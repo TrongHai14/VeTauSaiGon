@@ -1,0 +1,150 @@
+const test = require('node:test');
+const assert = require('node:assert');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const { DANH_SACH_TAU, CONG_TY } = require('../js/du-lieu-tau.js');
+const { CAU_HINH } = require('../js/cau-hinh.js');
+
+const GOC = path.join(__dirname, '..');
+const doc = (rel) => fs.readFileSync(path.join(GOC, rel), 'utf8');
+const meta = (html, key, val) => {
+  const m = new RegExp('<meta ' + key + '="' + val + '" content="([^"]*)">').exec(html);
+  return m ? m[1] : null;
+};
+const unesc = (s) => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
+const title = (html) => unesc(/<title>([^<]*)<\/title>/.exec(html)[1]);
+const KHUNG = ['<html lang="vi">', '<meta charset="utf-8">', 'name="viewport"', 'href="tel:0948170036"', 'href="https://zalo.me/0948170036"',
+  'data-logo="header"', 'data-logo="footer"', 'data-gioi-thieu'];
+const TAT_CA = ['index.html', 'dat-cho.html', 'xac-nhan.html', 'chinh-sach.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
+
+// Vị trí các script theo thứ tự; -1 nếu thiếu.
+const viTriScript = (html, tienTo, ds) => ds.map((s) => html.indexOf('<script src="' + tienTo + 'js/' + s + '"></script>'));
+const dungThuTu = (v) => v.every((x) => x >= 0) && v.every((x, i) => i === 0 || v[i - 1] < x);
+
+for (const t of DANH_SACH_TAU) {
+  test('tau/' + t.slug + '.html: data-tau, meta, og:image, khung, script', () => {
+    const html = doc('tau/' + t.slug + '.html');
+    assert.ok(html.includes('<body data-tau="' + t.slug + '">'));
+    const tieuDe = t.ten + ' – Du thuyền ăn tối sông Sài Gòn | Vé Tàu Sài Gòn';
+    assert.strictEqual(title(html), tieuDe);
+    assert.strictEqual(unesc(meta(html, 'name', 'description')), t.moTaNgan);
+    assert.strictEqual(unesc(meta(html, 'property', 'og:title')), tieuDe);
+    assert.strictEqual(meta(html, 'property', 'og:image'), 'https://vetausaigon.vn/' + t.anhDaiDien);
+    assert.strictEqual(meta(html, 'property', 'og:url'), 'https://vetausaigon.vn/tau/' + t.slug + '.html');
+    for (const k of KHUNG) assert.ok(html.includes(k), k);
+    assert.ok(html.includes('id="noi-dung-tau"') && html.includes('<h1>' + t.ten + '</h1>') && html.includes('<noscript>'));
+    assert.ok(html.includes('href="../css/style.css"'));
+    const v = viTriScript(html, '../', ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js']);
+    assert.ok(dungThuTu(v));
+    assert.ok(html.indexOf('khoiChayTrangTau()') > v[2]);
+  });
+}
+
+test('index.html: meta, khung, o tim kiem, script', () => {
+  const html = doc('index.html');
+  assert.strictEqual(title(html), 'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn');
+  const mt = meta(html, 'name', 'description');
+  assert.ok(mt && mt.length <= 160);
+  assert.strictEqual(meta(html, 'property', 'og:image'), 'https://vetausaigon.vn/' + DANH_SACH_TAU[0].anhDaiDien);
+  for (const k of KHUNG.concat(['id="danh-sach-tau"', 'id="form-tim"', 'class="hero"'])) assert.ok(html.includes(k), k);
+  assert.ok(dungThuTu(viTriScript(html, '', ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js'])));
+  assert.ok(html.includes('khoiChayTrangChu()'));
+});
+
+test('dat-cho.html: 4 buoc, o VAT, khong co phieu cho khach, khong tai html2canvas', () => {
+  const html = doc('dat-cho.html');
+  for (const k of KHUNG.concat(['data-buoc="1"', 'data-buoc="2"', 'data-buoc="3"', 'data-buoc="4"', 'name="vat"',
+    'name="congTyMst"', 'data-hanh-dong="da-chuyen"', 'id="khung-tom-tat"'])) assert.ok(html.includes(k), k);
+  assert.ok(!html.includes('id="phieu"') && !html.includes('html2canvas'), 'trang khach khong tao phieu');
+  assert.ok(dungThuTu(viTriScript(html, '', ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js', 'dat-cho.js'])));
+  assert.ok(html.includes('khoiChayTrangDatCho()'));
+});
+
+test('xac-nhan.html: noindex, o xac nhan da nhan tien, khong co lien ket tu trang khac', () => {
+  const html = doc('xac-nhan.html');
+  assert.ok(html.includes('<meta name="robots" content="noindex, nofollow">'));
+  assert.ok(html.includes('name="daNhanTien"') && html.includes('html2canvas') && html.includes('khoiChayTrangXacNhan()'));
+  for (const f of TAT_CA.filter((f) => f !== 'xac-nhan.html')) assert.ok(!doc(f).includes('xac-nhan.html'), f);
+});
+
+test('footer moi trang: dai ly chinh thuc, gioi thieu cong ty, MST, hotline Ms Nguyen', () => {
+  for (const f of TAT_CA) {
+    const html = doc(f);
+    for (const s of [CONG_TY.ten, CONG_TY.vaiTro, 'MST: ' + CONG_TY.mst, 'Hotline: Ms Nguyên', CAU_HINH.gioiThieuCongTy]) {
+      assert.ok(html.includes(s), f + ' thieu ' + s);
+    }
+  }
+});
+
+test('JS khong dung XHR/module; fetch( chi o dat-cho.js; email FormSubmit chi 1 noi', () => {
+  for (const f of ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js', 'dat-cho.js']) {
+    const js = doc('js/' + f);
+    assert.ok(!/XMLHttpRequest|^\s*(import|export)\s/m.test(js), f);
+    if (f !== 'dat-cho.js') assert.ok(!/\bfetch\(/.test(js), f);
+  }
+  const lanXuatHien = TAT_CA.concat(['js/cau-hinh.js', 'js/du-lieu-tau.js', 'js/hien-thi.js', 'js/dat-cho.js'])
+    .reduce((n, f) => n + (doc(f).match(/bookingindochinaqueen@gmail\.com/g) || []).length, 0);
+  assert.strictEqual(lanXuatHien, 1);
+});
+
+test('npm test dung node --test; hien-thi.js khong doi document.title', () => {
+  assert.strictEqual(JSON.parse(doc('package.json')).scripts.test, 'node --test');
+  assert.ok(!/document\.title/.test(doc('js/hien-thi.js')));
+});
+
+test('moi anh trong cau-hinh.js (anh bia, anh mon, logo, QR) co that va < 512000 byte', () => {
+  const ds = [].concat(CAU_HINH.anhBia, [CAU_HINH.logo.header, CAU_HINH.logo.footer, CAU_HINH.videoBia,
+    CAU_HINH.thanhToan.caNhan.anhQR, CAU_HINH.thanhToan.congTy.anhQR]);
+  for (const tau of Object.values(CAU_HINH.anhThucDon)) {
+    for (const bang of Object.values(tau)) for (const anh of Object.values(bang)) ds.push(...[].concat(anh));
+  }
+  for (const f of ds.filter(Boolean)) {
+    assert.ok(fs.existsSync(path.join(GOC, f)), 'khong co file ' + f);
+    if (!/\.mp4$/.test(f)) assert.ok(fs.statSync(path.join(GOC, f)).size < 512000, f + ' qua 500KB');
+  }
+});
+
+test('ten mon trong cau-hinh.js khop bang gia (khong co mon la)', () => {
+  for (const [slug, theoBang] of Object.entries(CAU_HINH.anhThucDon)) {
+    const tau = DANH_SACH_TAU.find((t) => t.slug === slug);
+    assert.ok(tau, slug);
+    for (const [tieuDe, theoMon] of Object.entries(theoBang)) {
+      const bang = tau.bangGia.find((b) => b.tieuDe === tieuDe);
+      assert.ok(bang, slug + ' / ' + tieuDe);
+      for (const ten of Object.keys(theoMon)) assert.ok(bang.dong.some((d) => d.ten === ten), slug + ' / ' + tieuDe + ' / ' + ten);
+    }
+  }
+});
+
+test('khoiChayTrangTau: data-tau sai hien "Khong tim thay tau" khong loi', () => {
+  const out = {};
+  const el = (id) => (out[id] = out[id] || { id, innerHTML: '' });
+  const ctx = {
+    document: { body: { getAttribute: () => 'tau-ma' }, getElementById: el, querySelectorAll: () => [], querySelector: () => null },
+    console
+  };
+  vm.createContext(ctx);
+  for (const f of ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js']) vm.runInContext(doc('js/' + f), ctx);
+  assert.doesNotThrow(() => ctx.khoiChayTrangTau());
+  assert.ok(out['noi-dung-tau'].innerHTML.includes('Không tìm thấy tàu'));
+});
+
+test('chinh-sach.html: du 5 muc theo update.docx, footer moi trang co link chinh sach va ban do', () => {
+  const { CHINH_SACH_CHUNG } = require('../js/du-lieu-tau.js');
+  const html = doc('chinh-sach.html');
+  for (const m of CHINH_SACH_CHUNG) {
+    assert.ok(html.includes('<details id="' + m.id + '" open>'), m.id);
+    for (const n of m.nhom) for (const d of n.dong) assert.ok(html.includes(d.replace(/“/g, '“')), d);
+  }
+  for (const f of TAT_CA) {
+    assert.ok(doc(f).includes('chinh-sach.html#doi-tra'), f);
+    assert.ok(doc(f).includes('google.com/maps'), f);
+  }
+});
+
+test('dat-cho.html: email nhan ve va o dong y dieu kien ve', () => {
+  const html = doc('dat-cho.html');
+  assert.ok(html.includes('name="dongY"') && html.includes('data-loi="dongY"') && html.includes('href="chinh-sach.html"'));
+  assert.ok(html.includes('nhận vé điện tử PDF') && html.includes('24 giờ'));
+});

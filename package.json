@@ -1,0 +1,1 @@
+{ "name": "vetausaigon", "private": true, "scripts": { "test": "node --test" } }

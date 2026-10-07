@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn</title>
+  <meta name="description" content="Đặt vé du thuyền ăn tối trên sông Sài Gòn: 6 tàu, buffet và set menu, đón khách tại Cảng Sài Gòn. Liên hệ Ms Nguyên 0948170036.">
+  <meta property="og:title" content="Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn">
+  <meta property="og:description" content="Đặt vé du thuyền ăn tối trên sông Sài Gòn: 6 tàu, buffet và set menu, đón khách tại Cảng Sài Gòn. Liên hệ Ms Nguyên 0948170036.">
+  <meta property="og:image" content="https://vetausaigon.vn/anh/indochina-star/tau-01.jpg">
+  <meta property="og:url" content="https://vetausaigon.vn/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="vi_VN">
+  <meta name="theme-color" content="#0194f3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="dau-trang">
+    <div class="khung">
+      <a class="logo" href="index.html"><span class="logo-hinh" data-logo="header"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 5"/><path d="M7 12V7h10v5"/><path d="M12 4v3"/></svg></span><span>Vé Tàu <b>Sài Gòn</b></span></a>
+      <nav class="menu-chinh">
+        <a href="index.html#danh-sach">Du thuyền</a>
+        <a href="dat-cho.html">Đặt chỗ</a>
+        <a href="#lien-he">Liên hệ</a>
+      </nav>
+      <a class="nut nut-xanh" href="tel:0948170036"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span>0948170036</span></a>
+    </div>
+  </header>
+  <section class="hero" style="background-image:url('anh/indochina-queen/tau-01.jpg')">
+    <div class="khung">
+      <span class="nhan-hero">★ Đại lý chính thức · 6 du thuyền</span>
+      <h1>Du thuyền ăn tối trên sông Sài Gòn</h1>
+      <p>Buffet, set menu và nhạc sống trên 6 du thuyền. Chọn tàu, chọn thực đơn và đặt chỗ trong vài phút.</p>
+    </div>
+  </section>
+  <main class="khung">
+    <form class="o-tim-kiem" id="form-tim">
+      <div class="o-tim-kiem-tieu-de"><span class="tab-tim"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 5"/><path d="M7 12V7h10v5"/><path d="M12 4v3"/></svg>Du thuyền ăn tối</span></div>
+      <div class="luoi-tim">
+        <div class="truong-tim"><label for="tim-tau">Du thuyền</label><select id="tim-tau" name="tau"><option value="">Tất cả du thuyền</option></select></div>
+        <div class="truong-tim"><label for="tim-ngay">Ngày lên tàu</label><input type="date" id="tim-ngay" name="ngay"></div>
+        <div class="truong-tim"><label for="tim-khach">Số người lớn</label><input type="number" id="tim-khach" name="khach" min="1" value="2"></div>
+        <button type="submit" class="nut">Tìm &amp; đặt chỗ</button>
+      </div>
+    </form>
+    <div class="diem-manh">
+      <div><span class="tron">★</span><p><strong>Đại lý chính thức</strong><span>Công ty TNHH Nguyên Nguyên Global</span></p></div>
+      <div><span class="tron">⚓</span><p><strong>6 du thuyền</strong><span>Buffet, set menu và nhạc sống</span></p></div>
+      <div><span class="tron">₫</span><p><strong>Thanh toán chuyển khoản</strong><span>Quét mã QR, có xuất hóa đơn VAT</span></p></div>
+      <div><span class="tron">✉</span><p><strong>Phiếu & code vé điện tử</strong><span>Gửi qua Zalo sau khi thanh toán</span></p></div>
+    </div>
+    <section class="khoi" id="danh-sach">
+      <div class="khoi-dau">
+        <div><h2>Chọn du thuyền</h2><p>Bấm vào tàu để xem thực đơn Buffet và Set menu.</p></div>
+        <div class="chip-loc">
+          <button type="button" class="chip" data-loc="" aria-pressed="true">Tất cả</button>
+          <button type="button" class="chip" data-loc="Buffet" aria-pressed="false">Buffet</button>
+          <button type="button" class="chip" data-loc="Set menu" aria-pressed="false">Set menu</button>
+        </div>
+      </div>
+      <div id="danh-sach-tau" class="danh-sach-tau">
+        <noscript>Vui lòng bật JavaScript để xem danh sách tàu hoặc gọi 0948170036.</noscript>
+      </div>
+    </section>
+    <section class="khoi">
+      <div class="khoi-dau"><div><h2>Đặt chỗ chỉ 3 bước</h2></div></div>
+      <div class="cac-buoc">
+        <div><h3>Chọn tàu &amp; thực đơn</h3><p>Chọn Buffet hoặc Set menu, bấm “Xem menu” để xem món trước khi đặt.</p></div>
+        <div><h3>Điền thông tin &amp; thanh toán</h3><p>Quét mã QR chuyển khoản. Cần hóa đơn VAT thì chuyển vào tài khoản công ty.</p></div>
+        <div><h3>Nhận phiếu &amp; code vé</h3><p>Ms Nguyên kiểm tra thanh toán và gửi phiếu xác nhận, code vé điện tử qua Zalo.</p></div>
+      </div>
+    </section>
+    <div class="bang-lien-he">
+      <div><h2>Cần tư vấn chọn tàu?</h2><p>Ms Nguyên tư vấn chọn tàu và thực đơn phù hợp.</p></div>
+      <div class="nhom">
+        <a class="nut" href="tel:0948170036">Gọi 0948170036</a>
+        <a class="nut nut-vien" href="https://zalo.me/0948170036" target="_blank" rel="noopener">Nhắn Zalo</a>
+      </div>
+    </div>
+  </main>
+  <footer class="chan-trang" id="lien-he">
+    <div class="khung">
+      <div class="chan-trang-luoi">
+        <div class="chan-trang-cong-ty">
+          <a class="logo" href="index.html"><span class="logo-hinh" data-logo="footer"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 5"/><path d="M7 12V7h10v5"/><path d="M12 4v3"/></svg></span><span>Vé Tàu Sài Gòn</span></a>
+          <p class="huy-hieu-lon">★ Đại lý chính thức</p>
+          <h3>Công ty TNHH Nguyên Nguyên Global</h3>
+          <p data-gioi-thieu>Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. Chúng tôi tư vấn chọn tàu, chọn thực đơn, giữ chỗ và xuất hóa đơn VAT cho khách lẻ, gia đình và doanh nghiệp.</p>
+        </div>
+        <div>
+          <h3>Du thuyền</h3>
+          <ul>
+            <li><a href="tau/indochina-star.html">Indochina Star</a></li>
+            <li><a href="tau/ben-nghe.html">Bến Nghé</a></li>
+            <li><a href="tau/indochina-queen.html">Indochina Queen</a></li>
+            <li><a href="tau/elite-of-saigon.html">Elite of Saigon</a></li>
+            <li><a href="tau/saigon-princess.html">Saigon Princess</a></li>
+            <li><a href="tau/ben-thanh-princess.html">Bến Thành Princess</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Thông tin liên hệ</h3>
+          <ul class="ds-lien-he">
+            <li><span>Mã số thuế</span><b>0319143429</b></li>
+            <li><span>Hotline</span><b>Ms Nguyên – <a href="tel:0948170036">0948170036</a></b></li>
+            <li><span>Zalo</span><b><a href="https://zalo.me/0948170036" target="_blank" rel="noopener">0948170036</a></b></li>
+            <li><span>Điểm đón khách</span><b>5 Nguyễn Tất Thành, Phường Xóm Chiếu, Hồ Chí Minh (cạnh Bến Nhà Rồng) · <a href="https://www.google.com/maps/search/?api=1&amp;query=5%20Nguy%E1%BB%85n%20T%E1%BA%A5t%20Th%C3%A0nh%2C%20X%C3%B3m%20Chi%E1%BA%BFu%2C%20H%E1%BB%93%20Ch%C3%AD%20Minh%20(c%E1%BA%A1nh%20B%E1%BA%BFn%20Nh%C3%A0%20R%E1%BB%93ng)" target="_blank" rel="noopener">Xem bản đồ</a></b></li>
+          </ul>
+          <h3 style="margin-top:16px">Hỗ trợ khách hàng</h3>
+          <ul>
+            <li><a href="chinh-sach.html#tre-em-chung">Chính sách trẻ em</a></li>
+            <li><a href="chinh-sach.html#dieu-kien-ve">Điều kiện vé</a></li>
+            <li><a href="chinh-sach.html#doi-tra">Chính sách đổi trả vé</a></li>
+            <li><a href="chinh-sach.html#huong-dan-ve">Hướng dẫn sử dụng vé</a></li>
+            <li><a href="chinh-sach.html#luu-y">Lưu ý quan trọng</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="cong-ty">
+        <p>© 2026 <strong>Công ty TNHH Nguyên Nguyên Global</strong> · MST: 0319143429 <span class="huy-hieu">Đại lý chính thức</span></p>
+        <p>Hotline: Ms Nguyên · SĐT: <a href="tel:0948170036">0948170036</a></p>
+      </div>
+    </div>
+  </footer>
+  <div class="thanh-lien-he" id="thanh-lien-he">
+    <a class="nut nut-xanh" href="tel:0948170036">Gọi 0948170036</a>
+    <a class="nut nut-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener">Nhắn Zalo</a>
+  </div>
+  <script src="js/cau-hinh.js"></script>
+  <script src="js/du-lieu-tau.js"></script>
+  <script src="js/hien-thi.js"></script>
+  <script>khoiChayTrangChu();</script>
+</body>
+</html>

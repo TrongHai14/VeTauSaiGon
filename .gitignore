@@ -1,1 +1,6 @@
 tai-lieu/*.docx
+*.docx
+~$*
+.claude/launch.json
+.bangiao/
+tai-lieu/hình ảnh idochinaqueen/
