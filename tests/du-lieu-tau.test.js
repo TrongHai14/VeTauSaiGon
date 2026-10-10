@@ -66,26 +66,9 @@ test('Elite: bang va phu thu', () => {
     ['Thứ 5 – Chủ nhật', 988000, 'Tặng set chill']]);
   assert.strictEqual(e.khuyenMai[0].tieuDe, 'Mid-week Chill');
 });
-test('moi anh duoc tham chieu ton tai va < 512000 byte', () => {
-  const dsAnh = [];
-  for (const t of DANH_SACH_TAU) {
-    if (t.anhDaiDien) dsAnh.push(t.anhDaiDien);
-    for (const a of [].concat(t.anhTau, t.anhMenu, t.anhKhac)) dsAnh.push(a.src);
-    for (const k of t.khuyenMai) if (k.anh) dsAnh.push(k.anh);
-  }
-  assert.ok(dsAnh.length > 0);
-  for (const src of dsAnh) {
-    const p = path.join(GOC, src);
-    assert.ok(fs.existsSync(p), 'thieu ' + src);
-    assert.ok(fs.statSync(p).size < 512000, 'qua lon ' + src);
-  }
-});
 test('moi file trong anh/ < 512000 byte', () => {
   const duyet = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? duyet(path.join(d, e.name)) : [path.join(d, e.name)]));
   for (const f of duyet(path.join(GOC, 'anh'))) assert.ok(fs.statSync(f).size < 512000, f);
-});
-test('moi anh co alt tieng Viet khong rong', () => {
-  for (const t of DANH_SACH_TAU) for (const a of [].concat(t.anhTau, t.anhMenu, t.anhKhac)) assert.ok(a.alt && a.alt.trim(), t.slug + ' ' + a.src);
 });
 // MST cong ty (10 so bat dau bang 0) khong phai SDT.
 const MST_CONG_TY = '0319143429';

@@ -1,146 +1,245 @@
 // =====================================================================
 // CẤU HÌNH ẢNH, LOGO, THANH TOÁN – chỉ cần sửa file này.
-// Đường dẫn ảnh tính từ thư mục gốc của web (cùng chỗ với index.html),
-// ví dụ: 'anh/indochina-queen/menu-01.jpg'. Ô nào để trống ('' hoặc [])
-// thì web tự dùng ảnh/biểu tượng mặc định. Hướng dẫn: tai-lieu/huong-dan-anh.md
+//
+// CÁCH ĐƯA ẢNH VÀO: chép ảnh vào thư mục anh/ ĐÚNG TÊN FILE ghi bên dưới
+// (ví dụ anh/indochina-queen/dai-dien.jpg). Không cần sửa code: có file là web tự hiện.
+// Ô nào chưa có file thì web hiện khung "Hình ảnh đang cập nhật"; khi mở trên máy
+// (localhost) khung đó ghi luôn tên file cần đưa vào.
+//
+// Muốn dùng tên file khác thì sửa đường dẫn ở đây. Muốn bỏ một ảnh thì xoá dòng đó.
+// Kiểm tra ảnh nào còn thiếu:  node cong-cu/kiem-tra-anh.js
+// Hướng dẫn chi tiết: tai-lieu/huong-dan-anh.md
+// Ảnh JPG, mỗi ảnh < 500KB, rộng tối đa 1600px. Tên file không dấu, không khoảng trắng.
 // =====================================================================
 
 var CAU_HINH = {
-  // Logo: ảnh PNG/SVG nền trong suốt. Header cao 40px, footer cao 48px.
+  // Địa chỉ web khi chạy thật (dùng cho link chia sẻ Zalo/Facebook). Có tên miền riêng thì đổi ở đây
+  // rồi chạy: node cong-cu/tao-trang.js
+  tenMien: 'https://tronghai14.github.io/VeTauSaiGon',
+
+  // Logo PNG nền trong suốt. Chưa có file thì web dùng biểu tượng con tàu.
   logo: {
-    header: '',          // ví dụ: 'anh/logo/logo-mau.png'
-    footer: ''           // ví dụ: 'anh/logo/logo-trang.png' (logo màu trắng cho nền tối)
+    header: 'anh/logo/logo.png',          // logo màu, hiện cao 40px
+    footer: 'anh/logo/logo-trang.png'     // logo trắng cho nền xanh đậm, hiện cao 48px (không có thì dùng logo header)
   },
 
-  // Ảnh bìa trang chủ: các ảnh chạy lần lượt (mờ dần + phóng nhẹ).
-  // Nên dùng ảnh ngang ≥ 1600px, mỗi ảnh < 500KB.
+  // Ảnh bìa trang chủ: chạy lần lượt (mờ dần + phóng nhẹ). Ảnh ngang ≥ 1600px.
   anhBia: [
-    'anh/indochina-queen/tau-01.jpg',
-    'anh/saigon-princess/tau-01.jpg',
-    'anh/elite-of-saigon/tau-01.jpg',
-    'anh/ben-nghe/tau-08.jpg'
+    'anh/bia/bia-01.jpg',
+    'anh/bia/bia-02.jpg',
+    'anh/bia/bia-03.jpg',
+    'anh/bia/bia-04.jpg'
   ],
-  // Video bìa (không bắt buộc): file .mp4 ngắn 10–20 giây, < 5MB. Có video thì video thay cho ảnh bìa.
+  // Video bìa (không bắt buộc): .mp4 10–20 giây, < 5MB. Có video thì video thay ảnh bìa.
   videoBia: '',
 
   // Giới thiệu công ty ở chân trang.
-  gioiThieuCongTy: 'Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: ' +
-    'Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. ' +
-    'Chúng tôi tư vấn chọn tàu, chọn thực đơn, giữ chỗ và xuất hóa đơn VAT cho khách lẻ, gia đình và doanh nghiệp.',
+  gioiThieuCongTy: 'Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. Chúng tôi tư vấn chọn tàu, chọn thực đơn, giữ chỗ và xuất hóa đơn VAT cho khách lẻ, gia đình và doanh nghiệp.',
 
-  // Tài khoản nhận tiền. maNganHang là mã BIN VietQR (ACB = 970416) để tự tạo mã QR có sẵn số tiền.
-  // anhQR: nếu điền ảnh QR có sẵn thì web hiện ảnh đó thay cho QR tự tạo (khách phải tự nhập số tiền).
+  // Tài khoản nhận tiền. maNganHang là mã BIN VietQR (ACB = 970416).
   thanhToan: {
     caNhan: {
       tieuDe: 'Chuyển khoản cá nhân (không xuất hóa đơn VAT)',
       nganHang: 'ACB', maNganHang: '970416',
       soTaiKhoan: '25960437', chuTaiKhoan: 'Lê Hoàng Thảo Nguyên',
-      anhQR: ''
+      anhQR: ''   // để trống = web tự tạo mã VietQR có sẵn số tiền (khuyên dùng)
     },
     congTy: {
       tieuDe: 'Chuyển khoản công ty (xuất hóa đơn VAT)',
       nganHang: 'ACB', maNganHang: '970416',
       soTaiKhoan: '4988888666', chuTaiKhoan: 'Công Ty TNHH Nguyên Nguyên Global',
-      anhQR: ''
+      anhQR: ''   // để trống = web tự tạo mã VietQR có sẵn số tiền (khuyên dùng)
     }
   },
 
-  // Ảnh thực đơn cho TỪNG món khách chọn: điền 1 hoặc nhiều ảnh vào mảng [].
-  // Ví dụ: 'INDO7': ['anh/indochina-queen/menu-01.jpg'],
-  // Món nào chưa có ảnh thì nút “Xem menu” mở toàn bộ ảnh menu chung của tàu.
+  // Ảnh từng tàu: ảnh đại diện, thư viện ảnh (tối đa bao nhiêu cũng được), ảnh khuyến mãi.
+  anhTau: {
+    'indochina-star': {   // Indochina Star
+      daiDien: 'anh/indochina-star/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
+      thuVien: [
+        'anh/indochina-star/tau-01.jpg',
+        'anh/indochina-star/tau-02.jpg',
+        'anh/indochina-star/tau-03.jpg',
+        'anh/indochina-star/tau-04.jpg',
+        'anh/indochina-star/tau-05.jpg',
+        'anh/indochina-star/tau-06.jpg',
+        'anh/indochina-star/tau-07.jpg',
+        'anh/indochina-star/tau-08.jpg'
+      ],
+      khuyenMai: {}
+    },
+    'ben-nghe': {   // Bến Nghé
+      daiDien: 'anh/ben-nghe/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
+      thuVien: [
+        'anh/ben-nghe/tau-01.jpg',
+        'anh/ben-nghe/tau-02.jpg',
+        'anh/ben-nghe/tau-03.jpg',
+        'anh/ben-nghe/tau-04.jpg',
+        'anh/ben-nghe/tau-05.jpg',
+        'anh/ben-nghe/tau-06.jpg',
+        'anh/ben-nghe/tau-07.jpg',
+        'anh/ben-nghe/tau-08.jpg'
+      ],
+      khuyenMai: {}
+    },
+    'indochina-queen': {   // Indochina Queen
+      daiDien: 'anh/indochina-queen/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
+      thuVien: [
+        'anh/indochina-queen/tau-01.jpg',
+        'anh/indochina-queen/tau-02.jpg',
+        'anh/indochina-queen/tau-03.jpg',
+        'anh/indochina-queen/tau-04.jpg',
+        'anh/indochina-queen/tau-05.jpg',
+        'anh/indochina-queen/tau-06.jpg',
+        'anh/indochina-queen/tau-07.jpg',
+        'anh/indochina-queen/tau-08.jpg'
+      ],
+      khuyenMai: {}
+    },
+    'elite-of-saigon': {   // Elite of Saigon
+      daiDien: 'anh/elite-of-saigon/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
+      thuVien: [
+        'anh/elite-of-saigon/tau-01.jpg',
+        'anh/elite-of-saigon/tau-02.jpg',
+        'anh/elite-of-saigon/tau-03.jpg',
+        'anh/elite-of-saigon/tau-04.jpg',
+        'anh/elite-of-saigon/tau-05.jpg',
+        'anh/elite-of-saigon/tau-06.jpg',
+        'anh/elite-of-saigon/tau-07.jpg',
+        'anh/elite-of-saigon/tau-08.jpg'
+      ],
+      khuyenMai: {
+        'Mid-week Chill': 'anh/elite-of-saigon/khuyen-mai-mid-week-chill.jpg'
+      }
+    },
+    'saigon-princess': {   // Saigon Princess
+      daiDien: 'anh/saigon-princess/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
+      thuVien: [
+        'anh/saigon-princess/tau-01.jpg',
+        'anh/saigon-princess/tau-02.jpg',
+        'anh/saigon-princess/tau-03.jpg',
+        'anh/saigon-princess/tau-04.jpg',
+        'anh/saigon-princess/tau-05.jpg',
+        'anh/saigon-princess/tau-06.jpg',
+        'anh/saigon-princess/tau-07.jpg',
+        'anh/saigon-princess/tau-08.jpg'
+      ],
+      khuyenMai: {
+        'Gói trang trí cơ bản': 'anh/saigon-princess/khuyen-mai-goi-trang-tri-co-ban.jpg'
+      }
+    },
+    'ben-thanh-princess': {   // Bến Thành Princess
+      daiDien: 'anh/ben-thanh-princess/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
+      thuVien: [
+        'anh/ben-thanh-princess/tau-01.jpg',
+        'anh/ben-thanh-princess/tau-02.jpg',
+        'anh/ben-thanh-princess/tau-03.jpg',
+        'anh/ben-thanh-princess/tau-04.jpg',
+        'anh/ben-thanh-princess/tau-05.jpg',
+        'anh/ben-thanh-princess/tau-06.jpg',
+        'anh/ben-thanh-princess/tau-07.jpg',
+        'anh/ben-thanh-princess/tau-08.jpg'
+      ],
+      khuyenMai: {}
+    },
+  },
+
+  // Ảnh thực đơn cho TỪNG món khách chọn (nút "Xem menu"). Một món có thể nhiều ảnh:
+  //   'INDO8': ['anh/indochina-queen/menu/set-indo8.jpg', 'anh/indochina-queen/menu/set-indo8-2.jpg'],
+  // KHÔNG sửa tên món bên trái dấu ":" (phải khớp bảng giá trong js/du-lieu-tau.js).
   anhThucDon: {
-  'indochina-star': {   // Indochina Star – ảnh menu chung hiện có: anh/indochina-star/menu-01.jpg … menu-03.jpg
-    'Buffet': {
-      'Tầng 1': [],
-      'Tầng 2': [],
+    'indochina-star': {   // Indochina Star
+      'Buffet': {
+        'Tầng 1': ['anh/indochina-star/menu/buffet-tang-1.jpg'],
+        'Tầng 2': ['anh/indochina-star/menu/buffet-tang-2.jpg'],
+      },
     },
-  },
-  'ben-nghe': {   // Bến Nghé – ảnh menu chung hiện có: anh/ben-nghe/menu-01.jpg … menu-11.jpg
-    'Buffet': {
-      'Buffet': [],
+    'ben-nghe': {   // Bến Nghé
+      'Buffet': {
+        'Buffet': ['anh/ben-nghe/menu/buffet.jpg'],
+      },
     },
-  },
-  'indochina-queen': {   // Indochina Queen – ảnh menu chung hiện có: anh/indochina-queen/menu-01.jpg … menu-13.jpg
-    'Buffet': {
-      'Tầng 1': [],
-      'Tầng 2': [],
-      'Tầng 3': [],
+    'indochina-queen': {   // Indochina Queen
+      'Buffet': {
+        'Tầng 1': ['anh/indochina-queen/menu/buffet-tang-1.jpg'],
+        'Tầng 2': ['anh/indochina-queen/menu/buffet-tang-2.jpg'],
+        'Tầng 3': ['anh/indochina-queen/menu/buffet-tang-3.jpg'],
+      },
+      'Set menu': {
+        'INDO7': ['anh/indochina-queen/menu/set-indo7.jpg'],
+        'INDO8': ['anh/indochina-queen/menu/set-indo8.jpg'],
+        'INDO9': ['anh/indochina-queen/menu/set-indo9.jpg'],
+        'INDO10': ['anh/indochina-queen/menu/set-indo10.jpg'],
+        'INDO11': ['anh/indochina-queen/menu/set-indo11.jpg'],
+        'INDO12': ['anh/indochina-queen/menu/set-indo12.jpg'],
+        'INDO13': ['anh/indochina-queen/menu/set-indo13.jpg'],
+        'INDO14': ['anh/indochina-queen/menu/set-indo14.jpg'],
+        'INDO15': ['anh/indochina-queen/menu/set-indo15.jpg'],
+        'INDO16': ['anh/indochina-queen/menu/set-indo16.jpg'],
+        'INDO17': ['anh/indochina-queen/menu/set-indo17.jpg'],
+      },
     },
-    'Set menu': {
-      'INDO7': [],
-      'INDO8': [],
-      'INDO9': [],
-      'INDO10': [],
-      'INDO11': [],
-      'INDO12': [],
-      'INDO13': [],
-      'INDO14': [],
-      'INDO15': [],
-      'INDO16': [],
-      'INDO17': [],
+    'elite-of-saigon': {   // Elite of Saigon
+      'Buffet – Tầng 1': {
+        'Buffet': ['anh/elite-of-saigon/menu/buffet.jpg'],
+      },
+      'Set menu – Tầng 2': {
+        'Menu Âu': ['anh/elite-of-saigon/menu/set-menu-au.jpg'],
+        'Menu Á': ['anh/elite-of-saigon/menu/set-menu-a.jpg'],
+        'Menu Việt': ['anh/elite-of-saigon/menu/set-menu-viet.jpg'],
+        'Menu Ấn': ['anh/elite-of-saigon/menu/set-menu-an.jpg'],
+        'Menu Chay': ['anh/elite-of-saigon/menu/set-menu-chay.jpg'],
+        'Menu Trẻ em': ['anh/elite-of-saigon/menu/set-menu-tre-em.jpg'],
+      },
     },
-  },
-  'elite-of-saigon': {   // Elite of Saigon – ảnh menu chung hiện có: anh/elite-of-saigon/menu-01.jpg … menu-14.jpg
-    'Buffet – Tầng 1': {
-      'Buffet': [],
+    'saigon-princess': {   // Saigon Princess
+      'Set menu': {
+        '3 món – Việt Nam': ['anh/saigon-princess/menu/set-3-mon-viet-nam.jpg'],
+        '3 món – Quốc tế (bò Nhật)': ['anh/saigon-princess/menu/set-3-mon-quoc-te-bo-nhat.jpg'],
+        '3 món – Âu (bò New Zealand)': ['anh/saigon-princess/menu/set-3-mon-au-bo-new-zealand.jpg'],
+        '3 món – Á Âu': ['anh/saigon-princess/menu/set-3-mon-a-au.jpg'],
+        '4 món – Á Âu (bò New Zealand)': ['anh/saigon-princess/menu/set-4-mon-a-au-bo-new-zealand.jpg'],
+        '4 món – Á Âu (bò Nhật)': ['anh/saigon-princess/menu/set-4-mon-a-au-bo-nhat.jpg'],
+        '4 món – Việt Nam': ['anh/saigon-princess/menu/set-4-mon-viet-nam.jpg'],
+        '4 món – Hải sản': ['anh/saigon-princess/menu/set-4-mon-hai-san.jpg'],
+        '5 món – Tinh Hoa': ['anh/saigon-princess/menu/set-5-mon-tinh-hoa.jpg'],
+        '5 món – Thanh Vị (bò New Zealand)': ['anh/saigon-princess/menu/set-5-mon-thanh-vi-bo-new-zealand.jpg'],
+        '5 món – Thanh Vị (bò Nhật)': ['anh/saigon-princess/menu/set-5-mon-thanh-vi-bo-nhat.jpg'],
+        '5 món – Á Âu (bò Nhật)': ['anh/saigon-princess/menu/set-5-mon-a-au-bo-nhat.jpg'],
+        '5 món – Hải sản': ['anh/saigon-princess/menu/set-5-mon-hai-san.jpg'],
+        '5 món – Á Âu (bò New Zealand)': ['anh/saigon-princess/menu/set-5-mon-a-au-bo-new-zealand.jpg'],
+        '5 món – Việt Nam': ['anh/saigon-princess/menu/set-5-mon-viet-nam.jpg'],
+        '5 món – Hương Việt': ['anh/saigon-princess/menu/set-5-mon-huong-viet.jpg'],
+        '5 món – Chay': ['anh/saigon-princess/menu/set-5-mon-chay.jpg'],
+        '4 món – Chay': ['anh/saigon-princess/menu/set-4-mon-chay.jpg'],
+        'Trẻ em – Donald': ['anh/saigon-princess/menu/set-tre-em-donald.jpg'],
+        'Trẻ em – Pluto': ['anh/saigon-princess/menu/set-tre-em-pluto.jpg'],
+      },
     },
-    'Set menu – Tầng 2': {
-      'Menu Âu': [],
-      'Menu Á': [],
-      'Menu Việt': [],
-      'Menu Ấn': [],
-      'Menu Chay': [],
-      'Menu Trẻ em': [],
+    'ben-thanh-princess': {   // Bến Thành Princess
+      'Set menu': {
+        '3 món – Quốc tế': ['anh/ben-thanh-princess/menu/set-3-mon-quoc-te.jpg'],
+        '3 món – Á Âu': ['anh/ben-thanh-princess/menu/set-3-mon-a-au.jpg'],
+        '3 món – Âu': ['anh/ben-thanh-princess/menu/set-3-mon-au.jpg'],
+        '3 món – Việt Nam': ['anh/ben-thanh-princess/menu/set-3-mon-viet-nam.jpg'],
+        '4 món – Á Âu (bò New Zealand)': ['anh/ben-thanh-princess/menu/set-4-mon-a-au-bo-new-zealand.jpg'],
+        '4 món – Á Âu (bò Nhật)': ['anh/ben-thanh-princess/menu/set-4-mon-a-au-bo-nhat.jpg'],
+        '4 món – Việt Nam': ['anh/ben-thanh-princess/menu/set-4-mon-viet-nam.jpg'],
+        '4 món – Hải sản': ['anh/ben-thanh-princess/menu/set-4-mon-hai-san.jpg'],
+        '5 món – Mỹ Vị (bò New Zealand)': ['anh/ben-thanh-princess/menu/set-5-mon-my-vi-bo-new-zealand.jpg'],
+        '5 món – Mỹ Vị (bò Nhật)': ['anh/ben-thanh-princess/menu/set-5-mon-my-vi-bo-nhat.jpg'],
+        '5 món – Á Âu (bò New Zealand)': ['anh/ben-thanh-princess/menu/set-5-mon-a-au-bo-new-zealand.jpg'],
+        '5 món – Á Âu (bò Nhật)': ['anh/ben-thanh-princess/menu/set-5-mon-a-au-bo-nhat.jpg'],
+        '5 món – Nét Việt': ['anh/ben-thanh-princess/menu/set-5-mon-net-viet.jpg'],
+        '5 món – Hải sản': ['anh/ben-thanh-princess/menu/set-5-mon-hai-san.jpg'],
+        '5 món – Việt Nam': ['anh/ben-thanh-princess/menu/set-5-mon-viet-nam.jpg'],
+        '5 món – Tinh Tế': ['anh/ben-thanh-princess/menu/set-5-mon-tinh-te.jpg'],
+        '5 món – Chay': ['anh/ben-thanh-princess/menu/set-5-mon-chay.jpg'],
+        '4 món – Chay': ['anh/ben-thanh-princess/menu/set-4-mon-chay.jpg'],
+        'Trẻ em – Pluto': ['anh/ben-thanh-princess/menu/set-tre-em-pluto.jpg'],
+        'Trẻ em – Donald': ['anh/ben-thanh-princess/menu/set-tre-em-donald.jpg'],
+      },
     },
-  },
-  'saigon-princess': {   // Saigon Princess – ảnh menu chung hiện có: anh/saigon-princess/menu-01.jpg … menu-20.jpg
-    'Set menu': {
-      '3 món – Việt Nam': [],
-      '3 món – Quốc tế (bò Nhật)': [],
-      '3 món – Âu (bò New Zealand)': [],
-      '3 món – Á Âu': [],
-      '4 món – Á Âu (bò New Zealand)': [],
-      '4 món – Á Âu (bò Nhật)': [],
-      '4 món – Việt Nam': [],
-      '4 món – Hải sản': [],
-      '5 món – Tinh Hoa': [],
-      '5 món – Thanh Vị (bò New Zealand)': [],
-      '5 món – Thanh Vị (bò Nhật)': [],
-      '5 món – Á Âu (bò Nhật)': [],
-      '5 món – Hải sản': [],
-      '5 món – Á Âu (bò New Zealand)': [],
-      '5 món – Việt Nam': [],
-      '5 món – Hương Việt': [],
-      '5 món – Chay': [],
-      '4 món – Chay': [],
-      'Trẻ em – Donald': [],
-      'Trẻ em – Pluto': [],
-    },
-  },
-  'ben-thanh-princess': {   // Bến Thành Princess – ảnh menu chung hiện có: anh/ben-thanh-princess/menu-01.jpg … menu-20.jpg
-    'Set menu': {
-      '3 món – Quốc tế': [],
-      '3 món – Á Âu': [],
-      '3 món – Âu': [],
-      '3 món – Việt Nam': [],
-      '4 món – Á Âu (bò New Zealand)': [],
-      '4 món – Á Âu (bò Nhật)': [],
-      '4 món – Việt Nam': [],
-      '4 món – Hải sản': [],
-      '5 món – Mỹ Vị (bò New Zealand)': [],
-      '5 món – Mỹ Vị (bò Nhật)': [],
-      '5 món – Á Âu (bò New Zealand)': [],
-      '5 món – Á Âu (bò Nhật)': [],
-      '5 món – Nét Việt': [],
-      '5 món – Hải sản': [],
-      '5 món – Việt Nam': [],
-      '5 món – Tinh Tế': [],
-      '5 món – Chay': [],
-      '4 món – Chay': [],
-      'Trẻ em – Pluto': [],
-      'Trẻ em – Donald': [],
-    },
-  },
   }
 };
 

@@ -99,6 +99,22 @@ function layAnhMon(tau, tieuDeBang, tenMon) {
   return ketQua;
 }
 
+// Ảnh của một tàu trong CAU_HINH.anhTau: { daiDien, thuVien: [], khuyenMai: { tiêu đề: ảnh } }.
+function layCauHinhAnhTau(tau) {
+  var cauHinh = typeof CAU_HINH !== 'undefined' ? CAU_HINH : null;
+  return (cauHinh && cauHinh.anhTau && cauHinh.anhTau[tau.slug]) || {};
+}
+
+function layAnhDaiDien(tau) {
+  var src = layCauHinhAnhTau(tau).daiDien;
+  return src ? { src: src, alt: 'Du thuyền ' + tau.ten } : null;
+}
+
+function layAnhKhuyenMai(tau, tieuDe) {
+  var km = layCauHinhAnhTau(tau).khuyenMai || {};
+  return km[tieuDe] ? { src: km[tieuDe], alt: 'Khuyến mãi ' + tieuDe + ' – ' + tau.ten } : null;
+}
+
 // Các nhóm thực đơn khách chọn được (bỏ bảng phụ thu và bảng rỗng).
 // Mỗi nhóm: { chiSo, tieuDe, loai, ghiChu, dong: [{ ma: 'chiSoBang:chiSoDong', ten, tenPhu, gia, anh }] }.
 function layNhomThucDon(tau) {
@@ -149,9 +165,44 @@ function taoLinkDatCho(tienTo, slug, maThucDon, loai) {
     (maThucDon ? '&menu=' + encodeURIComponent(maThucDon) : '');
 }
 
-function taoAnh(src, alt, tienTo, lazy) {
+// Mọi ảnh trên web đi qua hàm này. Chưa có file ảnh thì onerror đổi sang khung "Hình ảnh đang cập nhật".
+// nhan: chữ hiện trên khung thay thế (ví dụ tên tàu).
+function taoAnh(src, alt, tienTo, lazy, nhan) {
   return '<img src="' + escapeHtml(tienTo + src) + '" alt="' + escapeHtml(alt) + '"' +
-    (lazy ? ' loading="lazy"' : '') + '>';
+    (lazy ? ' loading="lazy"' : '') + ' data-tep="' + escapeHtml(src) + '"' +
+    (nhan ? ' data-nhan="' + escapeHtml(nhan) + '"' : '') + ' onerror="anhLoi(this)">';
+}
+
+// Mở web trên máy (localhost / file://) thì khung thay thế ghi tên file cần đưa vào.
+function laCheDoThietKe() {
+  if (typeof location === 'undefined') return false;
+  return location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+}
+
+// Ảnh SVG (data URI) làm khung thay thế: nền xanh đêm, sóng nước, con tàu, 1–2 dòng chữ.
+function taoAnhCho(dong1, dong2) {
+  var e = function (t) { return String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">' +
+    '<defs><linearGradient id="n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b2a4a"/><stop offset="1" stop-color="#0770cd"/></linearGradient></defs>' +
+    '<rect width="800" height="500" fill="url(#n)"/>' +
+    '<g fill="none" stroke="#ffffff" stroke-opacity=".10" stroke-width="3">' +
+    '<path d="M0 380q100-30 200 0t200 0 200 0 200 0"/><path d="M0 420q100-30 200 0t200 0 200 0 200 0"/><path d="M0 460q100-30 200 0t200 0 200 0 200 0"/></g>' +
+    '<g transform="translate(340 150)" fill="none" stroke="#ffffff" stroke-opacity=".85" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M10 95l12 22h76l12-22"/><path d="M22 95l-8-38h92l-8 38"/><path d="M34 57V25h52v32"/><path d="M60 5v20"/></g>' +
+    '<text x="400" y="330" text-anchor="middle" font-family="Be Vietnam Pro, Arial, sans-serif" font-size="30" font-weight="700" fill="#ffffff">' + e(dong1) + '</text>' +
+    (dong2 ? '<text x="400" y="372" text-anchor="middle" font-family="Consolas, monospace" font-size="20" fill="#bfe3ff">' + e(dong2) + '</text>' : '') +
+    '</svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// onerror của ảnh: thay bằng khung thay thế (chạy một lần).
+function anhLoi(img) {
+  img.onerror = null;
+  var nhan = img.getAttribute('data-nhan');
+  var tep = img.getAttribute('data-tep');
+  if (laCheDoThietKe() && tep) img.src = taoAnhCho(nhan || 'Chưa có ảnh', 'Đưa ảnh vào: ' + tep);
+  else img.src = taoAnhCho(nhan || 'Hình ảnh đang cập nhật', nhan ? 'Hình ảnh đang cập nhật' : '');
+  img.classList.add('anh-cho');
 }
 
 function taoKhoiGia(tau, nhanNho) {
@@ -169,7 +220,7 @@ function taoTheTau(tau, tienTo) {
   return '<article class="the-tau" data-loai="' + escapeHtml(nhan.join('|')) + '">' +
     '<a href="' + escapeHtml(tienTo + 'tau/' + tau.slug + '.html') + '">' +
     '<div class="the-tau-anh">' +
-    (tau.anhDaiDien ? taoAnh(tau.anhDaiDien, 'Du thuyền ' + tau.ten, tienTo, true) : '') +
+    (layAnhDaiDien(tau) ? taoAnh(layAnhDaiDien(tau).src, layAnhDaiDien(tau).alt, tienTo, true, tau.ten) : '') +
     (nhanHtml ? '<div class="the-tau-nhan">' + nhanHtml + '</div>' : '') + '</div>' +
     '<div class="the-tau-noi-dung">' +
     '<h3>' + escapeHtml(tau.ten) + '</h3>' +
@@ -206,7 +257,7 @@ var SO_DONG_HIEN_SAN = 6;
 // Một dòng món: ảnh nhỏ, tên, giá, nút Xem menu và nút Đặt.
 function taoDongMon(tau, dong, loai, an, tienTo) {
   var anhNho = dong.anh.length > 0
-    ? taoAnh(dong.anh[0].src, dong.anh[0].alt, tienTo, true)
+    ? taoAnh(dong.anh[0].src, dong.anh[0].alt, tienTo, true, dong.ten)
     : '<span class="anh-trong">' + icon('menu') + '</span>';
   return '<div class="dong-thuc-don"' + (an ? ' hidden data-an' : '') + '>' +
     '<button type="button" class="anh-mon" data-mo-anh="mon:' + dong.ma + '" data-i="0" aria-label="Xem menu ' + escapeHtml(dong.ten) + '">' + anhNho + '</button>' +
@@ -279,8 +330,8 @@ function taoMucKhuyenMai(tau, tienTo) {
   for (var i = 0; i < khuyenMai.length; i++) {
     var km = khuyenMai[i];
     html += '<div class="khuyen-mai">' +
-      (km.anh ? '<button type="button" data-mo-anh="khuyenMai" data-i="' + i + '">' +
-        taoAnh(km.anh, 'Khuyến mãi ' + km.tieuDe, tienTo, true) + '</button>' : '') +
+      (layAnhKhuyenMai(tau, km.tieuDe) ? '<button type="button" data-mo-anh="khuyenMai" data-i="' + i + '">' +
+        taoAnh(layAnhKhuyenMai(tau, km.tieuDe).src, layAnhKhuyenMai(tau, km.tieuDe).alt, tienTo, true, km.tieuDe) + '</button>' : '') +
       '<div><h3>' + escapeHtml(km.tieuDe) + '</h3><p>' + escapeHtml(km.noiDung) + '</p></div></div>';
   }
   return taoMuc('khuyen-mai', 'quaTang', 'Khuyến mãi', html);
@@ -308,41 +359,32 @@ function taoMucLichTrinh(tau) {
   return html ? taoMuc('lich-trinh', 'gio', 'Giờ chạy &amp; lộ trình', html) : '';
 }
 
+// Ảnh để xem: ảnh đại diện + thư viện ảnh.
 function layAnhTau(tau) {
-  return (tau.anhTau || []).concat(tau.anhKhac || []);
-}
-
-var SO_ANH_THU_VIEN = 8;
-
-function taoMucAnh(tau, tienTo) {
-  var anh = layAnhTau(tau);
-  if (anh.length === 0) return '';
-  var html = '<div class="luoi-anh-nho">';
-  var soHien = Math.min(anh.length, SO_ANH_THU_VIEN);
-  for (var i = 0; i < soHien; i++) {
-    html += '<button type="button" data-mo-anh="tau" data-i="' + i + '">' +
-      taoAnh(anh[i].src, anh[i].alt, tienTo, true) +
-      (i === soHien - 1 && anh.length > soHien ? '<span class="con-lai">+' + (anh.length - soHien) + ' ảnh</span>' : '') +
-      '</button>';
+  var ch = layCauHinhAnhTau(tau);
+  var kq = [];
+  var dd = layAnhDaiDien(tau);
+  if (dd) kq.push(dd);
+  var thuVien = ch.thuVien || [];
+  for (var i = 0; i < thuVien.length; i++) {
+    if (thuVien[i]) kq.push({ src: thuVien[i], alt: 'Du thuyền ' + tau.ten + ' – ảnh ' + (i + 1) });
   }
-  return taoMuc('hinh-anh', 'anh', 'Ảnh tàu (' + anh.length + ')', html + '</div>');
+  return kq;
 }
 
+// Lưới ảnh đầu trang tàu: 1 ảnh lớn (ảnh đại diện) + 4 ảnh nhỏ; bấm mở xem tất cả.
 function taoLuoiAnhDau(tau, tienTo) {
   var anh = layAnhTau(tau);
-  if (anh.length === 0) {
-    return tau.anhDaiDien ? '<div class="luoi-anh" style="grid-template-columns:1fr">' +
-      '<button type="button">' + taoAnh(tau.anhDaiDien, 'Du thuyền ' + tau.ten, tienTo, false) + '</button></div>' : '';
-  }
+  if (anh.length === 0) return '';
   var soO = Math.min(anh.length, 5);
-  var html = '<div class="luoi-anh">';
+  var html = '<div class="luoi-anh' + (soO < 5 ? ' luoi-anh-it' : '') + '">';
   var nhanXemTat = 'Xem tất cả ' + anh.length + ' ảnh';
   for (var i = 0; i < soO; i++) {
     var lopPhu = '';
     if (i === soO - 1 && anh.length > soO) lopPhu = '<span class="con-lai">' + nhanXemTat + '</span>';
     else if (i === 2 && anh.length > 3) lopPhu = '<span class="con-lai chi-dien-thoai">' + nhanXemTat + '</span>';
-    html += '<button type="button" data-mo-anh="tau" data-i="' + i + '">' +
-      taoAnh(anh[i].src, anh[i].alt, tienTo, i > 0) + lopPhu + '</button>';
+    html += '<button type="button" data-mo-anh="tau" data-i="' + i + '" aria-label="Xem ảnh ' + (i + 1) + '">' +
+      taoAnh(anh[i].src, anh[i].alt, tienTo, i > 0, tau.ten) + lopPhu + '</button>';
   }
   return html + '</div>';
 }
@@ -384,7 +426,6 @@ function taoTrangTau(tau, lienHe, tienTo) {
       ? taoMuc('tre-em', 'treEm', 'Chính sách trẻ em', taoDanhSachDau(tau.chinhSachTreEm)) : ''],
     ['giai-tri', 'Giải trí', tau.giaiTri && tau.giaiTri.length > 0
       ? taoMuc('giai-tri', 'nhac', 'Dịch vụ giải trí', taoDanhSachDau(tau.giaiTri)) : ''],
-    ['hinh-anh', 'Hình ảnh', taoMucAnh(tau, tienTo)],
     ['dieu-kien', 'Điều kiện vé', taoMuc('dieu-kien', 'khien', 'Điều kiện vé &amp; chính sách',
       taoKhoiChinhSach(CHINH_SACH_CHUNG, false) +
       '<p class="ghi-chu">Xem đầy đủ tại <a href="' + escapeHtml(tienTo + 'chinh-sach.html') + '">Chính sách &amp; điều kiện vé</a>.</p>')]
@@ -438,19 +479,27 @@ function ganLightbox(goc, cacNhom, tienTo) {
 
   function hien(i) {
     viTri = (i + nhomHienTai.length) % nhomHienTai.length;
-    anhLon.src = tienTo + nhomHienTai[viTri].src;
-    anhLon.alt = nhomHienTai[viTri].alt;
+    var anhHien = nhomHienTai[viTri] || { src: '', alt: '' };
+    anhLon.classList.remove('anh-cho');
+    anhLon.setAttribute('data-tep', anhHien.src);
+    anhLon.setAttribute('data-nhan', anhHien.alt);
+    anhLon.onerror = function () { anhLoi(anhLon); };
+    if (anhHien.src) anhLon.src = tienTo + anhHien.src;
+    else anhLoi(anhLon);
+    anhLon.alt = anhHien.alt;
     dem.textContent = (viTri + 1) + ' / ' + nhomHienTai.length;
     var nho = day.children;
     for (var k = 0; k < nho.length; k++) nho[k].className = k === viTri ? 'chon' : '';
     if (nho[viTri] && nho[viTri].scrollIntoView) nho[viTri].scrollIntoView({ block: 'nearest', inline: 'center' });
   }
   function mo(tenNhom, i) {
-    nhomHienTai = cacNhom[tenNhom] || [];
+    nhomHienTai = (cacNhom[tenNhom] || []).filter(function (x) { return !!x; });
     if (nhomHienTai.length === 0) return;
     var html = '';
     for (var k = 0; k < nhomHienTai.length; k++) {
-      html += '<button type="button" data-den="' + k + '">' + taoAnh(nhomHienTai[k].src, nhomHienTai[k].alt, tienTo, true) + '</button>';
+      html += '<button type="button" data-den="' + k + '">' + (nhomHienTai[k] && nhomHienTai[k].src
+        ? taoAnh(nhomHienTai[k].src, nhomHienTai[k].alt, tienTo, true, nhomHienTai[k].alt)
+        : '<img alt="" src="' + taoAnhCho('', '') + '">') + '</button>';
     }
     day.innerHTML = html;
     hop.classList.add('mo');
@@ -534,12 +583,23 @@ function apDungCauHinhChung(tienTo) {
   var ch = layCauHinh();
   var logo = ch.logo || {};
   var cacLogo = document.querySelectorAll('[data-logo]');
+  // Tải thử logo; chỉ thay biểu tượng con tàu khi file logo có thật. Logo footer thiếu thì dùng logo header.
+  function datLogo(oLogo, viTri, dsThu) {
+    if (dsThu.length === 0) return;
+    var thu = new Image();
+    thu.onload = function () {
+      oLogo.innerHTML = '<img src="' + escapeHtml(tienTo + dsThu[0]) + '" alt="Logo ' + escapeHtml(CONG_TY.ten) + '">';
+      oLogo.className = 'logo-anh logo-anh-' + viTri;
+      if (oLogo.nextElementSibling) oLogo.nextElementSibling.classList.add('logo-chu-phu');
+    };
+    thu.onerror = function () { datLogo(oLogo, viTri, dsThu.slice(1)); };
+    thu.src = tienTo + dsThu[0];
+  }
   for (var i = 0; i < cacLogo.length; i++) {
     var viTri = cacLogo[i].getAttribute('data-logo');
-    var src = logo[viTri] || (viTri === 'footer' ? logo.header : '');
-    if (!src) continue;
-    cacLogo[i].innerHTML = '<img src="' + escapeHtml(tienTo + src) + '" alt="Logo ' + escapeHtml(CONG_TY.ten) + '">';
-    cacLogo[i].className = 'logo-anh logo-anh-' + viTri;
+    var dsThu = [logo[viTri]];
+    if (viTri === 'footer') dsThu.push(logo.header);
+    datLogo(cacLogo[i], viTri, dsThu.filter(function (x) { return !!x; }));
   }
   var gioiThieu = document.querySelector('[data-gioi-thieu]');
   if (gioiThieu && ch.gioiThieuCongTy) gioiThieu.textContent = ch.gioiThieuCongTy;
@@ -558,11 +618,39 @@ function khoiChayAnhBia(hero, tienTo) {
     hero.insertBefore(lop, hero.firstChild);
     return;
   }
-  var anh = (ch.anhBia || []).filter(function (x) { return !!x; });
+  // Tải thử từng ảnh bìa; ảnh nào chưa có file thì bỏ (trên máy thì thay bằng khung ghi tên file).
+  var dsAnh = (ch.anhBia || []).filter(function (x) { return !!x; });
+  var conCho = dsAnh.length;
+  var ketQua = [];
+  if (conCho === 0) return;
+  for (var k = 0; k < dsAnh.length; k++) {
+    (function (viTri) {
+      var thu = new Image();
+      thu.onload = function () { ketQua[viTri] = tienTo + dsAnh[viTri]; xong(); };
+      thu.onerror = function () { ketQua[viTri] = null; thieu.push(dsAnh[viTri]); xong(); };
+      thu.src = tienTo + dsAnh[viTri];
+    })(k);
+  }
+  var thieu = [];
+  function xong() {
+    conCho--;
+    if (conCho > 0) return;
+    chayAnhBia(hero, lop, ketQua.filter(function (x) { return !!x; }));
+    // Trên máy: nhãn nhỏ góc dưới ghi ảnh bìa còn thiếu.
+    if (thieu.length > 0 && laCheDoThietKe()) {
+      var nhan = document.createElement('div');
+      nhan.className = 'nhan-thieu-anh';
+      nhan.textContent = 'Chưa có ảnh bìa – đưa vào: ' + thieu.join(', ');
+      hero.appendChild(nhan);
+    }
+  }
+}
+
+function chayAnhBia(hero, lop, anh) {
   if (anh.length === 0) return;
   var html = '';
   for (var i = 0; i < anh.length; i++) {
-    html += '<div class="hero-anh' + (i === 0 ? ' hien' : '') + '" style="background-image:url(&quot;' + escapeHtml(tienTo + anh[i]) + '&quot;)"></div>';
+    html += '<div class="hero-anh' + (i === 0 ? ' hien' : '') + '" style="background-image:url(&quot;' + escapeHtml(anh[i]) + '&quot;)"></div>';
   }
   lop.innerHTML = html;
   hero.insertBefore(lop, hero.firstChild);
@@ -660,16 +748,14 @@ function khoiChayTrangTau() {
       '<a class="nut" href="' + escapeHtml(taoLinkDatCho('../', tau.slug, null)) + '">Đặt chỗ</a>';
   }
   var khuyenMai = [];
-  for (var i = 0; i < (tau.khuyenMai || []).length; i++) {
-    if (tau.khuyenMai[i].anh) khuyenMai[i] = { src: tau.khuyenMai[i].anh, alt: 'Khuyến mãi ' + tau.khuyenMai[i].tieuDe };
-  }
-  var cacNhomAnh = { tau: layAnhTau(tau), menu: tau.anhMenu || [], khuyenMai: khuyenMai };
+  for (var i = 0; i < (tau.khuyenMai || []).length; i++) khuyenMai[i] = layAnhKhuyenMai(tau, tau.khuyenMai[i].tieuDe);
+  var cacNhomAnh = { tau: layAnhTau(tau), khuyenMai: khuyenMai };
   // Mỗi món một nhóm ảnh; món chưa gắn ảnh riêng thì mở ảnh menu chung của tàu.
   var nhom = layNhomThucDon(tau);
   for (var n = 0; n < nhom.length; n++) {
     for (var m = 0; m < nhom[n].dong.length; m++) {
       var mon = nhom[n].dong[m];
-      cacNhomAnh['mon:' + mon.ma] = mon.anh.length > 0 ? mon.anh : (tau.anhMenu || []);
+      cacNhomAnh['mon:' + mon.ma] = mon.anh.length > 0 ? mon.anh : [{ src: '', alt: 'Thực đơn ' + mon.ten }];
     }
   }
   ganLightbox(khung, cacNhomAnh, '../');
@@ -679,7 +765,7 @@ function khoiChayTrangTau() {
 
 if (typeof module !== 'undefined') {
   module.exports = {
-    escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung,
+    escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung, layAnhTau, layAnhDaiDien, layAnhKhuyenMai, taoAnhCho, taoAnh,
     taoTheTau, taoTrangTau, taoNutLienHe, taoKhoiChinhSach, khoiChayTrangChu, khoiChayTrangTau
   };
 }

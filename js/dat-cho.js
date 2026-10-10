@@ -3,7 +3,7 @@
 var hamHienThi = (typeof escapeHtml === 'function')
   ? {
     escapeHtml: escapeHtml, dinhDangGia: dinhDangGia, layNhomThucDon: layNhomThucDon,
-    layThucDonTheoLoai: layThucDonTheoLoai, icon: icon
+    layThucDonTheoLoai: layThucDonTheoLoai, icon: icon, taoAnh: taoAnh, layAnhDaiDien: layAnhDaiDien
   }
   : require('./hien-thi.js');
 var escapeHtmlDatCho = hamHienThi.escapeHtml;
@@ -567,7 +567,7 @@ function taoODem(ten, giaTri, toiThieu) {
 
 function taoAnhNhoMon(mon) {
   return mon.anh.length > 0
-    ? '<img src="' + escapeHtmlDatCho(mon.anh[0].src) + '" alt="' + escapeHtmlDatCho(mon.anh[0].alt) + '" loading="lazy">'
+    ? hamHienThi.taoAnh(mon.anh[0].src, mon.anh[0].alt, '', true, mon.ten)
     : '<span class="anh-trong">' + hamHienThi.icon('menu') + '</span>';
 }
 
@@ -640,7 +640,8 @@ function taoTomTatDon(don, tau, bangTreEm, tienTo) {
   var e = escapeHtmlDatCho;
   if (!tau) return '<p class="ghi-chu">Chưa chọn du thuyền.</p>';
   var tt = tomTatDon(don, tau, bangTreEm);
-  var html = '<div class="tt-tau">' + (tau.anhDaiDien ? '<img src="' + e(tienTo + tau.anhDaiDien) + '" alt="">' : '') +
+  var anhDaiDien = hamHienThi.layAnhDaiDien(tau);
+  var html = '<div class="tt-tau">' + (anhDaiDien ? hamHienThi.taoAnh(anhDaiDien.src, '', tienTo, false, tau.ten) : '') +
     '<div><strong>' + e(tau.ten) + '</strong><span>' + (laNgayCoThat(don.ngay) ? 'Ngày ' + e(dinhDangNgay(don.ngay)) : 'Chưa chọn ngày') +
     (tau.gioChay && tau.gioChay.donKhach ? ' · Đón ' + e(tau.gioChay.donKhach) : '') + '</span></div></div>';
   if (tt.dong.length === 0) return html + '<p class="ghi-chu">Chưa chọn thực đơn.</p>';
@@ -786,7 +787,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     var nhom = hamHienThi.layNhomThucDon(tau);
     for (var i = 0; i < nhom.length; i++) {
       for (var j = 0; j < nhom[i].dong.length; j++) {
-        nhomAnh['mon:' + nhom[i].dong[j].ma] = nhom[i].dong[j].anh.length > 0 ? nhom[i].dong[j].anh : (tau.anhMenu || []);
+        nhomAnh['mon:' + nhom[i].dong[j].ma] = nhom[i].dong[j].anh.length > 0 ? nhom[i].dong[j].anh : [{ src: '', alt: 'Thực đơn ' + nhom[i].dong[j].ten }];
       }
     }
   }

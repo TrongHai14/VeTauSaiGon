@@ -6,27 +6,6 @@ var LIEN_HE = {
 var DIA_CHI_MAC_DINH = '5 Nguyễn Tất Thành, Phường Xóm Chiếu, Hồ Chí Minh';
 var CONG_TY = { ten: 'Công ty TNHH Nguyên Nguyên Global', mst: '0319143429', vaiTro: 'Đại lý chính thức' };
 
-// Tạo danh sách ảnh: tên file theo thứ tự đánh số 2 chữ số, alt = moTa + số thứ tự trong danh sách.
-// danhSoThuTu: các số thứ tự của file (ví dụ [1, 3, 4] -> loai-01.jpg, loai-03.jpg, loai-04.jpg).
-function taoDanhSachAnh(slug, loai, danhSoThuTu, moTa) {
-  var ketQua = [];
-  for (var i = 0; i < danhSoThuTu.length; i++) {
-    var so = danhSoThuTu[i];
-    ketQua.push({
-      src: 'anh/' + slug + '/' + loai + '-' + (so < 10 ? '0' : '') + so + '.jpg',
-      alt: moTa + ' ' + (i + 1)
-    });
-  }
-  return ketQua;
-}
-
-// Dãy số từ tu đến den (gồm cả hai đầu).
-function dayso(tu, den) {
-  var ketQua = [];
-  for (var i = tu; i <= den; i++) ketQua.push(i);
-  return ketQua;
-}
-
 var CHINH_SACH_TRE_EM_PRINCESS = [
   'Trẻ em dưới 6 tuổi: ăn chung với bố mẹ và được tặng kèm 1 phần soup cho bé. Mỗi người lớn được kèm tối đa 1 bé, bé phát sinh phụ thu 100.000 VND/bé.',
   'Trẻ em từ đủ 6 tuổi đến 11 tuổi: chọn thực đơn Donald Kid hoặc Pluto Kid.',
@@ -39,7 +18,6 @@ var DANH_SACH_TAU = [
     slug: 'indochina-star',
     ten: 'Indochina Star',
     moTaNgan: 'Buffet tối trên du thuyền Indochina Star qua sông Sài Gòn: đón khách 18h00, tàu chạy 19h45, cập bến 21h15, có nhạc và múa dân tộc.',
-    anhDaiDien: 'anh/indochina-star/tau-01.jpg',
     gioChay: { donKhach: '18h00', khoiHanh: '19h45', capBen: '21h15', ghiChu: null },
     diaChi: DIA_CHI_MAC_DINH,
     loTrinh: ['Cảng Sài Gòn', 'Cầu Thủ Thiêm', 'Landmark 81', 'Cầu Sài Gòn'],
@@ -63,16 +41,12 @@ var DANH_SACH_TAU = [
       'Tầng 1: nhạc dân tộc và 2 bài múa dân tộc.',
       'Tầng 2: nhạc dân tộc và 2 bài múa dân tộc.',
       'Boong tàu: nhạc Philippines sôi động.'
-    ],
-    anhTau: taoDanhSachAnh('indochina-star', 'tau', [1, 2], 'Du thuyền Indochina Star'),
-    anhMenu: taoDanhSachAnh('indochina-star', 'menu', [1, 2, 3], 'Thực đơn buffet tàu Indochina Star'),
-    anhKhac: []
+    ]
   },
   {
     slug: 'ben-nghe',
     ten: 'Bến Nghé',
     moTaNgan: 'Du thuyền Bến Nghé ăn tối buffet và set menu trên sông Sài Gòn: đón khách 17h15, khởi hành 20h00, cập bến 21h30, nhạc sống hằng đêm.',
-    anhDaiDien: 'anh/ben-nghe/tau-08.jpg',
     moTaGia: 'Set menu từ 469.000đ · Buffet 733.320đ',
     gioChay: {
       donKhach: '17h15', khoiHanh: '20h00', capBen: '21h30',
@@ -101,16 +75,12 @@ var DANH_SACH_TAU = [
       'Chương trình nhạc sống hằng đêm từ 19h đến 21h15.',
       'Cuối tuần (thứ sáu đến chủ nhật) có thêm belly dance hoặc múa cổ trang.',
       'Riêng tầng thượng cuối tuần đang thử nghiệm DJ.'
-    ],
-    anhTau: taoDanhSachAnh('ben-nghe', 'tau', dayso(1, 13), 'Du thuyền Bến Nghé'),
-    anhMenu: taoDanhSachAnh('ben-nghe', 'menu', dayso(1, 11), 'Thực đơn tàu Bến Nghé'),
-    anhKhac: taoDanhSachAnh('ben-nghe', 'khac', dayso(1, 16), 'Món buffet tàu Bến Nghé')
+    ]
   },
   {
     slug: 'indochina-queen',
     ten: 'Indochina Queen',
     moTaNgan: 'Indochina Queen – Tàu Nữ Hoàng Đông Dương: buffet và set menu trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h45, cập bến 21h15.',
-    anhDaiDien: 'anh/indochina-queen/tau-01.jpg',
     gioChay: { donKhach: '18h00', khoiHanh: '19h45', capBen: '21h15', ghiChu: null },
     diaChi: DIA_CHI_MAC_DINH,
     loTrinh: [
@@ -156,16 +126,12 @@ var DANH_SACH_TAU = [
       'Sảnh tầng 1 và sảnh VIP: nhạc dân tộc và 02 bài múa dân tộc (biểu diễn từ 30-45 phút).',
       'Sảnh tầng 2 và tầng 3: nhạc Philippines và 02 bài múa dân tộc (biểu diễn từ 30-45 phút).',
       'Ban nhạc có thể thay đổi tùy theo tình hình thực tế.'
-    ],
-    anhTau: taoDanhSachAnh('indochina-queen', 'tau', dayso(1, 12), 'Du thuyền Indochina Queen'),
-    anhMenu: taoDanhSachAnh('indochina-queen', 'menu', dayso(1, 13), 'Thực đơn tàu Indochina Queen'),
-    anhKhac: []
+    ]
   },
   {
     slug: 'elite-of-saigon',
     ten: 'Elite of Saigon',
     moTaNgan: 'Elite of Saigon: buffet, set menu và set chill trên du thuyền sông Sài Gòn, có live band, DJ, hồ bơi và pháo hoa cuối tuần.',
-    anhDaiDien: 'anh/elite-of-saigon/tau-01.jpg',
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '22h00', ghiChu: null },
     diaChi: DIA_CHI_MAC_DINH,
     loTrinh: [
@@ -207,8 +173,7 @@ var DANH_SACH_TAU = [
     khuyenMai: [
       {
         tieuDe: 'Mid-week Chill',
-        noiDung: 'Chỉ thứ 3 và thứ 5: tặng 2 bia + nachos (bò hoặc gà), áp dụng kèm buffet hoặc set menu.',
-        anh: 'anh/elite-of-saigon/khac-02.jpg'
+        noiDung: 'Chỉ thứ 3 và thứ 5: tặng 2 bia + nachos (bò hoặc gà), áp dụng kèm buffet hoặc set menu.'
       }
     ],
     chinhSachTreEm: [
@@ -219,21 +184,12 @@ var DANH_SACH_TAU = [
     giaiTri: [
       'Thứ 2 – Thứ 3 – Thứ 4 hằng tuần: band nhạc biểu diễn live, múa cổ phong (không có dancer, không có DJ).',
       'Thứ 5 – Thứ 6 – Thứ 7 – Chủ nhật: band nhạc biểu diễn live, dancer và DJ.'
-    ],
-    anhTau: taoDanhSachAnh('elite-of-saigon', 'tau', dayso(1, 10), 'Du thuyền Elite of Saigon'),
-    anhMenu: taoDanhSachAnh('elite-of-saigon', 'menu', dayso(1, 14), 'Thực đơn tàu Elite of Saigon'),
-    anhKhac: [
-      { src: 'anh/elite-of-saigon/khac-01.jpg', alt: 'Sơ đồ lộ trình du thuyền Elite of Saigon' },
-      { src: 'anh/elite-of-saigon/khac-03.jpg', alt: 'Thực đơn set chill của Elite of Saigon' },
-      { src: 'anh/elite-of-saigon/khac-04.jpg', alt: 'Set chill đồ nguội trên tàu Elite of Saigon' },
-      { src: 'anh/elite-of-saigon/khac-05.jpg', alt: 'Set chill bia và đồ nguội trên tàu Elite of Saigon' }
     ]
   },
   {
     slug: 'saigon-princess',
     ten: 'Saigon Princess',
     moTaNgan: 'Saigon Princess: du thuyền ăn tối set menu 3, 4, 5 món trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h30, cập bến 21h30.',
-    anhDaiDien: 'anh/saigon-princess/tau-01.jpg',
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '21h30', ghiChu: null },
     diaChi: DIA_CHI_MAC_DINH,
     loTrinh: [
@@ -271,25 +227,18 @@ var DANH_SACH_TAU = [
     khuyenMai: [
       {
         tieuDe: 'Gói trang trí cơ bản',
-        noiDung: 'Tặng kèm gói trang trí cơ bản đối với tiệc sinh nhật và kỷ niệm.',
-        anh: null
+        noiDung: 'Tặng kèm gói trang trí cơ bản đối với tiệc sinh nhật và kỷ niệm.'
       }
     ],
     chinhSachTreEm: CHINH_SACH_TRE_EM_PRINCESS,
     giaiTri: [
       'Chương trình giải trí theo ngày: band nhạc Philippines biểu diễn từ 15-30 phút tại mỗi sảnh ăn tối, ảo thuật, violin… tùy ngày.'
-    ],
-    anhTau: taoDanhSachAnh('saigon-princess', 'tau', dayso(1, 10), 'Du thuyền Saigon Princess'),
-    anhMenu: taoDanhSachAnh('saigon-princess', 'menu', dayso(1, 20), 'Thực đơn tàu Saigon Princess'),
-    anhKhac: [
-      { src: 'anh/saigon-princess/khac-01.jpg', alt: 'Thông tin đón khách và lộ trình tàu Saigon Princess' }
     ]
   },
   {
     slug: 'ben-thanh-princess',
     ten: 'Bến Thành Princess',
     moTaNgan: 'Bến Thành Princess: du thuyền ăn tối set menu 3, 4, 5 món trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h30, cập bến 21h30.',
-    anhDaiDien: 'anh/ben-thanh-princess/tau-01.jpg',
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '21h30', ghiChu: null },
     diaChi: DIA_CHI_MAC_DINH,
     loTrinh: [
@@ -330,12 +279,6 @@ var DANH_SACH_TAU = [
       'Ban nhạc Việt Nam (Live band): thứ 4 và thứ 7 hằng tuần.',
       'Ban nhạc quốc tế (International live band): hằng ngày, trừ thứ 4 và thứ 7.',
       'Ảo thuật tại bàn (Close-up magic): hằng ngày.'
-    ],
-    anhTau: taoDanhSachAnh('ben-thanh-princess', 'tau', dayso(1, 6), 'Du thuyền Bến Thành Princess'),
-    anhMenu: taoDanhSachAnh('ben-thanh-princess', 'menu', dayso(1, 20), 'Thực đơn tàu Bến Thành Princess'),
-    anhKhac: [
-      { src: 'anh/ben-thanh-princess/khac-01.jpg', alt: 'Thông tin đón khách tàu Bến Thành Princess' },
-      { src: 'anh/ben-thanh-princess/khac-02.jpg', alt: 'Dịch vụ giải trí trên tàu Bến Thành Princess' }
     ]
   }
 ];

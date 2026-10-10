@@ -16,6 +16,12 @@ const unesc = (s) => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&
 const title = (html) => unesc(/<title>([^<]*)<\/title>/.exec(html)[1]);
 const KHUNG = ['<html lang="vi">', '<meta charset="utf-8">', 'name="viewport"', 'href="tel:0948170036"', 'href="https://zalo.me/0948170036"',
   'data-logo="header"', 'data-logo="footer"', 'data-gioi-thieu'];
+const TEN_MIEN = CAU_HINH.tenMien.replace(/\/+$/, '');
+// og:image chỉ có khi file ảnh có thật, và khi có thì trỏ đúng file đó.
+const kiemTraOgImage = (html, anh) => {
+  const coFile = !!anh && fs.existsSync(path.join(GOC, anh));
+  assert.strictEqual(meta(html, 'property', 'og:image'), coFile ? TEN_MIEN + '/' + anh : null);
+};
 const TAT_CA = ['index.html', 'dat-cho.html', 'xac-nhan.html', 'chinh-sach.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
 
 // Vị trí các script theo thứ tự; -1 nếu thiếu.
@@ -30,8 +36,8 @@ for (const t of DANH_SACH_TAU) {
     assert.strictEqual(title(html), tieuDe);
     assert.strictEqual(unesc(meta(html, 'name', 'description')), t.moTaNgan);
     assert.strictEqual(unesc(meta(html, 'property', 'og:title')), tieuDe);
-    assert.strictEqual(meta(html, 'property', 'og:image'), 'https://vetausaigon.vn/' + t.anhDaiDien);
-    assert.strictEqual(meta(html, 'property', 'og:url'), 'https://vetausaigon.vn/tau/' + t.slug + '.html');
+    kiemTraOgImage(html, CAU_HINH.anhTau[t.slug].daiDien);
+    assert.strictEqual(meta(html, 'property', 'og:url'), TEN_MIEN + '/tau/' + t.slug + '.html');
     for (const k of KHUNG) assert.ok(html.includes(k), k);
     assert.ok(html.includes('id="noi-dung-tau"') && html.includes('<h1>' + t.ten + '</h1>') && html.includes('<noscript>'));
     assert.ok(html.includes('href="../css/style.css"'));
@@ -46,7 +52,7 @@ test('index.html: meta, khung, o tim kiem, script', () => {
   assert.strictEqual(title(html), 'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn');
   const mt = meta(html, 'name', 'description');
   assert.ok(mt && mt.length <= 160);
-  assert.strictEqual(meta(html, 'property', 'og:image'), 'https://vetausaigon.vn/' + DANH_SACH_TAU[0].anhDaiDien);
+  kiemTraOgImage(html, CAU_HINH.anhBia[0]);
   for (const k of KHUNG.concat(['id="danh-sach-tau"', 'id="form-tim"', 'class="hero"'])) assert.ok(html.includes(k), k);
   assert.ok(dungThuTu(viTriScript(html, '', ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js'])));
   assert.ok(html.includes('khoiChayTrangChu()'));
@@ -93,17 +99,6 @@ test('npm test dung node --test; hien-thi.js khong doi document.title', () => {
   assert.ok(!/document\.title/.test(doc('js/hien-thi.js')));
 });
 
-test('moi anh trong cau-hinh.js (anh bia, anh mon, logo, QR) co that va < 512000 byte', () => {
-  const ds = [].concat(CAU_HINH.anhBia, [CAU_HINH.logo.header, CAU_HINH.logo.footer, CAU_HINH.videoBia,
-    CAU_HINH.thanhToan.caNhan.anhQR, CAU_HINH.thanhToan.congTy.anhQR]);
-  for (const tau of Object.values(CAU_HINH.anhThucDon)) {
-    for (const bang of Object.values(tau)) for (const anh of Object.values(bang)) ds.push(...[].concat(anh));
-  }
-  for (const f of ds.filter(Boolean)) {
-    assert.ok(fs.existsSync(path.join(GOC, f)), 'khong co file ' + f);
-    if (!/\.mp4$/.test(f)) assert.ok(fs.statSync(path.join(GOC, f)).size < 512000, f + ' qua 500KB');
-  }
-});
 
 test('ten mon trong cau-hinh.js khop bang gia (khong co mon la)', () => {
   for (const [slug, theoBang] of Object.entries(CAU_HINH.anhThucDon)) {

@@ -603,3 +603,13 @@ ol.cac-buoc-dat li.xong b { background: var(--xanh-la); color: #fff; }
 .canh-bao-tre { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: #fff4e5; color: #9a5b00; font-size: 13.5px; }
 .canh-bao-tre[hidden] { display: none; }
 .o-chon a { color: var(--xanh-dam); text-decoration: underline; }
+
+/* Nền ảnh bìa khi chưa có ảnh: trời đêm + ánh đèn sông */
+.hero {
+  background:
+    radial-gradient(1200px 400px at 80% 110%, rgba(255, 196, 92, .28), transparent 60%),
+    radial-gradient(900px 500px at 10% 0%, rgba(1, 148, 243, .45), transparent 60%),
+    linear-gradient(160deg, #031b33 0%, #06325c 55%, #0a4a86 100%);
+}
+img.anh-cho { background: #0b2a4a; }
+.nhan-thieu-anh { position: absolute; z-index: 3; right: 16px; bottom: 92px; max-width: min(560px, calc(100% - 32px)); padding: 6px 10px; border-radius: 8px; background: rgba(0, 0, 0, .45); color: #bfe3ff; font: 12px/1.4 Consolas, monospace; }

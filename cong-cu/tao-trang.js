@@ -14,6 +14,9 @@ const ICON_TAU = SVG('<path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 
 const ICON_DT = SVG('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/>');
 const ICON_NGUOI = SVG('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>');
 const ICON_THE = SVG('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/>');
+const TEN_MIEN = String(CAU_HINH.tenMien || '').replace(/\/+$/, '');
+// Ảnh chia sẻ link: ảnh đại diện của tàu, trang chung dùng ảnh bìa đầu tiên.
+const anhChiaSe = (slug) => (slug ? (CAU_HINH.anhTau[slug] || {}).daiDien : CAU_HINH.anhBia[0]) || '';
 const SCRIPT_CHUNG = ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js'];
 const script = (tt, ds) => ds.map((s) => `  <script src="${tt}js/${s}"></script>`).join('\n');
 
@@ -27,8 +30,7 @@ function dau(tt, { tieuDe, moTa, anh, url, anChiMuc }) {
   <meta name="description" content="${e(moTa)}">
   <meta property="og:title" content="${e(tieuDe)}">
   <meta property="og:description" content="${e(moTa)}">
-  <meta property="og:image" content="https://vetausaigon.vn/${anh}">
-  <meta property="og:url" content="${url}">
+${anh && fs.existsSync(path.join(GOC, anh)) ? '  <meta property="og:image" content="' + TEN_MIEN + '/' + anh + '">\n' : ''}  <meta property="og:url" content="${url}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="vi_VN">
   <meta name="theme-color" content="#0194f3">${anChiMuc ? '\n  <meta name="robots" content="noindex, nofollow">' : ''}
@@ -99,10 +101,10 @@ const MO_TA_CHU = 'Đặt vé du thuyền ăn tối trên sông Sài Gòn: 6 tà
 const ghi = (ten, html) => fs.writeFileSync(path.join(GOC, ten), html);
 
 // ---------- index.html ----------
-ghi('index.html', `${dau('', { tieuDe: 'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn', moTa: MO_TA_CHU, anh: DANH_SACH_TAU[0].anhDaiDien, url: 'https://vetausaigon.vn/' })}
+ghi('index.html', `${dau('', { tieuDe: 'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn', moTa: MO_TA_CHU, anh: anhChiaSe(null), url: TEN_MIEN + '/' })}
 <body>
 ${header('')}
-  <section class="hero" style="background-image:url('${CAU_HINH.anhBia[0] || 'anh/indochina-queen/tau-01.jpg'}')">
+  <section class="hero">
     <div class="khung">
       <span class="nhan-hero">★ ${e(CONG_TY.vaiTro)} · 6 du thuyền</span>
       <h1>Du thuyền ăn tối trên sông Sài Gòn</h1>
@@ -163,7 +165,7 @@ ${script('', SCRIPT_CHUNG)}
 
 // ---------- dat-cho.html ----------
 const o = (id, ten, nhan, input, them = '') => `            <div class="o-nhap${them}"><label for="${id}">${nhan}</label>${input}<p class="loi" data-loi="${ten}"></p></div>`;
-ghi('dat-cho.html', `${dau('', { tieuDe: 'Đặt chỗ du thuyền | Vé Tàu Sài Gòn', moTa: 'Chọn tàu, chọn Buffet hoặc Set menu, thanh toán chuyển khoản và nhận phiếu xác nhận, code vé điện tử từ Ms Nguyên.', anh: DANH_SACH_TAU[0].anhDaiDien, url: 'https://vetausaigon.vn/dat-cho.html' })}
+ghi('dat-cho.html', `${dau('', { tieuDe: 'Đặt chỗ du thuyền | Vé Tàu Sài Gòn', moTa: 'Chọn tàu, chọn Buffet hoặc Set menu, thanh toán chuyển khoản và nhận phiếu xác nhận, code vé điện tử từ Ms Nguyên.', anh: anhChiaSe(null), url: TEN_MIEN + '/dat-cho.html' })}
 <body class="trang-dat-cho">
 ${header('')}
   <main class="khung" id="dat-cho">
@@ -251,7 +253,7 @@ ${script('', SCRIPT_CHUNG.concat(['dat-cho.js']))}
 `);
 
 // ---------- xac-nhan.html (Ms Nguyên dùng; không có liên kết từ trang khác) ----------
-ghi('xac-nhan.html', `${dau('', { tieuDe: 'Xác nhận thanh toán | Vé Tàu Sài Gòn', moTa: 'Trang nội bộ tạo phiếu xác nhận sau khi đã nhận thanh toán.', anh: DANH_SACH_TAU[0].anhDaiDien, url: 'https://vetausaigon.vn/xac-nhan.html', anChiMuc: true })}
+ghi('xac-nhan.html', `${dau('', { tieuDe: 'Xác nhận thanh toán | Vé Tàu Sài Gòn', moTa: 'Trang nội bộ tạo phiếu xác nhận sau khi đã nhận thanh toán.', anh: anhChiaSe(null), url: TEN_MIEN + '/xac-nhan.html', anChiMuc: true })}
 <body class="trang-dat-cho">
 ${header('')}
   <main class="khung" id="xac-nhan">
@@ -288,7 +290,7 @@ ${script('', SCRIPT_CHUNG.concat(['dat-cho.js']))}
 `);
 
 // ---------- chinh-sach.html ----------
-ghi('chinh-sach.html', `${dau('', { tieuDe: 'Chính sách & điều kiện vé | Vé Tàu Sài Gòn', moTa: 'Chính sách trẻ em, điều kiện vé, chính sách đổi trả và hướng dẫn sử dụng vé du thuyền sông Sài Gòn.', anh: DANH_SACH_TAU[0].anhDaiDien, url: 'https://vetausaigon.vn/chinh-sach.html' })}
+ghi('chinh-sach.html', `${dau('', { tieuDe: 'Chính sách & điều kiện vé | Vé Tàu Sài Gòn', moTa: 'Chính sách trẻ em, điều kiện vé, chính sách đổi trả và hướng dẫn sử dụng vé du thuyền sông Sài Gòn.', anh: anhChiaSe(null), url: TEN_MIEN + '/chinh-sach.html' })}
 <body>
 ${header('')}
   <main class="khung">
@@ -311,7 +313,7 @@ ${script('', SCRIPT_CHUNG)}
 // ---------- tau/*.html ----------
 for (const t of DANH_SACH_TAU) {
   const tieuDe = t.ten + ' – Du thuyền ăn tối sông Sài Gòn | Vé Tàu Sài Gòn';
-  ghi(path.join('tau', t.slug + '.html'), `${dau('../', { tieuDe, moTa: t.moTaNgan, anh: t.anhDaiDien, url: 'https://vetausaigon.vn/tau/' + t.slug + '.html' })}
+  ghi(path.join('tau', t.slug + '.html'), `${dau('../', { tieuDe, moTa: t.moTaNgan, anh: anhChiaSe(t.slug), url: TEN_MIEN + '/tau/' + t.slug + '.html' })}
 <body data-tau="${t.slug}">
 ${header('../')}
   <main class="khung">
