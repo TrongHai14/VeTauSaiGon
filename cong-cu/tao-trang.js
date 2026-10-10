@@ -98,7 +98,13 @@ ${CHINH_SACH_CHUNG.map((m) => `            <li><a href="${tt}chinh-sach.html#${m
 }
 
 const MO_TA_CHU = 'Đặt vé du thuyền ăn tối trên sông Sài Gòn: 6 tàu, buffet và set menu, đón khách tại Cảng Sài Gòn. Liên hệ Ms Nguyên 0948170036.';
-const ghi = (ten, html) => fs.writeFileSync(path.join(GOC, ten), html);
+// --ra <thư mục>: ghi ra thư mục khác (test dùng để so với file trong repo mà không ghi đè).
+const viTriRa = process.argv.indexOf('--ra');
+const THU_MUC_RA = viTriRa > 0 && process.argv[viTriRa + 1] ? path.resolve(process.argv[viTriRa + 1]) : GOC;
+const ghi = (ten, html) => {
+  fs.mkdirSync(path.dirname(path.join(THU_MUC_RA, ten)), { recursive: true });
+  fs.writeFileSync(path.join(THU_MUC_RA, ten), html);
+};
 
 // ---------- index.html ----------
 ghi('index.html', `${dau('', { tieuDe: 'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn', moTa: MO_TA_CHU, anh: anhChiaSe(null), url: TEN_MIEN + '/' })}
@@ -233,6 +239,7 @@ ${o('dat-cho-cong-ty-dia-chi', 'congTyDiaChi', 'Địa chỉ công ty', '<input 
             <p id="email-loi" hidden>Chưa gửi được thông tin qua email. Vui lòng bấm “Gửi qua Zalo” bên dưới hoặc gọi 0948170036 để Ms Nguyên xác nhận.</p>
             <p>Để được xác nhận nhanh hơn, quý khách gửi mã đơn kèm ảnh chụp biên lai chuyển khoản qua Zalo:</p>
             <button type="button" class="nut nut-zalo" data-hanh-dong="zalo">Gửi qua Zalo cho Ms Nguyên</button>
+            <div id="khung-sao-chep" class="khung-sao-chep"></div>
           </div>
         </section>
       </form>
@@ -259,7 +266,7 @@ ${header('')}
   <main class="khung" id="xac-nhan">
     <div class="dau-trang-dat">
       <h1>Xác nhận thanh toán &amp; tạo phiếu</h1>
-      <p>Trang dành cho Ms Nguyên. Chỉ tạo phiếu khi đã thấy tiền vào tài khoản.</p>
+      <p>Trang dành cho Ms Nguyên. Chỉ tạo phiếu khi đã thấy tiền vào tài khoản. Phiếu chỉ để khách lưu; khi lên tàu, nhân viên kiểm <b>code vé điện tử</b>.</p>
     </div>
     <div class="bo-cuc-dat">
       <div class="cot-form">
@@ -282,7 +289,7 @@ ${header('')}
     </div>
   </main>
 ${footer('')}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 ${script('', SCRIPT_CHUNG.concat(['dat-cho.js']))}
   <script>khoiChayTrangXacNhan();</script>
 </body>

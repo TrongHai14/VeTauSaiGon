@@ -176,17 +176,53 @@ test('quy dinh tre em chung: 2 nguoi lon kem 1 be mien phi, be thu 2 tinh ve tre
   const tt = dc.tomTatDon(don, q, GIA_TRE_EM);
   assert.strictEqual(tt.tong, 561600 * 2 + 280800);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 2, treEm50: 1, treEmMienPhi: 1 });
-  assert.match(dc.canhBaoTreEm(don, q), /2 người lớn chỉ được kèm 1 trẻ em/);
+  assert.strictEqual(dc.canhBaoTreEm(don, q), null, 'be vuot da duoc tinh ve tre em nen khong canh bao');
   assert.strictEqual(dc.canhBaoTreEm(donBuffet({ treEm50: 1, treEmMienPhi: 0 }), q), null);
   assert.strictEqual(dc.canhBaoTreEm(donBuffet({ nguoiLon: 4, treEm50: 1, treEmMienPhi: 1 }), q), null);
   const email = dc.taoDuLieuEmail(don, q, GIA_TRE_EM, dc.layTaiKhoan(TT, don), null);
-  assert.ok(email['Cần báo phụ phí trẻ em'], 'email bao Ms Nguyen can bao phu phi');
+  assert.strictEqual(email['Cần báo phụ phí trẻ em'], undefined, 'da tinh tien thi email khong bao phu phi');
+  const vuot = donBuffet({ loai: 'setMenu', mon: { '1:0': 2 }, treEmMienPhi: 3 });
+  const emailVuot = dc.taoDuLieuEmail(vuot, q, GIA_TRE_EM, dc.layTaiKhoan(TT, vuot), null);
+  assert.match(emailVuot['Cần báo phụ phí trẻ em'], /tối đa 1 bé miễn phí/, 'vuot that thi email bao Ms Nguyen');
 });
 
-test('khoi chon mon buffet: ghi chu be thu 2 va canh bao vuot', () => {
-  const html = dc.taoKhoiChonMon(tau('indochina-queen'), donBuffet({ treEm50: 2, treEmMienPhi: 1 }), GIA_TRE_EM, LIEN_HE);
-  assert.ok(html.includes('bé thứ 2 trở đi tính vé trẻ em (50%)'));
-  assert.ok(/data-canh-bao-tre>Theo quy định/.test(html));
+test('khoi chon mon: ghi chu be mien phi o buffet; canh bao vuot chi hien khi chua tinh tien (set menu)', () => {
+  const buffet = dc.taoKhoiChonMon(tau('indochina-queen'), donBuffet({ treEm50: 2, treEmMienPhi: 1 }), GIA_TRE_EM, LIEN_HE);
+  assert.ok(buffet.includes('Bé miễn phí: 2 người lớn chỉ được kèm 1 bé, bé thứ 2 trở đi tự tính vé trẻ em (50%).'));
+  assert.ok(/data-canh-bao-tre hidden>/.test(buffet), 'buffet da tu tinh tien, khong canh bao');
+  const set = dc.taoKhoiChonMon(tau('indochina-queen'), donBuffet({ loai: 'setMenu', mon: { '1:0': 2 }, treEmMienPhi: 3 }), GIA_TRE_EM, LIEN_HE);
+  assert.ok(/data-canh-bao-tre>Theo quy định của tàu, 2 người lớn chỉ được kèm tối đa 1 bé miễn phí/.test(set));
+});
+
+test('canh bao tre em: 3 ca hop le cua reviewer khong bi canh bao, ca vuot that thi co', () => {
+  const q = tau('indochina-queen');
+  const p = tau('saigon-princess');
+  assert.strictEqual(dc.canhBaoTreEm(donBuffet({ buffetMa: '0:0', treEm50: 1, treEmMienPhi: 1 }), q), null, 'Queen 2+1+1');
+  assert.strictEqual(dc.canhBaoTreEm(donBuffet({ slugTau: 'saigon-princess', loai: 'setMenu', mon: { '0:0': 2, '0:18': 2 }, treEmMienPhi: 0 }), p), null, 'Princess 2 suat Donald');
+  assert.strictEqual(dc.canhBaoTreEm(donBuffet({ slugTau: 'saigon-princess', loai: 'setMenu', mon: { '0:0': 2 }, treEmMienPhi: 2 }), p), null, 'Princess moi NL kem 1 be');
+  assert.match(dc.canhBaoTreEm(donBuffet({ slugTau: 'saigon-princess', loai: 'setMenu', mon: { '0:0': 2 }, treEmMienPhi: 3 }), p), /tối đa 2 bé miễn phí/);
+});
+
+test('Queen: so khach tren phieu khop cach tinh tien (tre thu 2 vao cot nguoi lon)', () => {
+  const q = tau('indochina-queen');
+  const tt = dc.tomTatDon(donBuffet({ buffetMa: '0:0', nguoiLon: 2, treEm50: 2, treEmMienPhi: 0 }), q, GIA_TRE_EM);
+  assert.deepStrictEqual(tt.khach, { nguoiLon: 3, treEm50: 1, treEmMienPhi: 0 });
+  assert.strictEqual(tt.tong, 1965600);
+});
+
+test('trang xac nhan: don thieu truong hoac sai kieu bi tu choi (laDonHopLe)', () => {
+  const tot = donBuffet();
+  assert.ok(dc.laDonHopLe(tot));
+  for (const hong of [{ hoTen: 5 }, { ngay: '2026-02-30' }, { loai: 'x' }, { maDon: '' }, { mon: null }, { congTy: 'abc' }, { soDienThoai: [] }]) {
+    assert.ok(!dc.laDonHopLe(Object.assign({}, tot, hong)), JSON.stringify(hong));
+  }
+  assert.ok(!dc.laDonHopLe(null) && !dc.laDonHopLe('abc'));
+});
+
+test('che do Ms Nguyen (dat-cho.html?ms=1): chi hien o nhap ma don khi bat', () => {
+  assert.strictEqual(dc.taoKhoiMsNguyen(false, donBuffet()), '');
+  const html = dc.taoKhoiMsNguyen(true, donBuffet());
+  assert.ok(html.includes('data-hanh-dong="mo-xac-nhan"') && html.includes('value="VT261007ABCD"'));
 });
 
 test('phieu: gia bao gom / chua bao gom theo chinh sach chung', () => {
@@ -196,4 +232,36 @@ test('phieu: gia bao gom / chua bao gom theo chinh sach chung', () => {
   for (const s of ['Thuế, phí vào cảng.', 'Nước uống (khách mua và thanh toán trực tiếp tại tàu).', 'Vé chỉ có giá trị vào đúng ngày đăng ký.']) {
     assert.ok(html.includes(s), s);
   }
+});
+
+test('Queen buffet: 2 nguoi lon kem 01 tre 1m-1,3m, tre thu 2 tinh nhu nguoi lon (giai-dap.md muc 6)', () => {
+  const q = tau('indochina-queen');
+  const tt = dc.tomTatDon(donBuffet({ buffetMa: '0:0', nguoiLon: 2, treEm50: 2, treEmMienPhi: 0 }), q, GIA_TRE_EM);
+  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong]), [[561600, 2], [280800, 1], [561600, 1]]);
+  assert.strictEqual(tt.tong, 561600 * 3 + 280800);
+  const star = dc.tomTatDon(donBuffet({ slugTau: 'indochina-star', buffetMa: '0:0', nguoiLon: 2, treEm50: 2, treEmMienPhi: 0 }), tau('indochina-star'), GIA_TRE_EM);
+  assert.strictEqual(star.tong, 615600 * 2 + 307800 * 2, 'Star khong co quy dinh nay');
+});
+
+test('loc nhanh set menu: Princess co chip 3/4/5 mon, Chay, Tre em; Queen (11 mon INDO) khong co', () => {
+  const princess = dc.taoKhoiChonMon(tau('saigon-princess'), donBuffet({ slugTau: 'saigon-princess', loai: 'setMenu' }), GIA_TRE_EM, LIEN_HE);
+  for (const c of ['3 món', '4 món', '5 món', 'Chay', 'Trẻ em']) assert.ok(princess.includes('data-loc-nhom-con="' + c + '"'), c);
+  assert.ok(princess.includes('data-nhom-con="Trẻ em"'));
+  const queen = dc.taoKhoiChonMon(tau('indochina-queen'), donBuffet({ loai: 'setMenu' }), GIA_TRE_EM, LIEN_HE);
+  assert.ok(!queen.includes('data-loc-nhom-con'));
+});
+
+test('tin nhan Zalo: cau Luu y dung theo quy dinh cua tau (Princess moi nguoi lon kem 1 be)', () => {
+  const p = tau('saigon-princess');
+  const vuot = donBuffet({ slugTau: 'saigon-princess', loai: 'setMenu', mon: { '0:0': 2 }, treEmMienPhi: 3 });
+  const tin = dc.soanTinNhanDatCho(vuot, p, GIA_TRE_EM, dc.layTaiKhoan(TT, vuot));
+  assert.ok(tin.includes('- Lưu ý: Theo quy định của tàu, 2 người lớn chỉ được kèm tối đa 2 bé miễn phí.'));
+  const hopLe = donBuffet({ slugTau: 'saigon-princess', loai: 'setMenu', mon: { '0:0': 2 }, treEmMienPhi: 2 });
+  assert.ok(!dc.soanTinNhanDatCho(hopLe, p, GIA_TRE_EM, null).includes('Lưu ý'));
+});
+
+test('laMaDon: chi nhan dang VT + 6 so + 4 ky tu; ho ten toan khoang trang bi tu choi', () => {
+  assert.ok(dc.laMaDon('VT261010ABCD'));
+  for (const sai of ['', 'VT26101ABCD', 'vt261010abcd', 'XX261010ABCD', 'VT261010ABC', 'VT261010ABCDE', null]) assert.ok(!dc.laMaDon(sai), String(sai));
+  assert.ok(!dc.laDonHopLe(donBuffet({ hoTen: '   ' })));
 });

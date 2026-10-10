@@ -1,4 +1,4 @@
-var THONG_TIN_WEB = { ten: 'Vé Tàu Sài Gòn', tenMien: 'https://vetausaigon.vn' };
+var THONG_TIN_WEB = { ten: 'Vé Tàu Sài Gòn' };
 var LIEN_HE = {
   soDienThoai: '0948170036', tenNguoiLienHe: 'Ms Nguyên',
   linkGoi: 'tel:0948170036', linkZalo: 'https://zalo.me/0948170036'
@@ -285,6 +285,8 @@ var DANH_SACH_TAU = [
 // Ô đếm trẻ em ở trang đặt chỗ, theo từng tàu và từng loại (buffet / setMenu).
 // mienPhi: nhãn ô trẻ miễn phí. nuaGia: nhãn ô trẻ tính 50% giá (null = tàu không tính kiểu 50% cho loại này).
 // ghiChu: dòng nhắc thêm dưới ô đếm.
+// beMienPhiMoiNguoiLon: số bé miễn phí tối đa cho mỗi người lớn (không ghi = quy định chung 2 người lớn kèm 1 bé).
+// treEm50VuotTinhNguoiLon: true = mỗi 2 người lớn chỉ kèm 1 trẻ tính 50%, trẻ 50% thứ 2 trở đi tính giá người lớn.
 var GIA_TRE_EM = {
   'indochina-star': {
     buffet: { mienPhi: '0–4 tuổi (dưới 1m)', nuaGia: '5–9 tuổi (1m – dưới 1,3m)', ghiChu: 'Từ 10 tuổi (trên 1,3m) tính như người lớn.' }
@@ -293,7 +295,7 @@ var GIA_TRE_EM = {
     buffet: { mienPhi: 'Dưới 4 tuổi, không đặt suất ăn', nuaGia: '4–8 tuổi (hoặc dưới 4 tuổi có đặt suất ăn)', ghiChu: 'Từ 9 tuổi tính như người lớn.' }
   },
   'indochina-queen': {
-    buffet: { mienPhi: '1–4 tuổi (dưới 1m)', nuaGia: '5–9 tuổi (1m – dưới 1,3m)', ghiChu: 'Từ 10 tuổi (trên 1,3m) tính như người lớn. Hai người lớn kèm 01 trẻ 1m–1,3m, từ trẻ thứ 2 tính như người lớn.' },
+    buffet: { mienPhi: '1–4 tuổi (dưới 1m)', nuaGia: '5–9 tuổi (1m – dưới 1,3m)', ghiChu: 'Từ 10 tuổi (trên 1,3m) tính như người lớn. Trẻ 1m–1,3m (tính 50%): 2 người lớn kèm 01 trẻ, từ trẻ 1m–1,3m thứ 2 tính như người lớn.', treEm50VuotTinhNguoiLon: true },
     setMenu: { mienPhi: '1–4 tuổi (dưới 1m)', nuaGia: null, ghiChu: 'Trẻ 5–9 tuổi dùng set menu tính 50% (70% với set có tôm càng, cua): vui lòng ghi số bé ở ô Ghi chú, Ms Nguyên sẽ báo giá.' }
   },
   'elite-of-saigon': {
@@ -301,10 +303,10 @@ var GIA_TRE_EM = {
     setMenu: { mienPhi: 'Dưới 4 tuổi (01 bé đi cùng 02 người lớn)', nuaGia: null, ghiChu: 'Trẻ 4 – dưới 11 tuổi: chọn “Menu Trẻ em” trong danh sách thực đơn.' }
   },
   'saigon-princess': {
-    setMenu: { mienPhi: 'Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)', nuaGia: null, ghiChu: 'Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).' }
+    setMenu: { mienPhi: 'Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)', nuaGia: null, beMienPhiMoiNguoiLon: 1, ghiChu: 'Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).' }
   },
   'ben-thanh-princess': {
-    setMenu: { mienPhi: 'Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)', nuaGia: null, ghiChu: 'Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).' }
+    setMenu: { mienPhi: 'Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)', nuaGia: null, beMienPhiMoiNguoiLon: 1, ghiChu: 'Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).' }
   }
 };
 var LINK_BAN_DO = 'https://www.google.com/maps/search/?api=1&query=' +

@@ -3,7 +3,8 @@
 var hamHienThi = (typeof escapeHtml === 'function')
   ? {
     escapeHtml: escapeHtml, dinhDangGia: dinhDangGia, layNhomThucDon: layNhomThucDon,
-    layThucDonTheoLoai: layThucDonTheoLoai, icon: icon, taoAnh: taoAnh, layAnhDaiDien: layAnhDaiDien
+    layThucDonTheoLoai: layThucDonTheoLoai, icon: icon, taoAnh: taoAnh, layAnhDaiDien: layAnhDaiDien,
+    layNhomCon: layNhomCon, taoChipNhomCon: taoChipNhomCon, locNhomCon: locNhomCon
   }
   : require('./hien-thi.js');
 var escapeHtmlDatCho = hamHienThi.escapeHtml;
@@ -48,9 +49,10 @@ function laNgayCoThat(iso) {
   return d.getUTCFullYear() === nam && d.getUTCMonth() === thang - 1 && d.getUTCDate() === ngay;
 }
 
+// Số nguyên không âm; chuỗi có ký tự lạ ('2abc', '-1', '1.5') tính là 0.
 function soNguyen(giaTri) {
-  var so = parseInt(String(giaTri === null || giaTri === undefined ? '' : giaTri).trim(), 10);
-  return isFinite(so) && so > 0 ? so : 0;
+  var chuoi = String(giaTri === null || giaTri === undefined ? '' : giaTri).trim();
+  return /^\d+$/.test(chuoi) ? parseInt(chuoi, 10) : 0;
 }
 
 function dinhDangNgay(iso) {
@@ -101,15 +103,16 @@ function layDongDon(tau, don, bangTreEm) {
     if (nguoiLon > 0) {
       dong.push({ ten: tenHang + ' (người lớn)', gia: hang.dong.gia, soLuong: nguoiLon, thanhTien: hang.dong.gia * nguoiLon });
     }
-    var chinhSach = layGiaTreEm(bangTreEm, tau.slug, 'buffet');
-    var treEm50 = soNguyen(don.treEm50);
+    var pb = phanBoTreBuffet(don, layChinhSachTre(bangTreEm, tau.slug, 'buffet'));
     var giaTre = Math.round(hang.dong.gia / 2);
-    if (chinhSach && chinhSach.nuaGia && treEm50 > 0) {
-      dong.push({ ten: tenHang + ' (trẻ em 50%)', gia: giaTre, soLuong: treEm50, thanhTien: giaTre * treEm50 });
+    if (pb.tre50 > 0) {
+      dong.push({ ten: tenHang + ' (trẻ em 50%)', gia: giaTre, soLuong: pb.tre50, thanhTien: giaTre * pb.tre50 });
     }
-    var vuot = soBeMienPhiVuot(don);
-    if (chinhSach && chinhSach.nuaGia && vuot > 0) {
-      dong.push({ ten: tenHang + ' (bé thứ 2 trở đi, vé trẻ em)', gia: giaTre, soLuong: vuot, thanhTien: giaTre * vuot });
+    if (pb.tre50Vuot > 0) {
+      dong.push({ ten: tenHang + ' (trẻ 1m–1,3m thứ 2 trở đi, tính như người lớn)', gia: hang.dong.gia, soLuong: pb.tre50Vuot, thanhTien: hang.dong.gia * pb.tre50Vuot });
+    }
+    if (pb.mienPhiVuot > 0) {
+      dong.push({ ten: tenHang + ' (bé thứ 2 trở đi, vé trẻ em)', gia: giaTre, soLuong: pb.mienPhiVuot, thanhTien: giaTre * pb.mienPhiVuot });
     }
   } else if (don.loai === 'setMenu') {
     var nhom = hamHienThi.layThucDonTheoLoai(tau).setMenu;
@@ -133,19 +136,46 @@ function soTreToiDa(nguoiLon) {
   return nguoiLon > 0 ? Math.max(1, Math.floor(nguoiLon / 2)) : 0;
 }
 
-// Buffet: số bé miễn phí vượt quá giới hạn (bé thứ 2 trở đi phải mua vé trẻ em).
+// Buffet: số bé miễn phí vượt quá giới hạn chung (bé thứ 2 trở đi phải mua vé trẻ em).
 function soBeMienPhiVuot(don) {
   if (don.loai !== 'buffet') return 0;
   return Math.max(0, soNguyen(don.treEmMienPhi) - soTreToiDa(soNguyen(don.nguoiLon)));
 }
 
-// Cảnh báo khi số trẻ em vượt quy định 2 người lớn kèm 1 trẻ; null nếu không vượt.
-function canhBaoTreEm(don, tau) {
-  var khach = demKhach(don, tau);
-  var tongTre = khach.treEm50 + khach.treEmMienPhi;
-  if (khach.nguoiLon === 0 || tongTre <= soTreToiDa(khach.nguoiLon)) return null;
-  return 'Theo quy định 2 người lớn chỉ được kèm 1 trẻ em. Đơn có ' + tongTre + ' trẻ em cho ' + khach.nguoiLon +
-    ' người lớn, Ms Nguyên sẽ thông báo lại phụ phí bổ sung (nếu có).';
+// Chính sách trẻ em của tàu theo loại, lấy từ bảng truyền vào hoặc GIA_TRE_EM toàn cục.
+function layChinhSachTre(bangTreEm, slug, loai) {
+  var bang = bangTreEm || (typeof GIA_TRE_EM !== 'undefined' ? GIA_TRE_EM : require('./du-lieu-tau.js').GIA_TRE_EM);
+  return layGiaTreEm(bang, slug, loai) || {};
+}
+
+// Buffet: chia trẻ em thành nhóm tính tiền. Dùng chung cho tính tiền (layDongDon) và đếm khách (demKhach).
+// - Bé miễn phí vượt giới hạn: tính vé trẻ em 50% nếu tàu có giá 50%.
+// - Trẻ 50% vượt giới hạn: tính như người lớn nếu tàu có cờ treEm50VuotTinhNguoiLon (Queen).
+function phanBoTreBuffet(don, chinhSach) {
+  var nguoiLon = soNguyen(don.nguoiLon);
+  var gioiHan = soTreToiDa(nguoiLon);
+  var tre50 = soNguyen(don.treEm50);
+  var mienPhi = soNguyen(don.treEmMienPhi);
+  var tre50Vuot = chinhSach.treEm50VuotTinhNguoiLon ? Math.max(0, tre50 - gioiHan) : 0;
+  var mienPhiVuot = chinhSach.nuaGia ? Math.max(0, mienPhi - gioiHan) : 0;
+  return {
+    nguoiLon: nguoiLon, gioiHan: gioiHan,
+    tre50: chinhSach.nuaGia ? tre50 - tre50Vuot : 0, tre50Vuot: tre50Vuot,
+    mienPhi: mienPhi - mienPhiVuot, mienPhiVuot: mienPhiVuot
+  };
+}
+
+// Cảnh báo khi số bé miễn phí vượt giới hạn của tàu mà chưa được tính tiền tự động; null nếu hợp lệ.
+// Buffet có giá 50% thì bé vượt đã được tính vé trẻ em nên không cảnh báo. Suất menu trẻ em đã trả tiền không tính.
+function canhBaoTreEm(don, tau, bangTreEm) {
+  if (!tau || (don.loai !== 'buffet' && don.loai !== 'setMenu')) return null;
+  var cs = layChinhSachTre(bangTreEm, tau.slug, don.loai);
+  var khach = demKhach(don, tau, bangTreEm);
+  if (khach.nguoiLon === 0) return null;
+  var gioiHan = cs.beMienPhiMoiNguoiLon ? khach.nguoiLon * cs.beMienPhiMoiNguoiLon : soTreToiDa(khach.nguoiLon);
+  if (khach.treEmMienPhi <= gioiHan) return null;
+  return 'Theo quy định của tàu, ' + khach.nguoiLon + ' người lớn chỉ được kèm tối đa ' + gioiHan +
+    ' bé miễn phí. Đơn có ' + khach.treEmMienPhi + ' bé, Ms Nguyên sẽ thông báo lại phụ phí bổ sung (nếu có).';
 }
 
 function tinhTongDon(dong) {
@@ -154,13 +184,7 @@ function tinhTongDon(dong) {
   return tong;
 }
 
-function GIA_TRE_EM_MAC_DINH(slug) {
-  var bang = typeof GIA_TRE_EM !== 'undefined' ? GIA_TRE_EM : require('./du-lieu-tau.js').GIA_TRE_EM;
-  var cs = layGiaTreEm(bang, slug, 'buffet');
-  return cs && cs.nuaGia ? cs : null;
-}
-
-function demKhach(don, tau) {
+function demKhach(don, tau, bangTreEm) {
   var tenMonTheoMa = {};
   if (tau && don.loai === 'setMenu') {
     var nhomSet = hamHienThi.layThucDonTheoLoai(tau).setMenu;
@@ -169,13 +193,9 @@ function demKhach(don, tau) {
     }
   }
   if (don.loai === 'buffet') {
-    var vuot = soBeMienPhiVuot(don);
-    var coNuaGia = !!(tau && GIA_TRE_EM_MAC_DINH(tau.slug));
-    return {
-      nguoiLon: soNguyen(don.nguoiLon),
-      treEm50: soNguyen(don.treEm50) + (coNuaGia ? vuot : 0),
-      treEmMienPhi: soNguyen(don.treEmMienPhi) - (coNuaGia ? vuot : 0)
-    };
+    // Cột trên phiếu theo cách tính tiền: trẻ tính như người lớn vào cột người lớn, bé vượt tính 50% vào cột trẻ 50%.
+    var pb = phanBoTreBuffet(don, tau ? layChinhSachTre(bangTreEm, tau.slug, 'buffet') : {});
+    return { nguoiLon: pb.nguoiLon + pb.tre50Vuot, treEm50: pb.tre50 + pb.mienPhiVuot, treEmMienPhi: pb.mienPhi };
   }
   // Set menu: suất có chữ "Trẻ em" trong tên (Donald, Pluto, Menu Trẻ em) tính là trẻ em dùng menu trẻ em.
   var nguoiLon = 0;
@@ -234,6 +254,10 @@ function taoMaDon(date, ngauNhien) {
   return 'VT' + hai(date.getFullYear() % 100) + hai(date.getMonth() + 1) + hai(date.getDate()) + duoi;
 }
 
+function laMaDon(ma) {
+  return /^VT\d{6}[A-Z0-9]{4}$/.test(String(ma || ''));
+}
+
 // Nội dung chuyển khoản: không dấu, không ký tự đặc biệt để ngân hàng nào cũng nhận.
 function taoNoiDungChuyenKhoan(don) {
   return (don.maDon + ' ' + (chuanHoaSoDienThoai(don.soDienThoai) || '')).trim();
@@ -252,7 +276,7 @@ function taoLinkVietQR(taiKhoan, soTien, noiDung) {
 
 function tomTatDon(don, tau, bangTreEm) {
   var dong = layDongDon(tau, don, bangTreEm);
-  return { dong: dong, tong: tinhTongDon(dong), khach: demKhach(don, tau) };
+  return { dong: dong, tong: tinhTongDon(dong), khach: demKhach(don, tau, bangTreEm) };
 }
 
 function soanTinNhanDatCho(don, tau, bangTreEm, taiKhoan) {
@@ -268,7 +292,8 @@ function soanTinNhanDatCho(don, tau, bangTreEm, taiKhoan) {
   }
   if (tt.khach.treEmMienPhi > 0) dong.push('- Trẻ em miễn phí: ' + tt.khach.treEmMienPhi);
   dong.push('- Tổng cộng: ' + soVnd(tt.tong) + ' VND');
-  if (canhBaoTreEm(don, tau)) dong.push('- Lưu ý: số trẻ em vượt quy định 2 người lớn kèm 1 trẻ em.');
+  var canhBao = canhBaoTreEm(don, tau, bangTreEm);
+  if (canhBao) dong.push('- Lưu ý: ' + canhBao);
   if (taiKhoan) dong.push('- Đã chuyển vào: ' + taiKhoan.nganHang + ' ' + taiKhoan.soTaiKhoan + ' (' + taiKhoan.chuTaiKhoan + ')');
   if (don.vat && don.congTy) dong.push('- Xuất VAT: ' + don.congTy.ten + ' – MST ' + don.congTy.mst);
   dong.push('- Họ tên: ' + don.hoTen.trim(), '- SĐT: ' + chuanHoaSoDienThoai(don.soDienThoai));
@@ -308,7 +333,8 @@ function taoDuLieuEmail(don, tau, bangTreEm, taiKhoan, linkXacNhan) {
       : 'Không'
   };
   if (don.ghiChu && don.ghiChu.trim()) kq['Ghi chú'] = don.ghiChu.trim();
-  if (canhBaoTreEm(don, tau)) kq['Cần báo phụ phí trẻ em'] = canhBaoTreEm(don, tau);
+  var canhBaoTre = canhBaoTreEm(don, tau, bangTreEm);
+  if (canhBaoTre) kq['Cần báo phụ phí trẻ em'] = canhBaoTre;
   if (linkXacNhan) kq['Link tạo phiếu sau khi kiểm tra tiền'] = linkXacNhan;
   return kq;
 }
@@ -359,6 +385,23 @@ function giaiMaDon(chuoi) {
   } catch (loi) {
     return null;
   }
+}
+
+// Link trang xác nhận cho Ms Nguyên (cùng thư mục với trang hiện tại).
+function taoLinkXacNhan(don) {
+  return location.href.split('#')[0].split('?')[0].replace(/[^/]*$/, '') + 'xac-nhan.html#' + maHoaDon(don);
+}
+
+// Đơn đọc từ link có đủ trường đúng kiểu để dựng phiếu không.
+function laDonHopLe(don) {
+  if (!don || typeof don !== 'object') return false;
+  var chuoi = ['slugTau', 'ngay', 'loai', 'hoTen', 'soDienThoai', 'maDon'];
+  for (var i = 0; i < chuoi.length; i++) if (typeof don[chuoi[i]] !== 'string' || !don[chuoi[i]]) return false;
+  if (!don.hoTen.trim() || !laNgayCoThat(don.ngay)) return false;
+  if (don.loai !== 'buffet' && don.loai !== 'setMenu') return false;
+  if (don.mon !== undefined && (typeof don.mon !== 'object' || don.mon === null)) return false;
+  if (don.congTy !== undefined && (typeof don.congTy !== 'object' || don.congTy === null)) return false;
+  return true;
 }
 
 /* ---------- Phiếu xác nhận (chỉ tạo ở trang xac-nhan.html) ---------- */
@@ -597,13 +640,14 @@ function taoKhoiChonMon(tau, don, bangTreEm, lienHe) {
       '<a class="nut nut-zalo nut-nho" href="' + e(lienHe.linkZalo) + '" target="_blank" rel="noopener">Nhắn Zalo Ms Nguyên</a></div>';
   }
 
+  html += hamHienThi.taoChipNhomCon(nhom);
   html += '<div class="danh-sach-mon">';
   for (var g = 0; g < nhom.length; g++) {
     if (nhom[g].tieuDe !== TEN_LOAI_DICH_VU[don.loai]) html += '<h3 class="tieu-de-nhom">' + e(nhom[g].tieuDe) + '</h3>';
     for (var j = 0; j < nhom[g].dong.length; j++) {
       var mon = nhom[g].dong[j];
       var dangChon = don.loai === 'buffet' ? don.buffetMa === mon.ma : soNguyen(don.mon && don.mon[mon.ma]) > 0;
-      html += '<div class="mon' + (dangChon ? ' dang-chon' : '') + '">' +
+      html += '<div class="mon' + (dangChon ? ' dang-chon' : '') + '" data-nhom-con="' + e(hamHienThi.layNhomCon(mon.ten)) + '">' +
         '<button type="button" class="anh-mon" data-mo-anh="mon:' + mon.ma + '" data-i="0" aria-label="Xem menu ' + e(mon.ten) + '">' + taoAnhNhoMon(mon) + '</button>' +
         '<div class="mon-ten"><strong>' + e(mon.ten) + '</strong>' + (mon.tenPhu ? '<span>' + e(mon.tenPhu) + '</span>' : '') +
         '<button type="button" class="nut-xem-menu" data-mo-anh="mon:' + mon.ma + '" data-i="0">' + hamHienThi.icon('anh') + 'Xem menu</button></div>' +
@@ -628,10 +672,10 @@ function taoKhoiChonMon(tau, don, bangTreEm, lienHe) {
   html += '<div class="dong-dem"><div><strong>Trẻ em miễn phí</strong><span>' + e(cs.mienPhi || 'Theo chính sách của tàu') + '</span></div>' +
     taoODem('treEmMienPhi', soNguyen(don.treEmMienPhi), 0) + '</div>';
   if (don.loai === 'buffet' && cs.nuaGia) {
-    html += '<p class="ghi-chu">2 người lớn chỉ được kèm 1 bé miễn phí, bé thứ 2 trở đi tính vé trẻ em (50%).</p>';
+    html += '<p class="ghi-chu">Bé miễn phí: 2 người lớn chỉ được kèm 1 bé, bé thứ 2 trở đi tự tính vé trẻ em (50%).</p>';
   }
   if (cs.ghiChu) html += '<p class="ghi-chu">' + e(cs.ghiChu) + '</p>';
-  html += '<p class="canh-bao-tre" data-canh-bao-tre' + (canhBaoTreEm(don, tau) ? '' : ' hidden') + '>' + e(canhBaoTreEm(don, tau) || '') + '</p>';
+  html += '<p class="canh-bao-tre" data-canh-bao-tre' + (canhBaoTreEm(don, tau, bangTreEm) ? '' : ' hidden') + '>' + e(canhBaoTreEm(don, tau, bangTreEm) || '') + '</p>';
   return html + '</div>';
 }
 
@@ -652,6 +696,14 @@ function taoTomTatDon(don, tau, bangTreEm, tienTo) {
   }
   if (tt.khach.treEmMienPhi > 0) html += '<li><span>Trẻ em miễn phí<small>x ' + tt.khach.treEmMienPhi + '</small></span><b>0</b></li>';
   return html + '</ul><div class="tt-tong"><span>Tổng thanh toán</span><strong>' + e(hamHienThi.dinhDangGia(tt.tong)) + '</strong></div>';
+}
+
+// Không tải được mã QR (mất mạng, dịch vụ lỗi): thay bằng lời nhắn, khách vẫn chuyển khoản theo thông tin bên cạnh.
+function anhQRLoi(img) {
+  var hop = document.createElement('div');
+  hop.className = 'qr-loi';
+  hop.textContent = 'Không tải được mã QR. Vui lòng chuyển khoản theo thông tin bên cạnh (đúng số tiền và nội dung).';
+  img.parentNode.replaceChild(hop, img);
 }
 
 function taoKhoiThanhToan(don, tau, bangTreEm, cauHinhThanhToan) {
@@ -675,7 +727,7 @@ function taoKhoiThanhToan(don, tau, bangTreEm, cauHinhThanhToan) {
     html += '<p class="hop-vat">Quý khách chọn <b>xuất hóa đơn VAT</b> nên vui lòng chuyển khoản vào tài khoản công ty.</p>';
   }
   html += '<div class="hop-chuyen-khoan">' +
-    '<div class="qr"><img src="' + e(anhQR) + '" alt="Mã QR chuyển khoản ' + e(tk.nganHang + ' ' + tk.soTaiKhoan) + '">' +
+    '<div class="qr"><img src="' + e(anhQR) + '" alt="Mã QR chuyển khoản ' + e(tk.nganHang + ' ' + tk.soTaiKhoan) + '" onerror="anhQRLoi(this)">' +
     '<small>' + (tk.anhQR ? 'Quét mã rồi nhập đúng số tiền và nội dung bên cạnh' : 'Quét bằng app ngân hàng – số tiền và nội dung đã điền sẵn') + '</small></div>' +
     '<dl>' +
     '<dt>Ngân hàng</dt><dd>' + e(tk.nganHang) + '</dd>' +
@@ -694,6 +746,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   var khungMon = goc.querySelector('#khung-chon-mon');
   var khungTomTat = document.getElementById('khung-tom-tat');
   var khungThanhToan = goc.querySelector('#khung-thanh-toan');
+  var cheDoMsNguyen = thamSo && thamSo.ms === '1';
   var oThongBao = document.getElementById('thong-bao');
   var cacBuoc = goc.querySelectorAll('[data-buoc]');
   var cacChiBuoc = document.querySelectorAll('[data-chi-buoc]');
@@ -729,8 +782,23 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   function veMon() {
     khungMon.innerHTML = taoKhoiChonMon(tauHienTai(), don, bangTreEm, lienHe);
   }
+  var thanhDuoi = document.getElementById('thanh-lien-he');
   function veTomTat() {
     if (khungTomTat) khungTomTat.innerHTML = taoTomTatDon(don, tauHienTai(), bangTreEm, '');
+    if (thanhDuoi) {
+      var tong = tomTatDon(don, tauHienTai(), bangTreEm).tong;
+      thanhDuoi.innerHTML = '<div class="gia-nho"><small>Tổng thanh toán</small><strong>' +
+        (tong > 0 ? escapeHtmlDatCho(hamHienThi.dinhDangGia(tong)) : '—') + '</strong></div>' +
+        '<a class="nut nut-zalo" href="' + escapeHtmlDatCho(lienHe.linkZalo) + '" target="_blank" rel="noopener">Zalo</a>' +
+        '<button type="button" class="nut" data-xem-don>Xem đơn</button>';
+    }
+  }
+  if (thanhDuoi) {
+    thanhDuoi.addEventListener('click', function (e) {
+      if (!e.target.closest('[data-xem-don]')) return;
+      var oTomTat = document.querySelector('.cot-tom-tat');
+      if (oTomTat && oTomTat.scrollIntoView) oTomTat.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
   function thongBao(noiDung, lop) {
     if (!oThongBao) return;
@@ -808,6 +876,11 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   el.ngay.addEventListener('change', function () { don.ngay = el.ngay.value; veTomTat(); });
 
   khungMon.addEventListener('click', function (e) {
+    var chipLoc = e.target.closest('[data-loc-nhom-con]');
+    if (chipLoc) {
+      hamHienThi.locNhomCon(khungMon, chipLoc);
+      return;
+    }
     var nutLoai = e.target.closest('[data-chon-loai]');
     if (nutLoai) {
       don.loai = nutLoai.getAttribute('data-chon-loai');
@@ -839,7 +912,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     }
     var oCanhBao = khungMon.querySelector('[data-canh-bao-tre]');
     if (oCanhBao) {
-      var canhBao = canhBaoTreEm(don, tauHienTai());
+      var canhBao = canhBaoTreEm(don, tauHienTai(), bangTreEm);
       oCanhBao.textContent = canhBao || '';
       oCanhBao.hidden = !canhBao;
     }
@@ -874,13 +947,14 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
         don.ngayDat = ngayHomNayDiaPhuong(new Date());
       }
       if (don.vat) don.taiKhoan = 'congTy';
-      khungThanhToan.innerHTML = taoKhoiThanhToan(don, tauHienTai(), bangTreEm, cauHinhThanhToan);
+      khungThanhToan.innerHTML = taoKhoiThanhToan(don, tauHienTai(), bangTreEm, cauHinhThanhToan) + taoKhoiMsNguyen(cheDoMsNguyen, don);
       denBuoc(3);
     } else if (hanhDong === 'da-chuyen') {
       if (dangGui) return;
       var tau = tauHienTai();
       var tk = layTaiKhoan(cauHinhThanhToan, don);
-      var linkXacNhan = location.href.split('#')[0].split('?')[0].replace(/[^/]*$/, '') + 'xac-nhan.html#' + maHoaDon(don);
+      don.tongLucDat = tomTatDon(don, tau, bangTreEm).tong;
+      var linkXacNhan = taoLinkXacNhan(don);
       dangGui = true;
       nut.disabled = true;
       thongBao('Đang gửi thông tin cho Ms Nguyên…', '');
@@ -892,10 +966,32 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
         goc.querySelector('#email-loi').hidden = ok;
         denBuoc(4);
       });
+    } else if (hanhDong === 'mo-xac-nhan') {
+      var oMa = goc.querySelector('#ma-don-khach');
+      var ma = oMa ? oMa.value.trim().toUpperCase() : '';
+      if (!laMaDon(ma)) {
+        thongBao('Mã đơn không đúng định dạng (VT + 6 số + 4 ký tự, ví dụ VT261010ABCD). Kiểm tra lại tin nhắn Zalo của khách.', 'loi-gui');
+        if (oMa) oMa.focus();
+        return;
+      }
+      don.maDon = ma;
+      don.tongLucDat = tomTatDon(don, tauHienTai(), bangTreEm).tong;
+      window.open(taoLinkXacNhan(don), '_blank', 'noopener');
     } else if (hanhDong === 'zalo') {
-      saoChepNoiDung(soanTinNhanDatCho(don, tauHienTai(), bangTreEm, layTaiKhoan(cauHinhThanhToan, don)), function (ok) {
-        thongBao(ok ? 'Đã sao chép thông tin đơn. Trong Zalo, nhấn giữ ô nhập tin → Dán, gửi kèm ảnh chụp biên lai chuyển khoản.'
-          : 'Trong Zalo, gửi mã đơn ' + don.maDon + ' và ảnh chụp biên lai chuyển khoản cho Ms Nguyên.', 'da-gui');
+      var noiDungZalo = soanTinNhanDatCho(don, tauHienTai(), bangTreEm, layTaiKhoan(cauHinhThanhToan, don));
+      var khungChep = goc.querySelector('#khung-sao-chep');
+      saoChepNoiDung(noiDungZalo, function (ok) {
+        if (ok) {
+          thongBao('Đã sao chép thông tin đặt chỗ. Trong Zalo, nhấn giữ ô nhập tin, chọn Dán rồi gửi.', 'da-gui');
+          if (khungChep) khungChep.innerHTML = '';
+          return;
+        }
+        thongBao('Không sao chép tự động được. Hãy chọn và sao chép nội dung bên dưới, rồi trong Zalo nhấn giữ ô nhập tin, chọn Dán rồi gửi.', 'loi-gui');
+        if (khungChep) {
+          khungChep.innerHTML = '<textarea readonly rows="10">' + escapeHtmlDatCho(noiDungZalo) + '</textarea>';
+          khungChep.firstChild.focus();
+          khungChep.firstChild.select();
+        }
       });
       window.open(lienHe.linkZalo, '_blank', 'noopener');
     }
@@ -925,6 +1021,16 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   }
 }
 
+// Ô dành cho Ms Nguyên (chỉ hiện khi mở dat-cho.html?ms=1): dùng khi email đơn không tới.
+function taoKhoiMsNguyen(bat, don) {
+  if (!bat) return '';
+  return '<div class="hop-ms-nguyen"><strong>Dành cho Ms Nguyên</strong>' +
+    '<p>Đơn nhập lại theo tin nhắn Zalo của khách. Điền mã đơn khách gửi (dạng VT…) rồi mở trang xác nhận.</p>' +
+    '<div class="o-nhap"><label for="ma-don-khach">Mã đơn của khách</label><input type="text" id="ma-don-khach" value="' +
+    escapeHtmlDatCho(don.maDon) + '"></div>' +
+    '<button type="button" class="nut nut-xanh" data-hanh-dong="mo-xac-nhan">Mở trang xác nhận đơn này</button></div>';
+}
+
 function khoiChayTrangDatCho() {
   if (typeof apDungCauHinhChung === 'function') apDungCauHinhChung('');
   ganSuKienDatCho(document.getElementById('dat-cho'), DANH_SACH_TAU, GIA_TRE_EM, CAU_HINH.thanhToan, CONG_TY, LIEN_HE, docThamSoUrl(location.search));
@@ -935,16 +1041,22 @@ function khoiChayTrangXacNhan() {
   if (typeof apDungCauHinhChung === 'function') apDungCauHinhChung('');
   var goc = document.getElementById('xac-nhan');
   var don = giaiMaDon(location.hash);
-  var tau = don ? timTauTheoSlug(DANH_SACH_TAU, don.slugTau) : null;
-  if (!don || !tau || !don.maDon) {
-    goc.innerHTML = '<div class="the-form"><h2>Không đọc được đơn</h2><p>Hãy mở đúng link “Link tạo phiếu sau khi kiểm tra tiền” trong email đặt chỗ.</p></div>';
+  var tau = laDonHopLe(don) ? timTauTheoSlug(DANH_SACH_TAU, don.slugTau) : null;
+  if (!tau) {
+    goc.innerHTML = '<div class="the-form"><h2>Không đọc được đơn</h2><p>Hãy mở đúng link “Link tạo phiếu sau khi kiểm tra tiền” trong email đặt chỗ.</p>' +
+      '<p>Không có email (gửi email lỗi)? Mở <a href="dat-cho.html?ms=1">trang đặt chỗ ở chế độ Ms Nguyên</a>, nhập lại đơn theo tin nhắn Zalo của khách, ' +
+      'tới bước thanh toán rồi bấm “Mở trang xác nhận đơn này”.</p></div>';
     return;
   }
   var tk = layTaiKhoan(CAU_HINH.thanhToan, don);
   var tt = tomTatDon(don, tau, GIA_TRE_EM);
   goc.querySelector('#tom-tat-xac-nhan').innerHTML = taoTomTatDon(don, tau, GIA_TRE_EM, '') +
     '<p class="hop-vat">Kiểm tra tài khoản <b>' + escapeHtmlDatCho(tk.nganHang + ' ' + tk.soTaiKhoan) + '</b> đã nhận <b>' +
-    escapeHtmlDatCho(hamHienThi.dinhDangGia(tt.tong)) + '</b> với nội dung <b>' + escapeHtmlDatCho(taoNoiDungChuyenKhoan(don)) + '</b>.</p>';
+    escapeHtmlDatCho(hamHienThi.dinhDangGia(tt.tong)) + '</b> với nội dung <b>' + escapeHtmlDatCho(taoNoiDungChuyenKhoan(don)) + '</b>.</p>' +
+    (typeof don.tongLucDat === 'number' && don.tongLucDat !== tt.tong
+      ? '<p class="thong-bao loi-gui">Giá đã thay đổi từ lúc khách đặt: lúc đặt khách thấy <b>' + escapeHtmlDatCho(hamHienThi.dinhDangGia(don.tongLucDat)) +
+        '</b>, bảng giá hiện tại là <b>' + escapeHtmlDatCho(hamHienThi.dinhDangGia(tt.tong)) + '</b>. Kiểm tra theo số tiền khách đã chuyển trước khi tạo phiếu.</p>'
+      : '');
   var form = goc.querySelector('#form-xac-nhan');
   var khungPhieu = goc.querySelector('#khung-phieu');
   var khuVucPhieu = goc.querySelector('#khu-vuc-phieu');
@@ -991,7 +1103,7 @@ function khoiChayTrangXacNhan() {
 if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
-    taoMaDon, taoNoiDungChuyenKhoan, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
+    taoMaDon, laMaDon, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
     taoDuLieuEmail, guiEmailDatCho, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };

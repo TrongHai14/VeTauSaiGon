@@ -182,7 +182,7 @@ function laCheDoThietKe() {
 // Ảnh SVG (data URI) làm khung thay thế: nền xanh đêm, sóng nước, con tàu, 1–2 dòng chữ.
 function taoAnhCho(dong1, dong2) {
   var e = function (t) { return String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
-  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">' +
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">' +
     '<defs><linearGradient id="n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b2a4a"/><stop offset="1" stop-color="#0770cd"/></linearGradient></defs>' +
     '<rect width="800" height="500" fill="url(#n)"/>' +
     '<g fill="none" stroke="#ffffff" stroke-opacity=".10" stroke-width="3">' +
@@ -253,13 +253,58 @@ function taoDanhSachDau(danhSach) {
 }
 
 var SO_DONG_HIEN_SAN = 6;
+var SO_MON_CO_LOC = 9;   // từ 9 món trở lên thì hiện chip lọc nhanh
+
+// Nhóm con của một món để lọc nhanh: '3 món', '4 món', 'Chay', 'Trẻ em'… ('' nếu không xếp được).
+function layNhomCon(ten) {
+  var t = String(ten);
+  if (/Trẻ em|Kid/i.test(t)) return 'Trẻ em';
+  if (/Chay/i.test(t)) return 'Chay';
+  var so = /^(\d+) món/.exec(t);
+  return so ? so[1] + ' món' : '';
+}
+
+// Chip lọc cho danh sách món dài; '' nếu danh sách ngắn hoặc không chia được.
+function taoChipNhomCon(cacNhom) {
+  var dem = {};
+  var thuTu = [];
+  var tong = 0;
+  for (var i = 0; i < cacNhom.length; i++) {
+    for (var j = 0; j < cacNhom[i].dong.length; j++) {
+      var k = layNhomCon(cacNhom[i].dong[j].ten);
+      tong++;
+      if (!k) continue;
+      if (!dem[k]) { dem[k] = 0; thuTu.push(k); }
+      dem[k]++;
+    }
+  }
+  if (tong < SO_MON_CO_LOC || thuTu.length < 3) return '';
+  var html = '<div class="chip-loc chip-nhom-con"><button type="button" class="chip" data-loc-nhom-con="" aria-pressed="true">Tất cả</button>';
+  for (var n = 0; n < thuTu.length; n++) {
+    html += '<button type="button" class="chip" data-loc-nhom-con="' + escapeHtml(thuTu[n]) + '" aria-pressed="false">' +
+      escapeHtml(thuTu[n]) + ' (' + dem[thuTu[n]] + ')</button>';
+  }
+  return html + '</div>';
+}
+
+// Bấm chip: chỉ hiện món thuộc nhóm con đó (bỏ giới hạn "Xem thêm" khi đang lọc).
+function locNhomCon(goc, chip) {
+  var khung = chip.closest('.nhom-loai') || goc;
+  var gt = chip.getAttribute('data-loc-nhom-con');
+  var cacChip = khung.querySelectorAll('[data-loc-nhom-con]');
+  for (var i = 0; i < cacChip.length; i++) cacChip[i].setAttribute('aria-pressed', String(cacChip[i] === chip));
+  var cacMon = khung.querySelectorAll('[data-nhom-con]');
+  for (var j = 0; j < cacMon.length; j++) cacMon[j].hidden = !!gt && cacMon[j].getAttribute('data-nhom-con') !== gt;
+  var xemThem = khung.querySelectorAll('[data-xem-them]');
+  for (var k = 0; k < xemThem.length; k++) xemThem[k].parentNode.removeChild(xemThem[k]);
+}
 
 // Một dòng món: ảnh nhỏ, tên, giá, nút Xem menu và nút Đặt.
 function taoDongMon(tau, dong, loai, an, tienTo) {
   var anhNho = dong.anh.length > 0
     ? taoAnh(dong.anh[0].src, dong.anh[0].alt, tienTo, true, dong.ten)
     : '<span class="anh-trong">' + icon('menu') + '</span>';
-  return '<div class="dong-thuc-don"' + (an ? ' hidden data-an' : '') + '>' +
+  return '<div class="dong-thuc-don" data-nhom-con="' + escapeHtml(layNhomCon(dong.ten)) + '"' + (an ? ' hidden data-an' : '') + '>' +
     '<button type="button" class="anh-mon" data-mo-anh="mon:' + dong.ma + '" data-i="0" aria-label="Xem menu ' + escapeHtml(dong.ten) + '">' + anhNho + '</button>' +
     '<div class="ten"><strong>' + escapeHtml(dong.ten) + '</strong>' +
     (dong.tenPhu ? '<span class="ten-phu">' + escapeHtml(dong.tenPhu) + '</span>' : '') +
@@ -296,6 +341,7 @@ function taoMucThucDon(tau, tienTo, lienHe) {
     var loai = cacLoai[i];
     html += '<div class="nhom-loai" data-loai="' + loai + '"' + (loai !== loaiDau ? ' hidden' : '') + '>';
     if (theoLoai[loai].length === 0) html += taoThongBaoThieuLoai(tau, loai, lienHe);
+    html += taoChipNhomCon(theoLoai[loai]);
     for (var g = 0; g < theoLoai[loai].length; g++) {
       var nhom = theoLoai[loai][g];
       html += '<div class="nhom-thuc-don">';
@@ -539,6 +585,11 @@ function ganLightbox(goc, cacNhom, tienTo) {
 
 function ganSuKienThucDon(goc) {
   goc.addEventListener('click', function (e) {
+    var chipLoc = e.target.closest('[data-loc-nhom-con]');
+    if (chipLoc) {
+      locNhomCon(goc, chipLoc);
+      return;
+    }
     var tab = e.target.closest('[data-tab-loai]');
     if (tab) {
       var cacTab = goc.querySelectorAll('[data-tab-loai]');
@@ -765,7 +816,7 @@ function khoiChayTrangTau() {
 
 if (typeof module !== 'undefined') {
   module.exports = {
-    escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung, layAnhTau, layAnhDaiDien, layAnhKhuyenMai, taoAnhCho, taoAnh,
+    escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung, layAnhTau, layAnhDaiDien, layAnhKhuyenMai, taoAnhCho, taoAnh, layNhomCon, taoChipNhomCon,
     taoTheTau, taoTrangTau, taoNutLienHe, taoKhoiChinhSach, khoiChayTrangChu, khoiChayTrangTau
   };
 }

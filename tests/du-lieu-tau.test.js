@@ -11,7 +11,6 @@ const bang = (t, tieuDe) => t.bangGia.find((b) => b.tieuDe === tieuDe);
 
 test('thong tin chung', () => {
   assert.strictEqual(THONG_TIN_WEB.ten, 'Vé Tàu Sài Gòn');
-  assert.strictEqual(THONG_TIN_WEB.tenMien, 'https://vetausaigon.vn');
   assert.strictEqual(LIEN_HE.soDienThoai, '0948170036');
   assert.strictEqual(LIEN_HE.linkZalo, 'https://zalo.me/0948170036');
   assert.strictEqual(LIEN_HE.linkGoi, 'tel:0948170036');

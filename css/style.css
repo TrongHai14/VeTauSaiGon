@@ -612,4 +612,15 @@ ol.cac-buoc-dat li.xong b { background: var(--xanh-la); color: #fff; }
     linear-gradient(160deg, #031b33 0%, #06325c 55%, #0a4a86 100%);
 }
 img.anh-cho { background: #0b2a4a; }
-.nhan-thieu-anh { position: absolute; z-index: 3; right: 16px; bottom: 92px; max-width: min(560px, calc(100% - 32px)); padding: 6px 10px; border-radius: 8px; background: rgba(0, 0, 0, .45); color: #bfe3ff; font: 12px/1.4 Consolas, monospace; }
+.nhan-thieu-anh { position: absolute; z-index: 3; right: 16px; top: 12px; max-width: min(560px, calc(100% - 32px)); padding: 6px 10px; border-radius: 8px; background: rgba(0, 0, 0, .45); color: #bfe3ff; font: 12px/1.4 Consolas, monospace; }
+
+.chip-nhom-con { margin: 0 0 12px; }
+.chip-nhom-con .chip { padding: 5px 12px; font-size: 13px; }
+.dong-thuc-don[hidden], .mon[hidden] { display: none; }
+/* Ẩn chữ alt trong lúc ảnh đang tải hoặc trước khi đổi sang khung thay thế */
+.anh-mon img, .luoi-anh img, .the-tau-anh img, .tt-tau img, .lightbox img, .khuyen-mai img { color: transparent; background: #0b2a4a; }
+
+.qr-loi { padding: 18px 12px; border-radius: 10px; background: #fdecec; color: #c0262d; font-size: 13.5px; }
+.hop-ms-nguyen { margin-top: 16px; padding: 14px; border-radius: 12px; border: 1.5px dashed var(--cam); background: var(--cam-nhat); }
+.hop-ms-nguyen p { margin: 4px 0 10px; font-size: 13.5px; }
+.hop-ms-nguyen .nut { margin-top: 10px; }
