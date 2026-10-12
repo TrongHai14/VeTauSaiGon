@@ -145,3 +145,15 @@ test('dat-cho.html: email nhan ve va o dong y dieu kien ve', () => {
   assert.ok(html.includes('name="dongY"') && html.includes('data-loi="dongY"') && html.includes('href="chinh-sach.html"'));
   assert.ok(html.includes('nhận vé điện tử PDF') && html.includes('24 giờ'));
 });
+
+test('logo Nguyen Nguyen Travel: o goc phai header moi trang, file co that va < 500KB', () => {
+  assert.strictEqual(CAU_HINH.logo.gocPhai, 'anh/logo/logo-nguyen-nguyen.jpg');
+  const p = path.join(GOC, CAU_HINH.logo.gocPhai);
+  assert.ok(fs.existsSync(p) && fs.statSync(p).size < 512000);
+  for (const f of TAT_CA) {
+    const html = doc(f);
+    const a = html.indexOf('class="logo-goc-phai"');
+    assert.ok(a > 0 && html.indexOf('<span data-logo="gocPhai" hidden></span>', a) > a, f);
+    assert.ok(a < html.indexOf('</header>'), f + ' logo nam trong header');
+  }
+});

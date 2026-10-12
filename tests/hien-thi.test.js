@@ -97,3 +97,16 @@ test('taoNutLienHe', () => {
   const html = ht.taoNutLienHe(LIEN_HE);
   assert.ok(html.includes('href="tel:0948170036"') && html.includes('href="https://zalo.me/0948170036"'));
 });
+
+test('gioi thieu tung tau: du 6 tau co doan gioi thieu va 3 diem noi bat, hien o dau trang tau', () => {
+  for (const t of DANH_SACH_TAU) {
+    assert.ok(t.gioiThieu && t.gioiThieu.length > 80 && t.gioiThieu.length < 700, t.slug + ' gioi thieu');
+    assert.ok(Array.isArray(t.noiBat) && t.noiBat.length === 3, t.slug + ' noi bat');
+    const html = ht.taoTrangTau(t, LIEN_HE, '../');
+    assert.ok(html.includes('id="gioi-thieu"') && html.includes(ht.escapeHtml(t.gioiThieu)), t.slug);
+    assert.ok(html.indexOf('id="gioi-thieu"') < html.indexOf('id="thuc-don"'), t.slug + ' gioi thieu truoc thuc don');
+    assert.ok(html.includes('<a href="#gioi-thieu">Giới thiệu</a>'), t.slug + ' co tab');
+  }
+  const khong = Object.assign({}, DANH_SACH_TAU[0], { gioiThieu: '', noiBat: [] });
+  assert.ok(!ht.taoTrangTau(khong, LIEN_HE, '../').includes('id="gioi-thieu"'), 'khong co noi dung thi an muc');
+});

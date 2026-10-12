@@ -19,8 +19,9 @@ var CAU_HINH = {
 
   // Logo PNG nền trong suốt. Chưa có file thì web dùng biểu tượng con tàu.
   logo: {
-    header: 'anh/logo/logo.png',          // logo màu, hiện cao 40px
-    footer: 'anh/logo/logo-trang.png'     // logo trắng cho nền xanh đậm, hiện cao 48px (không có thì dùng logo header)
+    header: 'anh/logo/logo.png',                 // logo bên trái header (thay biểu tượng con tàu), hiện cao 40px
+    gocPhai: 'anh/logo/logo-nguyen-nguyen.jpg',  // logo Nguyên Nguyên Travel ở góc phải header, hiện cao 48px
+    footer: 'anh/logo/logo-nguyen-nguyen.jpg'    // logo ở chân trang (nền xanh đậm), hiện cao 96px
   },
 
   // Ảnh bìa trang chủ: chạy lần lượt (mờ dần + phóng nhẹ). Ảnh ngang ≥ 1600px.

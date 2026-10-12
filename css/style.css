@@ -660,3 +660,16 @@ img.anh-cho { background: #0b2a4a; }
 .bang-so-sanh .gia { color: var(--cam); font-weight: 800; }
 .nhan-nho { display: inline-block; background: var(--xanh-nhat); color: var(--xanh-dam); font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
 .hoi-dap details p { margin: 0 0 10px; color: var(--chu-phu); }
+
+/* ---------- Logo góc phải header, logo chân trang ---------- */
+.logo-goc-phai { display: flex; align-items: center; flex: none; }
+.logo-anh-gocPhai img { height: 48px; width: 48px; object-fit: cover; border-radius: 10px; display: block; box-shadow: 0 1px 4px rgba(3, 18, 26, .25); }
+.chan-trang .logo-anh-footer img { height: 96px; width: 96px; object-fit: cover; border-radius: 14px; }
+@media (max-width: 760px) { .logo-anh-gocPhai img { height: 40px; width: 40px; } }
+
+/* ---------- Giới thiệu tàu ---------- */
+.gioi-thieu-tau { font-size: 15.5px; line-height: 1.7; margin: 0 0 14px; }
+.noi-bat { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.noi-bat li { display: flex; gap: 8px; align-items: flex-start; background: var(--xanh-nhat); border-radius: 10px; padding: 10px 12px; font-size: 14px; font-weight: 600; }
+.noi-bat .icon { color: var(--xanh-la); flex: none; margin-top: 2px; }
+@media (max-width: 760px) { .noi-bat { grid-template-columns: 1fr; } }

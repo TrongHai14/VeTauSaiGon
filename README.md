@@ -22,7 +22,8 @@ Chép ảnh vào thư mục `anh/` theo **đúng tên file**. Web tự hiện �
 
 | Ảnh | Đặt vào |
 |---|---|
-| Logo header / footer | `anh/logo/logo.png`, `anh/logo/logo-trang.png` |
+| Logo bên trái header | `anh/logo/logo.png` (chưa có thì dùng biểu tượng con tàu) |
+| Logo Nguyên Nguyên Travel (góc phải header + chân trang) | `anh/logo/logo-nguyen-nguyen.jpg` (đã có) |
 | Ảnh bìa trang chủ (tự chuyển) | `anh/bia/bia-01.jpg` … `bia-04.jpg` |
 | Ảnh đại diện từng tàu | `anh/<tàu>/dai-dien.jpg` |
 | Thư viện ảnh tàu | `anh/<tàu>/tau-01.jpg` … `tau-08.jpg` |
@@ -41,7 +42,7 @@ Chép ảnh vào thư mục `anh/` theo **đúng tên file**. Web tự hiện �
 | Muốn sửa | File |
 |---|---|
 | Ảnh, logo, tài khoản ngân hàng, giới thiệu công ty, tên miền | `js/cau-hinh.js` |
-| Giá, thực đơn, giờ chạy, lộ trình, chính sách trẻ em của từng tàu | `js/du-lieu-tau.js` (mảng `DANH_SACH_TAU`) |
+| Giới thiệu ngắn, điểm nổi bật, giá, thực đơn, giờ chạy, lộ trình, chính sách trẻ em của từng tàu | `js/du-lieu-tau.js` (mảng `DANH_SACH_TAU`, trường `gioiThieu` và `noiBat`) |
 | Mốc tuổi ở ô đếm trẻ em | `js/du-lieu-tau.js` (`GIA_TRE_EM`) |
 | Chính sách chung: điều kiện vé, đổi trả, hướng dẫn, lưu ý | `js/du-lieu-tau.js` (`CHINH_SACH_CHUNG`) |
 | Header, footer, nội dung cố định của các trang | `cong-cu/tao-trang.js`, sửa xong chạy **Tạo lại các trang HTML** |

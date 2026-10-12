@@ -369,6 +369,18 @@ function taoMucThucDon(tau, tienTo, lienHe) {
   return taoMuc('thuc-don', 'menu', 'Chọn thực đơn', html);
 }
 
+// Mục "Giới thiệu tàu": đoạn giới thiệu ngắn + các điểm nổi bật.
+function taoMucGioiThieu(tau) {
+  if (!tau.gioiThieu && !(tau.noiBat && tau.noiBat.length)) return '';
+  var html = tau.gioiThieu ? '<p class="gioi-thieu-tau">' + escapeHtml(tau.gioiThieu) + '</p>' : '';
+  if (tau.noiBat && tau.noiBat.length) {
+    html += '<ul class="noi-bat">';
+    for (var i = 0; i < tau.noiBat.length; i++) html += '<li>' + icon('dung') + '<span>' + escapeHtml(tau.noiBat[i]) + '</span></li>';
+    html += '</ul>';
+  }
+  return taoMuc('gioi-thieu', 'tau', 'Giới thiệu tàu ' + escapeHtml(tau.ten), html);
+}
+
 function taoMucKhuyenMai(tau, tienTo) {
   var khuyenMai = tau.khuyenMai || [];
   if (khuyenMai.length === 0) return '';
@@ -465,6 +477,7 @@ function taoTrangTau(tau, lienHe, tienTo) {
   html += taoLuoiAnhDau(tau, tienTo);
 
   var cacMuc = [
+    ['gioi-thieu', 'Giới thiệu', taoMucGioiThieu(tau)],
     ['thuc-don', 'Thực đơn & giá', taoMucThucDon(tau, tienTo, lienHe)],
     ['khuyen-mai', 'Khuyến mãi', taoMucKhuyenMai(tau, tienTo)],
     ['lich-trinh', 'Lịch trình', taoMucLichTrinh(tau)],
@@ -641,6 +654,7 @@ function apDungCauHinhChung(tienTo) {
     thu.onload = function () {
       oLogo.innerHTML = '<img src="' + escapeHtml(tienTo + dsThu[0]) + '" alt="Logo ' + escapeHtml(CONG_TY.ten) + '">';
       oLogo.className = 'logo-anh logo-anh-' + viTri;
+      oLogo.hidden = false;
       if (oLogo.nextElementSibling) oLogo.nextElementSibling.classList.add('logo-chu-phu');
     };
     thu.onerror = function () { datLogo(oLogo, viTri, dsThu.slice(1)); };
@@ -649,7 +663,7 @@ function apDungCauHinhChung(tienTo) {
   for (var i = 0; i < cacLogo.length; i++) {
     var viTri = cacLogo[i].getAttribute('data-logo');
     var dsThu = [logo[viTri]];
-    if (viTri === 'footer') dsThu.push(logo.header);
+    if (viTri === 'footer') dsThu.push(logo.gocPhai, logo.header);
     datLogo(cacLogo[i], viTri, dsThu.filter(function (x) { return !!x; }));
   }
   var gioiThieu = document.querySelector('[data-gioi-thieu]');
@@ -848,6 +862,6 @@ function khoiChayTrangTau() {
 if (typeof module !== 'undefined') {
   module.exports = {
     escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung, layAnhTau, layAnhDaiDien, layAnhKhuyenMai, taoAnhCho, taoAnh, layNhomCon, taoChipNhomCon, cacNgayNhanh,
-    taoTheTau, taoTrangTau, taoNutLienHe, taoKhoiChinhSach, khoiChayTrangChu, khoiChayTrangTau
+    taoTheTau, taoTrangTau, taoNutLienHe, taoKhoiChinhSach, taoMucGioiThieu, khoiChayTrangChu, khoiChayTrangTau
   };
 }

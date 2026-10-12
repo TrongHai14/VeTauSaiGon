@@ -52,6 +52,7 @@ function header(tt) {
         <a href="#lien-he">Liên hệ</a>
       </nav>
       <a class="nut nut-xanh" href="tel:0948170036">${ICON_DT}<span>0948170036</span></a>
+      <a class="logo-goc-phai" href="${tt}index.html" aria-label="${e(CONG_TY.ten)}"><span data-logo="gocPhai" hidden></span></a>
     </div>
   </header>`;
 }
