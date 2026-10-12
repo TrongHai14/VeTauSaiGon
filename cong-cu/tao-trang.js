@@ -88,6 +88,13 @@ ${CHINH_SACH_CHUNG.map((m) => `            <li><a href="${tt}chinh-sach.html#${m
           </ul>
         </div>
       </div>
+      <ul class="dai-uy-tin">
+        <li>★ ${e(CONG_TY.vaiTro)}</li>
+        <li>MST ${CONG_TY.mst}</li>
+        <li>Xuất hóa đơn VAT</li>
+        <li>Chỉ nhận chuyển khoản ACB ghi trên web</li>
+        <li>Vé có chữ ký số + mã QR</li>
+      </ul>
       <div class="cong-ty">
         <p>© ${new Date().getFullYear()} <strong>${e(CONG_TY.ten)}</strong> · MST: ${CONG_TY.mst} <span class="huy-hieu">${e(CONG_TY.vaiTro)}</span></p>
         <p>Hotline: Ms Nguyên · SĐT: <a href="tel:0948170036">0948170036</a></p>

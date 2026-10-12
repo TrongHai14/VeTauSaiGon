@@ -260,8 +260,11 @@ function taoKetQuaKiemTra(kq, homNay, e) {
   }
   var v = kq.ve;
   var dungNgay = v.n === homNay;
-  return '<div class="ve-ket-qua ve-dung"><div class="ve-dau">✓</div><h1>VÉ HỢP LỆ</h1>' +
-    '<p>Phiếu do Ms Nguyên phát hành, nội dung chưa bị sửa.</p>' +
+  var logo = typeof CAU_HINH !== 'undefined' && CAU_HINH.logo ? (CAU_HINH.logo.gocPhai || '') : '';
+  return '<div class="ve-ket-qua ve-dung">' +
+    (logo ? '<img class="ve-logo" src="' + e(logo) + '" alt="Nguyên Nguyên Travel" onerror="this.parentNode && this.parentNode.removeChild(this)">' : '') +
+    '<div class="ve-dau">✓</div><h1>VÉ HỢP LỆ</h1>' +
+    '<p>Phiếu do Ms Nguyên – ' + e(typeof CONG_TY !== 'undefined' ? CONG_TY.ten : 'Nguyên Nguyên Global') + ' phát hành, nội dung chưa bị sửa.</p>' +
     (dungNgay ? '' : '<p class="ve-ngay-lech">Lưu ý: vé dùng cho ngày <b>' + e(dinhDangNgayVe(v.n)) + '</b>, không phải hôm nay.</p>') +
     '<dl>' +
     '<dt>Tàu</dt><dd>' + e(v.tt) + '</dd>' +

@@ -157,3 +157,12 @@ test('logo Nguyen Nguyen Travel: o goc phai header moi trang, file co that va < 
     assert.ok(a < html.indexOf('</header>'), f + ' logo nam trong header');
   }
 });
+
+test('footer moi trang co dai huy hieu uy tin (dai ly chinh thuc, MST, VAT, chu ky so)', () => {
+  for (const f of TAT_CA) {
+    const html = doc(f);
+    const a = html.indexOf('<ul class="dai-uy-tin">');
+    assert.ok(a > html.indexOf('<footer'), f);
+    for (const chu of ['Đại lý chính thức', 'MST 0319143429', 'Xuất hóa đơn VAT', 'Vé có chữ ký số']) assert.ok(html.indexOf(chu, a) > a, f + ' thieu ' + chu);
+  }
+});

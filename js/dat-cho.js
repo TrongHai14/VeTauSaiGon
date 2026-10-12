@@ -459,11 +459,14 @@ function taoPhieuHtml(don, tau, congTy, lienHe, bangTreEm, taiKhoan, thongTin) {
     ? soVnd(tt.dong[0].gia) + ' x ' + tt.dong[0].soLuong + ' = ' + soVnd(tt.tong) + ' vnd'
     : soVnd(tt.tong) + ' vnd';
 
-  return '<div class="phieu" id="phieu"><div class="phieu-goc"></div><div class="phieu-noi">' +
+  return '<div class="phieu" id="phieu"><div class="phieu-goc"></div>' +
+    (layLogoDaiLy() ? '<div class="phieu-chim">' + taoAnhLogo('', 'phieu-chim-anh') + '</div>' : '') +
+    '<div class="phieu-noi">' +
+    '<div class="phieu-dau">' + taoAnhLogo('', 'phieu-logo') +
     '<div class="phieu-cong-ty"><strong>' + e(congTy.ten) + '</strong>' +
     '<p>MST: ' + e(congTy.mst) + ' – ' + e(congTy.vaiTro) + '</p>' +
     '<p>Địa chỉ: ' + e(tau.diaChi) + '</p>' +
-    '<p>Hỗ trợ dịch vụ: ' + e(lienHe.tenNguoiLienHe) + ' ' + e(lienHe.soDienThoai) + '</p></div>' +
+    '<p>Hỗ trợ dịch vụ: ' + e(lienHe.tenNguoiLienHe) + ' ' + e(lienHe.soDienThoai) + '</p></div></div>' +
     '<h2>PHIẾU XÁC NHẬN DỊCH VỤ DU THUYỀN<br>' + e(tau.ten.toUpperCase()) + '</h2>' +
     '<p class="phieu-ngay">Ngày đặt <b>' + hai(ngayDat.getDate()) + '</b> tháng <b>' + hai(ngayDat.getMonth() + 1) +
     '</b> năm <b>' + ngayDat.getFullYear() + '</b> · Mã đơn <b>' + e(don.maDon) + '</b></p>' +
@@ -524,6 +527,38 @@ function taoAnhQR(noiDung) {
   qr.addData(noiDung);
   qr.make();
   return qr.createDataURL(4, 8);
+}
+
+// Thông tin công ty (CONG_TY trong js/du-lieu-tau.js), dùng được cả trên trình duyệt lẫn Node.
+function layCongTy() {
+  if (typeof CONG_TY !== 'undefined') return CONG_TY;
+  if (typeof module !== 'undefined') return require('./du-lieu-tau.js').CONG_TY;
+  return { ten: '', mst: '', vaiTro: '' };
+}
+
+// Đường dẫn logo đại lý (CAU_HINH.logo.gocPhai); '' nếu chưa cấu hình.
+function layLogoDaiLy() {
+  var ch = typeof CAU_HINH !== 'undefined' ? CAU_HINH : null;
+  return (ch && ch.logo && (ch.logo.gocPhai || ch.logo.footer)) || '';
+}
+
+// Ảnh logo; thiếu file thì tự ẩn (không hiện ảnh vỡ).
+function taoAnhLogo(tienTo, lop) {
+  var src = layLogoDaiLy();
+  if (!src) return '';
+  return '<img class="' + lop + '" src="' + escapeHtmlDatCho(tienTo + src) + '" alt="Logo ' + escapeHtmlDatCho(layCongTy().ten) +
+    '" onerror="this.parentNode && this.parentNode.removeChild(this)">';
+}
+
+// Khung tin cậy ở bước thanh toán: đại lý chính thức, MST, các cam kết.
+function taoKhoiUyTin(congTy, tienTo) {
+  var e = escapeHtmlDatCho;
+  return '<div class="khoi-uy-tin">' + taoAnhLogo(tienTo, 'uy-tin-logo') +
+    '<div><strong>Thanh toán cho đại lý chính thức</strong>' +
+    '<span>' + e(congTy.ten) + ' · MST ' + e(congTy.mst) + '</span>' +
+    '<ul><li>' + hamHienThi.icon('khien') + 'Chỉ chuyển vào 2 tài khoản ACB ghi trên trang này</li>' +
+    '<li>' + hamHienThi.icon('the') + 'Xuất hóa đơn VAT khi cần</li>' +
+    '<li>' + hamHienThi.icon('dung') + 'Vé có chữ ký số, quét QR là biết vé thật</li></ul></div></div>';
 }
 
 /* ---------- Xuất ảnh phiếu ---------- */
@@ -736,7 +771,9 @@ function taoTomTatDon(don, tau, bangTreEm, tienTo) {
       e(soVnd(tt.dong[i].thanhTien)) + '</b></li>';
   }
   if (tt.khach.treEmMienPhi > 0) html += '<li><span>Trẻ em miễn phí<small>x ' + tt.khach.treEmMienPhi + '</small></span><b>0</b></li>';
-  return html + '</ul><div class="tt-tong"><span>Tổng thanh toán</span><strong>' + e(hamHienThi.dinhDangGia(tt.tong)) + '</strong></div>';
+  return html + '</ul><div class="tt-tong"><span>Tổng thanh toán</span><strong>' + e(hamHienThi.dinhDangGia(tt.tong)) + '</strong></div>' +
+    '<div class="tt-dai-ly">' + taoAnhLogo(tienTo, 'tt-logo') + '<span>Đặt qua <b>' + e(layCongTy().ten) +
+    '</b> – Đại lý chính thức</span></div>';
 }
 
 // Không tải được mã QR (mất mạng, dịch vụ lỗi): thay bằng lời nhắn, khách vẫn chuyển khoản theo thông tin bên cạnh.
@@ -753,7 +790,7 @@ function taoKhoiThanhToan(don, tau, bangTreEm, cauHinhThanhToan) {
   var tk = layTaiKhoan(cauHinhThanhToan, don);
   var noiDung = taoNoiDungChuyenKhoan(don);
   var anhQR = tk.anhQR ? tk.anhQR : taoLinkVietQR(tk, tt.tong, noiDung);
-  var html = '<p class="loi-nhan">Quý khách thanh toán vé trước để tàu giữ chỗ. Thanh toán xong, Ms Nguyên sẽ gửi <b>phiếu xác nhận</b> và ' +
+  var html = taoKhoiUyTin(layCongTy(), '') + '<p class="loi-nhan">Quý khách thanh toán vé trước để tàu giữ chỗ. Thanh toán xong, Ms Nguyên sẽ gửi <b>phiếu xác nhận</b> và ' +
     '<b>code vé điện tử</b>; khi lên tàu quý khách đưa code cho nhân viên soát vé.</p>';
   if (!don.vat) {
     html += '<div class="chon-tai-khoan" role="radiogroup">';
@@ -1254,7 +1291,7 @@ function khoiChayTrangXacNhan() {
 if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
-    taoMaDon, laMaDon, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
+    taoMaDon, laMaDon, taoKhoiUyTin, layLogoDaiLy, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
     taoDuLieuEmail, guiEmailDatCho, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };

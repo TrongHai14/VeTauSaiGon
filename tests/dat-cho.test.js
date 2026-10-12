@@ -275,3 +275,17 @@ test('laMaDon: chi nhan dang VT + 6 so + 4 ky tu; ho ten toan khoang trang bi tu
   for (const sai of ['', 'VT26101ABCD', 'vt261010abcd', 'XX261010ABCD', 'VT261010ABC', 'VT261010ABCDE', null]) assert.ok(!dc.laMaDon(sai), String(sai));
   assert.ok(!dc.laDonHopLe(donBuffet({ hoTen: '   ' })));
 });
+
+test('uy tin: phieu co logo dau phieu va logo chim; buoc thanh toan va tom tat don co thong tin dai ly', () => {
+  const don = donBuffet();
+  const phieu = dc.taoPhieuHtml(don, tau('indochina-queen'), CONG_TY, LIEN_HE, GIA_TRE_EM, dc.layTaiKhoan(TT, don),
+    { trangThai: 'Đã thanh toán.', codeVe: '', ngayXacNhan: new Date() });
+  assert.ok(phieu.includes('class="phieu-logo" src="anh/logo/logo-nguyen-nguyen.jpg"'), 'logo dau phieu');
+  assert.ok(phieu.includes('class="phieu-chim-anh"'), 'logo chim');
+  assert.ok(phieu.includes('onerror="this.parentNode && this.parentNode.removeChild(this)"'), 'thieu file logo thi tu an');
+  const tt = dc.taoKhoiThanhToan(don, tau('indochina-queen'), GIA_TRE_EM, TT);
+  assert.ok(tt.indexOf('class="khoi-uy-tin"') >= 0 && tt.indexOf('class="khoi-uy-tin"') < tt.indexOf('img.vietqr.io'), 'khung uy tin truoc ma QR');
+  for (const chu of ['Thanh toán cho đại lý chính thức', 'MST 0319143429', 'Chỉ chuyển vào 2 tài khoản ACB']) assert.ok(tt.includes(chu), chu);
+  const tom = dc.taoTomTatDon(don, tau('indochina-queen'), GIA_TRE_EM, '');
+  assert.ok(tom.includes('class="tt-dai-ly"') && tom.includes('Đại lý chính thức'));
+});
