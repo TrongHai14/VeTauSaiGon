@@ -1206,9 +1206,20 @@ function khoiChayTrangXacNhan() {
   var don = giaiMaDon(location.hash);
   var tau = laDonHopLe(don) ? timTauTheoSlug(DANH_SACH_TAU, don.slugTau) : null;
   if (!tau) {
-    goc.innerHTML = '<div class="the-form"><h2>Không đọc được đơn</h2><p>Hãy mở đúng link “Link tạo phiếu sau khi kiểm tra tiền” trong email đặt chỗ.</p>' +
+    // Không có đơn: vẫn giữ mục "Khoá ký phiếu" (để tạo/nạp khoá lần đầu), ẩn phần tạo phiếu.
+    var oDon = goc.querySelector('#tom-tat-xac-nhan');
+    var oForm = goc.querySelector('#form-xac-nhan');
+    var thongBaoKhongDon = '<h3>' + (location.hash.length > 1 ? 'Không đọc được đơn' : 'Chưa mở đơn nào') + '</h3>' +
+      '<p>Để tạo phiếu, hãy mở đúng link “Link tạo phiếu sau khi kiểm tra tiền” trong email đặt chỗ.</p>' +
       '<p>Không có email (gửi email lỗi)? Mở <a href="dat-cho.html?ms=1">trang đặt chỗ ở chế độ Ms Nguyên</a>, nhập lại đơn theo tin nhắn Zalo của khách, ' +
-      'tới bước thanh toán rồi bấm “Mở trang xác nhận đơn này”.</p></div>';
+      'tới bước thanh toán rồi bấm “Mở trang xác nhận đơn này”.</p>';
+    if (oDon) oDon.innerHTML = thongBaoKhongDon;
+    else goc.innerHTML = '<div class="the-form">' + thongBaoKhongDon + '</div>';
+    if (oForm) oForm.hidden = true;
+    if (goc.querySelector('#khung-khoa')) {
+      if (typeof docKhoaBiMat === 'function') ganQuanLyKhoa(goc);
+      else goc.querySelector('#khung-khoa').innerHTML = '<p class="khoa-loi">Chưa tải được phần chữ ký số (js/xac-thuc.js). Kiểm tra mạng rồi tải lại trang.</p>';
+    }
     return;
   }
   var tk = layTaiKhoan(CAU_HINH.thanhToan, don);

@@ -204,10 +204,13 @@ test('phieu chi duoc sinh trong khoiChayTrangXacNhan, khong nam trong luong dat 
   assert.ok(xacNhan.includes('taoPhieuHtml('));
 });
 
+// Chạy trang xác nhận trong vm; trả toàn bộ HTML đã ghi (trang + các ô con như #tom-tat-xac-nhan) và các ô bị ẩn.
 function chayXacNhan(hash) {
   const phanTu = {};
+  const con = {};
   const lay = (id) => (phanTu[id] = phanTu[id] || {
-    id, innerHTML: '', addEventListener() {}, querySelector: () => ({ innerHTML: '', addEventListener() {}, elements: {} })
+    id, innerHTML: '', addEventListener() {},
+    querySelector: (sel) => (con[sel] = con[sel] || { innerHTML: '', hidden: false, addEventListener() {}, elements: {} })
   });
   const ctx = {
     console,
@@ -218,7 +221,8 @@ function chayXacNhan(hash) {
   vm.createContext(ctx);
   for (const f of ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js', 'dat-cho.js']) vm.runInContext(doc('js/' + f), ctx);
   ctx.khoiChayTrangXacNhan();
-  return phanTu['xac-nhan'].innerHTML;
+  const html = phanTu['xac-nhan'].innerHTML + Object.values(con).map((o) => o.innerHTML).join('');
+  return Object.assign(new String(html), { formAn: !!(con['#form-xac-nhan'] && con['#form-xac-nhan'].hidden) });
 }
 
 test('xac-nhan voi hash hong: hien "Khong doc duoc don", khong nem loi, khong co phieu', () => {
@@ -228,8 +232,10 @@ test('xac-nhan voi hash hong: hien "Khong doc duoc don", khong nem loi, khong co
   for (const h of hong) {
     let html;
     assert.doesNotThrow(() => { html = chayXacNhan(h); }, h);
-    assert.ok(html.includes('Không đọc được đơn'), h + ' -> ' + html.slice(0, 80));
+    const mongDoi = h.length > 1 ? 'Không đọc được đơn' : 'Chưa mở đơn nào';
+    assert.ok(html.includes(mongDoi), h + ' -> ' + html.slice(0, 80));
     assert.ok(!html.includes('id="phieu"'));
+    assert.ok(html.formAn, h + ': an form tao phieu khi khong co don');
   }
 });
 
