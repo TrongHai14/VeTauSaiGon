@@ -52,6 +52,10 @@ var CAU_HINH = {
     }
   },
 
+  // Khoá công khai để kiểm tra chữ ký trên phiếu (chống làm giả). Lấy ở xac-nhan.html → "Tạo khoá ký phiếu",
+  // dán đúng dòng web đưa ra vào đây rồi push lên GitHub. null = chưa cài (phiếu chưa ký được).
+  khoaCongKhai: null,
+
   // Ảnh từng tàu: ảnh đại diện, thư viện ảnh (tối đa bao nhiêu cũng được), ảnh khuyến mãi.
   anhTau: {
     'indochina-star': {   // Indochina Star

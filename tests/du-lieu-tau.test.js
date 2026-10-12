@@ -40,7 +40,8 @@ test('gia khop giai-dap.md: Star, Queen, Ben Nghe', () => {
   assert.deepStrictEqual(sm.dong.map((d) => d.ten), ['INDO7', 'INDO8', 'INDO9', 'INDO10', 'INDO11', 'INDO12', 'INDO13', 'INDO14', 'INDO15', 'INDO16', 'INDO17']);
   assert.deepStrictEqual(sm.dong.map((d) => d.gia), [723600, 723600, 831600, 831600, 939600, 939600, 1047600, 1047600, 1209600, 1425600, 1641600]);
   assert.strictEqual(sm.ghiChu, 'Set menu chỉ phục vụ ở tầng 3 (sảnh VIP).');
-  assert.strictEqual(tau('indochina-queen').chinhSachTreEm.length, 4);
+  assert.strictEqual(tau('indochina-queen').chinhSachTreEm.length, 5);
+  assert.ok(tau('indochina-queen').chinhSachTreEm[0].includes('năm sinh'), 'Queen tinh tuoi theo nam sinh (giai-dap.md muc 7)');
   assert.deepStrictEqual(bang(tau('ben-nghe'), 'Buffet').dong.map((d) => d.gia), [733320]);
   assert.ok(bang(tau('ben-nghe'), 'Buffet').ghiChu.includes('Đã bao gồm VAT và vé lên tàu, chưa bao gồm nước uống.'));
 });

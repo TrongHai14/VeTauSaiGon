@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=45f9f102">
 </head>
 <body class="trang-dat-cho">
   <header class="dau-trang">
@@ -36,6 +36,8 @@
     </div>
     <div class="bo-cuc-dat">
       <div class="cot-form">
+        <div class="the-form"><h2>Khoá ký phiếu</h2><div id="khung-khoa"></div>
+          <p class="ghi-chu">Khoá bí mật chỉ nằm trên máy này và trong file sao lưu. Không gửi file khoá cho ai, không đưa lên GitHub.</p></div>
         <div class="the-form"><h2>Đơn đặt chỗ</h2><div id="tom-tat-xac-nhan"></div></div>
         <form class="the-form" id="form-xac-nhan" novalidate>
           <label class="o-chon"><input type="checkbox" name="daNhanTien"><span><strong>Tôi đã kiểm tra: tài khoản đã nhận đủ tiền</strong><small>Đúng số tiền và nội dung chuyển khoản ở trên</small></span></label>
@@ -51,6 +53,7 @@
           <button type="button" class="nut nut-xanh" data-hanh-dong="tai-anh">Tải ảnh phiếu</button>
           <button type="button" class="nut nut-vien" data-hanh-dong="in">In / Lưu PDF</button>
         </div>
+        <p class="ghi-chu"><a id="link-kiem-tra" href="#" target="_blank" rel="noopener" hidden>Mở thử trang kiểm tra vé của phiếu này</a></p>
       </section>
     </div>
   </main>
@@ -103,10 +106,12 @@
     <a class="nut nut-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener">Nhắn Zalo</a>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="js/cau-hinh.js"></script>
-  <script src="js/du-lieu-tau.js"></script>
-  <script src="js/hien-thi.js"></script>
-  <script src="js/dat-cho.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha512-ZDSPMa/JM1D+7kdg2x3BsruQ6T/JpJo3jWDWkCZsP+5yVyp1KfESqLI+7RqB5k24F7p2cV7i2YHh/890y6P6Sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="js/cau-hinh.js?v=118fa14f"></script>
+  <script src="js/du-lieu-tau.js?v=b3919145"></script>
+  <script src="js/hien-thi.js?v=1ce84254"></script>
+  <script src="js/xac-thuc.js?v=26bab77d"></script>
+  <script src="js/dat-cho.js?v=ad6bada4"></script>
   <script>khoiChayTrangXacNhan();</script>
 </body>
 </html>

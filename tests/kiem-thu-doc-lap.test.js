@@ -38,7 +38,8 @@ test('buffet 3 nguoi lon + 3 be mien phi: chi 1 be mien phi, 2 be con lai tinh 5
   const tt = tong(d);
   assert.strictEqual(tt.tong, 3 * 615600 + 2 * 307800);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 3, treEm50: 2, treEmMienPhi: 1 });
-  assert.strictEqual(dc.canhBaoTreEm(d, tau('indochina-queen')), null, 'be vuot da tu tinh 50% nen khong can canh bao');
+  assert.match(dc.canhBaoTreEm(d, tau('indochina-queen')), /2 người lớn chỉ được kèm 1 trẻ em/, 'Queen: 3 tre cho 3 nguoi lon vuot quy dinh (giai-dap.md muc 7)');
+  assert.strictEqual(dc.canhBaoTreEm(Object.assign({}, d, { slugTau: 'indochina-star', buffetMa: '0:0' }), tau('indochina-star')), null, 'Star: be vuot da tu tinh 50%');
 });
 
 test('buffet 4 nguoi lon: toi da 2 be mien phi', () => {
@@ -355,7 +356,7 @@ test('node cong-cu/tao-trang.js --ra <tam>: chay duoc, HTML trong repo khop ban 
   execFileSync(process.execPath, [path.join(GOC, 'cong-cu', 'tao-trang.js'), '--ra', tam], { cwd: GOC, stdio: 'pipe' });
   const docTam = (f) => fs.readFileSync(path.join(tam, f), 'utf8');
   const chuan = (t) => t.split('\r\n').join('\n').replace(/© \d{4}/, '©');
-  const trang = ['index.html', 'dat-cho.html', 'xac-nhan.html', 'chinh-sach.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
+  const trang = ['index.html', 'dat-cho.html', 'xac-nhan.html', 'chinh-sach.html', 'kiem-tra-ve.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
   for (const f of trang) {
     const h = docTam(f);
     assert.strictEqual(chuan(doc(f)), chuan(h), f + ' trong repo chua duoc tao lai (chay node cong-cu/tao-trang.js)');

@@ -5,7 +5,7 @@ const path = require('path');
 const GOC = path.join(__dirname, '..');
 const { DANH_SACH_TAU, CONG_TY, CHINH_SACH_CHUNG, LINK_BAN_DO } = require(path.join(GOC, 'js/du-lieu-tau.js'));
 const { CAU_HINH } = require(path.join(GOC, 'js/cau-hinh.js'));
-const { escapeHtml: e, taoKhoiChinhSach } = require(path.join(GOC, 'js/hien-thi.js'));
+const { escapeHtml: e, taoKhoiChinhSach, giaThapNhat, layNhanTau, dinhDangGia } = require(path.join(GOC, 'js/hien-thi.js'));
 
 const FONT = '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
   '  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">';
@@ -18,7 +18,9 @@ const TEN_MIEN = String(CAU_HINH.tenMien || '').replace(/\/+$/, '');
 // Ảnh chia sẻ link: ảnh đại diện của tàu, trang chung dùng ảnh bìa đầu tiên.
 const anhChiaSe = (slug) => (slug ? (CAU_HINH.anhTau[slug] || {}).daiDien : CAU_HINH.anhBia[0]) || '';
 const SCRIPT_CHUNG = ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js'];
-const script = (tt, ds) => ds.map((s) => `  <script src="${tt}js/${s}"></script>`).join('\n');
+// ?v=<mã nội dung>: file đổi thì đường dẫn đổi, trình duyệt khách tự tải bản mới (không dùng bản cũ trong bộ nhớ đệm).
+const maPhienBan = (rel) => require('crypto').createHash('sha1').update(fs.readFileSync(path.join(GOC, rel))).digest('hex').slice(0, 8);
+const script = (tt, ds) => ds.map((s) => `  <script src="${tt}js/${s}?v=${maPhienBan('js/' + s)}"></script>`).join('\n');
 
 function dau(tt, { tieuDe, moTa, anh, url, anChiMuc }) {
   return `<!DOCTYPE html>
@@ -35,7 +37,7 @@ ${anh && fs.existsSync(path.join(GOC, anh)) ? '  <meta property="og:image" conte
   <meta property="og:locale" content="vi_VN">
   <meta name="theme-color" content="#0194f3">${anChiMuc ? '\n  <meta name="robots" content="noindex, nofollow">' : ''}
   ${FONT}
-  <link rel="stylesheet" href="${tt}css/style.css">
+  <link rel="stylesheet" href="${tt}css/style.css?v=${maPhienBan('css/style.css')}">
 </head>`;
 }
 
@@ -122,7 +124,7 @@ ${header('')}
       <div class="o-tim-kiem-tieu-de"><span class="tab-tim">${ICON_TAU}Du thuyền ăn tối</span></div>
       <div class="luoi-tim">
         <div class="truong-tim"><label for="tim-tau">Du thuyền</label><select id="tim-tau" name="tau"><option value="">Tất cả du thuyền</option></select></div>
-        <div class="truong-tim"><label for="tim-ngay">Ngày lên tàu</label><input type="date" id="tim-ngay" name="ngay"></div>
+        <div class="truong-tim"><label for="tim-ngay">Ngày lên tàu</label><input type="date" id="tim-ngay" name="ngay"><div class="ngay-nhanh" id="ngay-nhanh"></div></div>
         <div class="truong-tim"><label for="tim-khach">Số người lớn</label><input type="number" id="tim-khach" name="khach" min="1" value="2"></div>
         <button type="submit" class="nut">Tìm &amp; đặt chỗ</button>
       </div>
@@ -131,7 +133,7 @@ ${header('')}
       <div><span class="tron">★</span><p><strong>${e(CONG_TY.vaiTro)}</strong><span>${e(CONG_TY.ten)}</span></p></div>
       <div><span class="tron">⚓</span><p><strong>6 du thuyền</strong><span>Buffet, set menu và nhạc sống</span></p></div>
       <div><span class="tron">₫</span><p><strong>Thanh toán chuyển khoản</strong><span>Quét mã QR, có xuất hóa đơn VAT</span></p></div>
-      <div><span class="tron">✉</span><p><strong>Phiếu & code vé điện tử</strong><span>Gửi qua Zalo sau khi thanh toán</span></p></div>
+      <div><span class="tron">✓</span><p><strong>Vé có chữ ký số</strong><span>Nhân viên quét mã QR là biết vé thật</span></p></div>
     </div>
     <section class="khoi" id="danh-sach">
       <div class="khoi-dau">
@@ -146,12 +148,44 @@ ${header('')}
         <noscript>Vui lòng bật JavaScript để xem danh sách tàu hoặc gọi 0948170036.</noscript>
       </div>
     </section>
+    <section class="khoi" id="so-sanh">
+      <div class="khoi-dau"><div><h2>So sánh nhanh 6 du thuyền</h2><p>Giờ chạy, loại thực đơn và giá thấp nhất cho người lớn.</p></div></div>
+      <div class="bang-so-sanh-khung">
+        <table class="bang-so-sanh">
+          <thead><tr><th>Du thuyền</th><th>Thực đơn</th><th>Đón khách</th><th>Khởi hành</th><th>Cập bến</th><th>Giá từ / khách</th><th></th></tr></thead>
+          <tbody>
+${DANH_SACH_TAU.map((t) => {
+    const gia = giaThapNhat(t);
+    const g = t.gioChay || {};
+    return '            <tr><th scope="row"><a href="tau/' + t.slug + '.html">' + e(t.ten) + '</a></th>' +
+      '<td>' + layNhanTau(t).map((n) => '<span class="nhan-nho">' + e(n) + '</span>').join(' ') + '</td>' +
+      '<td>' + e(g.donKhach || '') + '</td><td>' + e(g.khoiHanh || '') + '</td><td>' + e(g.capBen || '') + '</td>' +
+      '<td class="gia">' + e(gia ? dinhDangGia(gia) : 'Liên hệ') + '</td>' +
+      '<td><a class="nut nut-nho" href="tau/' + t.slug + '.html">Xem</a></td></tr>';
+  }).join('\n')}
+          </tbody>
+        </table>
+      </div>
+    </section>
     <section class="khoi">
       <div class="khoi-dau"><div><h2>Đặt chỗ chỉ 3 bước</h2></div></div>
       <div class="cac-buoc">
         <div><h3>Chọn tàu &amp; thực đơn</h3><p>Chọn Buffet hoặc Set menu, bấm “Xem menu” để xem món trước khi đặt.</p></div>
         <div><h3>Điền thông tin &amp; thanh toán</h3><p>Quét mã QR chuyển khoản. Cần hóa đơn VAT thì chuyển vào tài khoản công ty.</p></div>
         <div><h3>Nhận phiếu &amp; code vé</h3><p>Ms Nguyên kiểm tra thanh toán và gửi phiếu xác nhận, code vé điện tử qua Zalo.</p></div>
+      </div>
+    </section>
+    <section class="khoi" id="hoi-dap">
+      <div class="khoi-dau"><div><h2>Câu hỏi thường gặp</h2><p>Xem đầy đủ tại <a href="chinh-sach.html">Chính sách &amp; điều kiện vé</a>.</p></div></div>
+      <div class="chinh-sach hoi-dap">
+${[
+    ['Thanh toán thế nào? Có xuất hóa đơn VAT không?', 'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản ' + CONG_TY.ten + '.'],
+    ['Bao lâu thì nhận được vé?', 'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.'],
+    ['Làm sao biết phiếu là thật?', 'Mỗi phiếu có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ.'],
+    ['Trẻ em tính giá thế nào?', 'Mỗi tàu có chính sách riêng, ghi ngay ở ô đếm trẻ em khi đặt chỗ. Thường: trẻ dưới 1m miễn phí (2 người lớn kèm 1 bé), trẻ 1m – dưới 1,3m mua vé trẻ em, từ 1,3m mua vé người lớn.'],
+    ['Có đổi ngày hoặc hủy vé được không?', 'Không hoàn/hủy vé trong ngày sử dụng. Đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới.'],
+    ['Đón khách ở đâu? Nên có mặt lúc nào?', 'Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.']
+  ].map(([h, d], i) => '        <details' + (i === 0 ? ' open' : '') + '><summary>' + e(h) + '</summary><p>' + e(d) + '</p></details>').join('\n')}
       </div>
     </section>
     <div class="bang-lien-he">
@@ -270,6 +304,8 @@ ${header('')}
     </div>
     <div class="bo-cuc-dat">
       <div class="cot-form">
+        <div class="the-form"><h2>Khoá ký phiếu</h2><div id="khung-khoa"></div>
+          <p class="ghi-chu">Khoá bí mật chỉ nằm trên máy này và trong file sao lưu. Không gửi file khoá cho ai, không đưa lên GitHub.</p></div>
         <div class="the-form"><h2>Đơn đặt chỗ</h2><div id="tom-tat-xac-nhan"></div></div>
         <form class="the-form" id="form-xac-nhan" novalidate>
           <label class="o-chon"><input type="checkbox" name="daNhanTien"><span><strong>Tôi đã kiểm tra: tài khoản đã nhận đủ tiền</strong><small>Đúng số tiền và nội dung chuyển khoản ở trên</small></span></label>
@@ -285,12 +321,14 @@ ${header('')}
           <button type="button" class="nut nut-xanh" data-hanh-dong="tai-anh">Tải ảnh phiếu</button>
           <button type="button" class="nut nut-vien" data-hanh-dong="in">In / Lưu PDF</button>
         </div>
+        <p class="ghi-chu"><a id="link-kiem-tra" href="#" target="_blank" rel="noopener" hidden>Mở thử trang kiểm tra vé của phiếu này</a></p>
       </section>
     </div>
   </main>
 ${footer('')}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-${script('', SCRIPT_CHUNG.concat(['dat-cho.js']))}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha512-ZDSPMa/JM1D+7kdg2x3BsruQ6T/JpJo3jWDWkCZsP+5yVyp1KfESqLI+7RqB5k24F7p2cV7i2YHh/890y6P6Sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+${script('', SCRIPT_CHUNG.concat(['xac-thuc.js', 'dat-cho.js']))}
   <script>khoiChayTrangXacNhan();</script>
 </body>
 </html>
@@ -317,6 +355,20 @@ ${script('', SCRIPT_CHUNG)}
 </html>
 `);
 
+// ---------- kiem-tra-ve.html (nhân viên quét QR trên phiếu) ----------
+ghi('kiem-tra-ve.html', `${dau('', { tieuDe: 'Kiểm tra vé | Vé Tàu Sài Gòn', moTa: 'Kiểm tra phiếu xác nhận du thuyền có chữ ký số.', anh: '', url: TEN_MIEN + '/kiem-tra-ve.html', anChiMuc: true })}
+<body class="trang-kiem-tra-ve">
+${header('')}
+  <main class="khung" id="kiem-tra-ve">
+    <noscript>Vui lòng bật JavaScript để kiểm tra vé hoặc gọi 0948170036.</noscript>
+  </main>
+${footer('')}
+${script('', SCRIPT_CHUNG.concat(['xac-thuc.js']))}
+  <script>khoiChayTrangKiemTraVe();</script>
+</body>
+</html>
+`);
+
 // ---------- tau/*.html ----------
 for (const t of DANH_SACH_TAU) {
   const tieuDe = t.ten + ' – Du thuyền ăn tối sông Sài Gòn | Vé Tàu Sài Gòn';
@@ -336,4 +388,4 @@ ${script('../', SCRIPT_CHUNG)}
 </html>
 `);
 }
-console.log('Đã tạo lại', 4 + DANH_SACH_TAU.length, 'trang.');
+console.log('Đã tạo lại', 5 + DANH_SACH_TAU.length, 'trang.');

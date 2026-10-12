@@ -63,6 +63,17 @@ var DANH_SACH_TAU = [
         ghiChu: 'Đã bao gồm VAT và vé lên tàu, chưa bao gồm nước uống.',
         dong: [{ ten: 'Buffet', tenPhu: null, gia: 733320 }]
       }
+      // ===== SET MENU BẾN NGHÉ: bỏ dấu // ở các dòng dưới rồi điền tên, giá (số, không dấu chấm) =====
+      // Có set menu thì web tự mở tab "Set menu" cho Bến Nghé. Nhớ thêm ô ảnh từng món vào
+      // anhThucDon['ben-nghe']['Set menu'] trong js/cau-hinh.js (ví dụ món Set 1 dùng ảnh anh/ben-nghe/menu/set-1.jpg).
+      // ,{
+      //   tieuDe: 'Set menu',
+      //   ghiChu: 'Đã bao gồm VAT và vé lên tàu, chưa bao gồm nước uống.',
+      //   dong: [
+      //     { ten: 'Set 1', tenPhu: null, gia: 469000 },
+      //     { ten: 'Set 2', tenPhu: null, gia: 0 }
+      //   ]
+      // }
     ],
     khuyenMai: [],
     chinhSachTreEm: [
@@ -117,10 +128,11 @@ var DANH_SACH_TAU = [
     ],
     khuyenMai: [],
     chinhSachTreEm: [
-      'Trẻ 1–4 tuổi (dưới 1m): miễn phí lên tàu, bố mẹ tự lo ăn cho bé.',
-      'Trẻ 5–9 tuổi (1m – dưới 1,3m): 50% giá người lớn. Set menu có tôm càng, cua… thì trẻ tính 70%.',
-      'Trẻ từ 10 tuổi (trên 1,3m): tính như người lớn.',
-      'Hai người lớn được kèm 01 trẻ 1m–1,3m, từ trẻ thứ 2 tính như người lớn.'
+      'Tuổi tính theo năm sinh, không tính theo tháng.',
+      'Trẻ từ 01–03 tuổi (dưới 1m): miễn phí lên tàu, bố mẹ tự lo. 2 người lớn chỉ được kèm 1 bé miễn phí, bé thứ 2 mua vé trẻ em.',
+      'Trẻ từ 04–09 tuổi (từ 1,0m đến dưới 1,3m): mua vé trẻ em (50% giá người lớn). Set menu có tôm càng, cua… thì trẻ tính 70%.',
+      'Trẻ em từ 10 tuổi (từ 1,3m): mua vé người lớn.',
+      '2 người lớn chỉ được kèm 1 trẻ em; nếu số trẻ em vượt quá quy định sẽ được thông báo lại phụ phí bổ sung.'
     ],
     giaiTri: [
       'Sảnh tầng 1 và sảnh VIP: nhạc dân tộc và 02 bài múa dân tộc (biểu diễn từ 30-45 phút).',
@@ -287,6 +299,7 @@ var DANH_SACH_TAU = [
 // ghiChu: dòng nhắc thêm dưới ô đếm.
 // beMienPhiMoiNguoiLon: số bé miễn phí tối đa cho mỗi người lớn (không ghi = quy định chung 2 người lớn kèm 1 bé).
 // treEm50VuotTinhNguoiLon: true = mỗi 2 người lớn chỉ kèm 1 trẻ tính 50%, trẻ 50% thứ 2 trở đi tính giá người lớn.
+// canhBaoTongTre: true = 2 người lớn chỉ được kèm 1 trẻ em (tính cả trẻ mua vé và bé miễn phí); vượt thì báo phụ phí bổ sung.
 var GIA_TRE_EM = {
   'indochina-star': {
     buffet: { mienPhi: '0–4 tuổi (dưới 1m)', nuaGia: '5–9 tuổi (1m – dưới 1,3m)', ghiChu: 'Từ 10 tuổi (trên 1,3m) tính như người lớn.' }
@@ -295,8 +308,8 @@ var GIA_TRE_EM = {
     buffet: { mienPhi: 'Dưới 4 tuổi, không đặt suất ăn', nuaGia: '4–8 tuổi (hoặc dưới 4 tuổi có đặt suất ăn)', ghiChu: 'Từ 9 tuổi tính như người lớn.' }
   },
   'indochina-queen': {
-    buffet: { mienPhi: '1–4 tuổi (dưới 1m)', nuaGia: '5–9 tuổi (1m – dưới 1,3m)', ghiChu: 'Từ 10 tuổi (trên 1,3m) tính như người lớn. Trẻ 1m–1,3m (tính 50%): 2 người lớn kèm 01 trẻ, từ trẻ 1m–1,3m thứ 2 tính như người lớn.', treEm50VuotTinhNguoiLon: true },
-    setMenu: { mienPhi: '1–4 tuổi (dưới 1m)', nuaGia: null, ghiChu: 'Trẻ 5–9 tuổi dùng set menu tính 50% (70% với set có tôm càng, cua): vui lòng ghi số bé ở ô Ghi chú, Ms Nguyên sẽ báo giá.' }
+    buffet: { mienPhi: '01–03 tuổi (dưới 1m)', nuaGia: '04–09 tuổi (1m – dưới 1,3m)', ghiChu: 'Tuổi tính theo năm sinh, không tính theo tháng. Từ 10 tuổi (từ 1,3m) mua vé người lớn.', canhBaoTongTre: true },
+    setMenu: { mienPhi: '01–03 tuổi (dưới 1m)', nuaGia: null, ghiChu: 'Tuổi tính theo năm sinh. Trẻ 04–09 tuổi dùng set menu tính 50% (70% với set có tôm càng, cua): vui lòng ghi số bé ở ô Ghi chú, Ms Nguyên sẽ báo giá.', canhBaoTongTre: true }
   },
   'elite-of-saigon': {
     buffet: { mienPhi: 'Dưới 4 tuổi (01 bé đi cùng 02 người lớn)', nuaGia: '4 – dưới 11 tuổi', ghiChu: null },

@@ -145,3 +145,12 @@ Giá đã bao gồm thuế, phí phục vụ và vé lên tàu (theo ảnh).
 | Trẻ em – Donald | Kid's menu | 850.000 |
 
 Giá đã bao gồm thuế, phí phục vụ và vé lên tàu (theo ảnh).
+
+## 7. Indochina Queen – chính sách trẻ em (cập nhật 12/10/2026, thay cho mốc tuổi ở mục 6)
+
+Tuổi tính theo năm sinh, không tính theo tháng.
+
+- Trẻ từ 01–03 tuổi (dưới 1m): miễn phí lên tàu, bố mẹ tự lo. 2 người lớn chỉ được kèm 1 bé miễn phí, bé thứ 2 mua vé trẻ em.
+- Trẻ từ 04–09 tuổi (từ 1,0m đến dưới 1,3m): mua vé trẻ em.
+- Trẻ em từ 10 tuổi (từ 1,3m): mua vé người lớn.
+- 2 người lớn chỉ được kèm 1 trẻ em. Nếu số trẻ em vượt quá quy định thì sẽ thông báo lại phụ phí bổ sung. Quy định này thay cho câu "từ trẻ thứ 2 tính như người lớn" ở mục 6.

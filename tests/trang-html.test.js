@@ -22,10 +22,12 @@ const kiemTraOgImage = (html, anh) => {
   const coFile = !!anh && fs.existsSync(path.join(GOC, anh));
   assert.strictEqual(meta(html, 'property', 'og:image'), coFile ? TEN_MIEN + '/' + anh : null);
 };
-const TAT_CA = ['index.html', 'dat-cho.html', 'xac-nhan.html', 'chinh-sach.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
+const TAT_CA = ['index.html', 'dat-cho.html', 'xac-nhan.html', 'chinh-sach.html', 'kiem-tra-ve.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
 
 // Vị trí các script theo thứ tự; -1 nếu thiếu.
-const viTriScript = (html, tienTo, ds) => ds.map((s) => html.indexOf('<script src="' + tienTo + 'js/' + s + '"></script>'));
+// Script có thể kèm ?v=<mã phiên bản> để trình duyệt không dùng bản cũ trong bộ nhớ đệm.
+const thoatRegex = (t) => t.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+const viTriScript = (html, tienTo, ds) => ds.map((s) => html.search(new RegExp('<script src="' + thoatRegex(tienTo + 'js/' + s) + '(\\?v=[0-9a-f]{8})?"></script>')));
 const dungThuTu = (v) => v.every((x) => x >= 0) && v.every((x, i) => i === 0 || v[i - 1] < x);
 
 for (const t of DANH_SACH_TAU) {
@@ -40,7 +42,7 @@ for (const t of DANH_SACH_TAU) {
     assert.strictEqual(meta(html, 'property', 'og:url'), TEN_MIEN + '/tau/' + t.slug + '.html');
     for (const k of KHUNG) assert.ok(html.includes(k), k);
     assert.ok(html.includes('id="noi-dung-tau"') && html.includes('<h1>' + t.ten + '</h1>') && html.includes('<noscript>'));
-    assert.ok(html.includes('href="../css/style.css"'));
+    assert.match(html, /href="\.\.\/css\/style\.css\?v=[0-9a-f]{8}"/);
     const v = viTriScript(html, '../', ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js']);
     assert.ok(dungThuTu(v));
     assert.ok(html.indexOf('khoiChayTrangTau()') > v[2]);

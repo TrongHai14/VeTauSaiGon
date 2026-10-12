@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=45f9f102">
 </head>
 <body>
   <header class="dau-trang">
@@ -40,7 +40,7 @@
       <div class="o-tim-kiem-tieu-de"><span class="tab-tim"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 5"/><path d="M7 12V7h10v5"/><path d="M12 4v3"/></svg>Du thuyền ăn tối</span></div>
       <div class="luoi-tim">
         <div class="truong-tim"><label for="tim-tau">Du thuyền</label><select id="tim-tau" name="tau"><option value="">Tất cả du thuyền</option></select></div>
-        <div class="truong-tim"><label for="tim-ngay">Ngày lên tàu</label><input type="date" id="tim-ngay" name="ngay"></div>
+        <div class="truong-tim"><label for="tim-ngay">Ngày lên tàu</label><input type="date" id="tim-ngay" name="ngay"><div class="ngay-nhanh" id="ngay-nhanh"></div></div>
         <div class="truong-tim"><label for="tim-khach">Số người lớn</label><input type="number" id="tim-khach" name="khach" min="1" value="2"></div>
         <button type="submit" class="nut">Tìm &amp; đặt chỗ</button>
       </div>
@@ -49,7 +49,7 @@
       <div><span class="tron">★</span><p><strong>Đại lý chính thức</strong><span>Công ty TNHH Nguyên Nguyên Global</span></p></div>
       <div><span class="tron">⚓</span><p><strong>6 du thuyền</strong><span>Buffet, set menu và nhạc sống</span></p></div>
       <div><span class="tron">₫</span><p><strong>Thanh toán chuyển khoản</strong><span>Quét mã QR, có xuất hóa đơn VAT</span></p></div>
-      <div><span class="tron">✉</span><p><strong>Phiếu & code vé điện tử</strong><span>Gửi qua Zalo sau khi thanh toán</span></p></div>
+      <div><span class="tron">✓</span><p><strong>Vé có chữ ký số</strong><span>Nhân viên quét mã QR là biết vé thật</span></p></div>
     </div>
     <section class="khoi" id="danh-sach">
       <div class="khoi-dau">
@@ -64,12 +64,39 @@
         <noscript>Vui lòng bật JavaScript để xem danh sách tàu hoặc gọi 0948170036.</noscript>
       </div>
     </section>
+    <section class="khoi" id="so-sanh">
+      <div class="khoi-dau"><div><h2>So sánh nhanh 6 du thuyền</h2><p>Giờ chạy, loại thực đơn và giá thấp nhất cho người lớn.</p></div></div>
+      <div class="bang-so-sanh-khung">
+        <table class="bang-so-sanh">
+          <thead><tr><th>Du thuyền</th><th>Thực đơn</th><th>Đón khách</th><th>Khởi hành</th><th>Cập bến</th><th>Giá từ / khách</th><th></th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><a href="tau/indochina-star.html">Indochina Star</a></th><td><span class="nhan-nho">Buffet</span></td><td>18h00</td><td>19h45</td><td>21h15</td><td class="gia">615.600 VND</td><td><a class="nut nut-nho" href="tau/indochina-star.html">Xem</a></td></tr>
+            <tr><th scope="row"><a href="tau/ben-nghe.html">Bến Nghé</a></th><td><span class="nhan-nho">Buffet</span> <span class="nhan-nho">Set menu</span></td><td>17h15</td><td>20h00</td><td>21h30</td><td class="gia">733.320 VND</td><td><a class="nut nut-nho" href="tau/ben-nghe.html">Xem</a></td></tr>
+            <tr><th scope="row"><a href="tau/indochina-queen.html">Indochina Queen</a></th><td><span class="nhan-nho">Buffet</span> <span class="nhan-nho">Set menu</span></td><td>18h00</td><td>19h45</td><td>21h15</td><td class="gia">561.600 VND</td><td><a class="nut nut-nho" href="tau/indochina-queen.html">Xem</a></td></tr>
+            <tr><th scope="row"><a href="tau/elite-of-saigon.html">Elite of Saigon</a></th><td><span class="nhan-nho">Buffet</span> <span class="nhan-nho">Set menu</span></td><td>18h00</td><td>19h30</td><td>22h00</td><td class="gia">1.969.000 VND</td><td><a class="nut nut-nho" href="tau/elite-of-saigon.html">Xem</a></td></tr>
+            <tr><th scope="row"><a href="tau/saigon-princess.html">Saigon Princess</a></th><td><span class="nhan-nho">Set menu</span></td><td>18h00</td><td>19h30</td><td>21h30</td><td class="gia">950.000 VND</td><td><a class="nut nut-nho" href="tau/saigon-princess.html">Xem</a></td></tr>
+            <tr><th scope="row"><a href="tau/ben-thanh-princess.html">Bến Thành Princess</a></th><td><span class="nhan-nho">Set menu</span></td><td>18h00</td><td>19h30</td><td>21h30</td><td class="gia">950.000 VND</td><td><a class="nut nut-nho" href="tau/ben-thanh-princess.html">Xem</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
     <section class="khoi">
       <div class="khoi-dau"><div><h2>Đặt chỗ chỉ 3 bước</h2></div></div>
       <div class="cac-buoc">
         <div><h3>Chọn tàu &amp; thực đơn</h3><p>Chọn Buffet hoặc Set menu, bấm “Xem menu” để xem món trước khi đặt.</p></div>
         <div><h3>Điền thông tin &amp; thanh toán</h3><p>Quét mã QR chuyển khoản. Cần hóa đơn VAT thì chuyển vào tài khoản công ty.</p></div>
         <div><h3>Nhận phiếu &amp; code vé</h3><p>Ms Nguyên kiểm tra thanh toán và gửi phiếu xác nhận, code vé điện tử qua Zalo.</p></div>
+      </div>
+    </section>
+    <section class="khoi" id="hoi-dap">
+      <div class="khoi-dau"><div><h2>Câu hỏi thường gặp</h2><p>Xem đầy đủ tại <a href="chinh-sach.html">Chính sách &amp; điều kiện vé</a>.</p></div></div>
+      <div class="chinh-sach hoi-dap">
+        <details open><summary>Thanh toán thế nào? Có xuất hóa đơn VAT không?</summary><p>Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích &quot;Tôi cần xuất hóa đơn VAT&quot; và chuyển vào tài khoản Công ty TNHH Nguyên Nguyên Global.</p></details>
+        <details><summary>Bao lâu thì nhận được vé?</summary><p>Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.</p></details>
+        <details><summary>Làm sao biết phiếu là thật?</summary><p>Mỗi phiếu có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy &quot;VÉ HỢP LỆ&quot; cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ.</p></details>
+        <details><summary>Trẻ em tính giá thế nào?</summary><p>Mỗi tàu có chính sách riêng, ghi ngay ở ô đếm trẻ em khi đặt chỗ. Thường: trẻ dưới 1m miễn phí (2 người lớn kèm 1 bé), trẻ 1m – dưới 1,3m mua vé trẻ em, từ 1,3m mua vé người lớn.</p></details>
+        <details><summary>Có đổi ngày hoặc hủy vé được không?</summary><p>Không hoàn/hủy vé trong ngày sử dụng. Đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới.</p></details>
+        <details><summary>Đón khách ở đâu? Nên có mặt lúc nào?</summary><p>Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.</p></details>
       </div>
     </section>
     <div class="bang-lien-he">
@@ -128,9 +155,9 @@
     <a class="nut nut-xanh" href="tel:0948170036">Gọi 0948170036</a>
     <a class="nut nut-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener">Nhắn Zalo</a>
   </div>
-  <script src="js/cau-hinh.js"></script>
-  <script src="js/du-lieu-tau.js"></script>
-  <script src="js/hien-thi.js"></script>
+  <script src="js/cau-hinh.js?v=118fa14f"></script>
+  <script src="js/du-lieu-tau.js?v=b3919145"></script>
+  <script src="js/hien-thi.js?v=1ce84254"></script>
   <script>khoiChayTrangChu();</script>
 </body>
 </html>

@@ -8,6 +8,12 @@ var hamHienThi = (typeof escapeHtml === 'function')
   }
   : require('./hien-thi.js');
 var escapeHtmlDatCho = hamHienThi.escapeHtml;
+if (typeof kyVe !== 'function' && typeof module !== 'undefined') {
+  var hamXacThuc = require('./xac-thuc.js');
+  var kyVe = hamXacThuc.kyVe;
+  var kiemTraVe = hamXacThuc.kiemTraVe;
+  var kiemTraKhoaTruocKhiKy = hamXacThuc.kiemTraKhoaTruocKhiKy;
+}
 
 var TEN_LOAI_DICH_VU = { buffet: 'Buffet', setMenu: 'Set menu' };
 // Địa chỉ nhận email đặt chỗ (FormSubmit). Sau này có thể thay bằng mã FormSubmit do họ cấp.
@@ -173,6 +179,13 @@ function canhBaoTreEm(don, tau, bangTreEm) {
   var khach = demKhach(don, tau, bangTreEm);
   if (khach.nguoiLon === 0) return null;
   var gioiHan = cs.beMienPhiMoiNguoiLon ? khach.nguoiLon * cs.beMienPhiMoiNguoiLon : soTreToiDa(khach.nguoiLon);
+  if (cs.canhBaoTongTre) {
+    // Tàu tính giới hạn trên TỔNG số trẻ (trẻ mua vé + bé miễn phí), ví dụ Indochina Queen.
+    var tongTre = khach.treEm50 + khach.treEmMienPhi;
+    if (tongTre <= gioiHan) return null;
+    return 'Theo quy định của tàu, 2 người lớn chỉ được kèm 1 trẻ em. Đơn có ' + tongTre + ' trẻ em cho ' + khach.nguoiLon +
+      ' người lớn, Ms Nguyên sẽ thông báo lại phụ phí bổ sung (nếu có).';
+  }
   if (khach.treEmMienPhi <= gioiHan) return null;
   return 'Theo quy định của tàu, ' + khach.nguoiLon + ' người lớn chỉ được kèm tối đa ' + gioiHan +
     ' bé miễn phí. Đơn có ' + khach.treEmMienPhi + ' bé, Ms Nguyên sẽ thông báo lại phụ phí bổ sung (nếu có).';
@@ -481,8 +494,36 @@ function taoPhieuHtml(don, tau, congTy, lienHe, bangTreEm, taiKhoan, thongTin) {
     '<p class="phieu-luu-y">Lưu ý: Quý khách vui lòng có mặt tại tàu trước ' + e(gio.khoiHanh || 'giờ khởi hành') +
     ', trường hợp đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ. Khi lên tàu, xuất trình vé điện tử qua điện thoại cho nhân viên. ' +
     'Vé chỉ có giá trị vào đúng ngày đăng ký.</p>' +
+    (thongTin.xacThuc
+      ? '<div class="phieu-xac-thuc"><img src="' + e(thongTin.xacThuc.qr) + '" alt="Mã QR kiểm tra vé">' +
+        '<div><b>Vé điện tử có chữ ký số</b><br>Mã xác thực: <b>' + e(thongTin.xacThuc.maNgan) + '</b><br>' +
+        'Nhân viên quét mã QR để kiểm tra vé thật. Phiếu bị sửa bất kỳ chi tiết nào sẽ báo không hợp lệ.</div></div>'
+      : '') +
     '<p class="phieu-chuc">Chúc Quý Khách có một trải nghiệm nhiều niềm vui!</p>' +
     '</div>' + taoPhoDem() + '</div>';
+}
+
+// Nội dung vé được ký (js/xac-thuc.js) từ đơn đã xác nhận.
+function taoNoiDungVe(don, tau, bangTreEm, codeVe, ngayXacNhan) {
+  var tt = tomTatDon(don, tau, bangTreEm);
+  return {
+    m: don.maDon, t: tau.slug, tt: tau.ten, n: don.ngay, h: don.hoTen.trim(), s: chuanHoaSoDienThoai(don.soDienThoai) || don.soDienThoai,
+    nl: tt.khach.nguoiLon, te: tt.khach.treEm50, mp: tt.khach.treEmMienPhi, g: tt.tong, c: codeVe || '', x: ngayHomNayDiaPhuong(ngayXacNhan)
+  };
+}
+
+// Link kiểm tra vé tuyệt đối (theo tenMien) để QR quét được cả khi phiếu tạo trên máy.
+function taoLinkKiemTraVe(tenMien, chuoiVe) {
+  return String(tenMien || '').replace(/\/+$/, '') + '/kiem-tra-ve.html#' + chuoiVe;
+}
+
+// Mã QR dạng ảnh (thư viện qrcode-generator). Trả '' nếu chưa tải được thư viện.
+function taoAnhQR(noiDung) {
+  if (typeof qrcode !== 'function') return '';
+  var qr = qrcode(0, 'M');
+  qr.addData(noiDung);
+  qr.make();
+  return qr.createDataURL(4, 8);
 }
 
 /* ---------- Xuất ảnh phiếu ---------- */
@@ -1036,6 +1077,91 @@ function khoiChayTrangDatCho() {
   ganSuKienDatCho(document.getElementById('dat-cho'), DANH_SACH_TAU, GIA_TRE_EM, CAU_HINH.thanhToan, CONG_TY, LIEN_HE, docThamSoUrl(location.search));
 }
 
+// Ký phiếu an toàn: kiểm khoá trên máy khớp khoá công khai, ký, rồi tự kiểm lại chữ ký trước khi trả về.
+// layKhoa: hàm trả Promise<bản ghi khoá | null> (thường là docKhoaBiMat). Trả Promise<chuỗi vé đã ký>.
+function kyPhieuAnToan(congKhai, layKhoa, noiDungVe) {
+  return Promise.resolve().then(layKhoa).then(function (banGhi) {
+    var loiKhoa = kiemTraKhoaTruocKhiKy(congKhai, banGhi);
+    if (loiKhoa) throw new Error(loiKhoa);
+    return kyVe(banGhi, noiDungVe);
+  }).then(function (chuoiVe) {
+    return kiemTraVe(congKhai, chuoiVe).then(function (kq) {
+      if (!kq.hopLe) throw new Error('Phiếu vừa ký không qua được bước tự kiểm tra (' + kq.lyDo + '). Nạp lại file khoá sao lưu rồi thử lại.');
+      return chuoiVe;
+    });
+  });
+}
+
+/* ---------- Khoá ký phiếu (trang xác nhận) ---------- */
+function taiChuoiVeMay(noiDung, tenFile) {
+  taiFileVeMay(new Blob([noiDung], { type: 'application/json' }), tenFile);
+}
+
+// Mục "Khoá ký phiếu": báo trạng thái, tạo khoá (lần đầu hoặc khi mất/lộ khoá), nạp khoá từ file sao lưu.
+function ganQuanLyKhoa(goc) {
+  var khung = goc.querySelector('#khung-khoa');
+  if (!khung) return;
+  var congKhai = typeof CAU_HINH !== 'undefined' ? CAU_HINH.khoaCongKhai : null;
+  var dongCauHinh = function (banGhi) {
+    return '<textarea readonly rows="3">' + escapeHtmlDatCho('khoaCongKhai: ' + JSON.stringify({ kty: 'EC', crv: 'P-256', x: banGhi.x, y: banGhi.y }) + ',') + '</textarea>';
+  };
+  function baoLoi(chu) {
+    khung.insertAdjacentHTML('beforeend', '<p class="khoa-loi">' + escapeHtmlDatCho(chu) + '</p>');
+  }
+  function ve() {
+    return docKhoaBiMat().then(function (banGhi) {
+      var html;
+      if (banGhi && congKhai && khoaKhop(congKhai, banGhi)) {
+        html = '<p class="khoa-ok">✓ Máy này đã có khoá ký phiếu, khớp với khoá công khai của web.</p>';
+      } else if (banGhi && !congKhai) {
+        html = '<p class="khoa-canh-bao">Máy này đã có khoá nhưng web chưa cài khoá công khai. Dán dòng dưới vào <code>js/cau-hinh.js</code> (thay <code>khoaCongKhai: null</code>), tạo lại trang rồi push lên GitHub:</p>' + dongCauHinh(banGhi);
+      } else if (banGhi) {
+        html = '<p class="khoa-loi">Khoá trên máy này KHÔNG khớp khoá công khai của web, nên chưa ký phiếu được.</p>' +
+          '<p class="khoa-canh-bao">Nạp đúng file khoá sao lưu. Nếu bạn vừa CỐ Ý tạo khoá mới (vì mất hoặc lộ khoá cũ), dán dòng dưới vào <code>js/cau-hinh.js</code> thay dòng khoaCongKhai cũ, tạo lại trang rồi push:</p>' + dongCauHinh(banGhi);
+      } else {
+        html = '<p class="khoa-canh-bao">Máy này chưa có khoá ký phiếu. ' + (congKhai
+          ? 'Bấm "Nạp khoá từ file" và chọn file khoá sao lưu (khoa-bi-mat-ms-nguyen.json).'
+          : 'Lần đầu dùng: bấm "Tạo khoá ký phiếu". Web sẽ tải về file khoá sao lưu, cất kỹ file này.') + '</p>';
+      }
+      html += '<div class="nhom-nut-khoa">' +
+        '<button type="button" class="nut nut-nho' + (congKhai ? ' nut-vien' : '') + '" data-khoa="tao">' + (congKhai ? 'Tạo khoá mới (khi mất/lộ khoá)' : 'Tạo khoá ký phiếu') + '</button>' +
+        '<label class="nut nut-nho nut-vien">Nạp khoá từ file<input type="file" accept="application/json,.json" data-khoa="nap" hidden></label></div>';
+      khung.innerHTML = html;
+      return banGhi;
+    }, function (loi) {
+      khung.innerHTML = '<p class="khoa-loi">' + escapeHtmlDatCho(loi && loi.message ? loi.message : 'Không đọc được kho khoá.') + '</p>';
+    });
+  }
+  khung.addEventListener('click', function (e) {
+    if (!e.target.closest('[data-khoa="tao"]')) return;
+    docKhoaBiMat().then(function (banGhi) {
+      if (congKhai && !window.confirm('Chỉ tạo khoá mới khi MẤT hoặc LỘ file khoá. Sau khi tạo phải dán khoá công khai mới vào js/cau-hinh.js và push; mọi phiếu đã ký bằng khoá cũ sẽ báo KHÔNG HỢP LỆ. Tiếp tục?')) return null;
+      if (!congKhai && banGhi && !window.confirm('Máy này đã có khoá. Tạo khoá mới sẽ thay khoá cũ. Tiếp tục?')) return null;
+      return taoCapKhoa().then(function (cap) {
+        taiChuoiVeMay(JSON.stringify(cap.biMat), 'khoa-bi-mat-ms-nguyen.json');
+        return luuKhoaBiMat(cap.biMat);
+      }).then(ve);
+    }).then(null, function (loi) { baoLoi(loi && loi.message ? loi.message : 'Không tạo được khoá.'); });
+  });
+  khung.addEventListener('change', function (e) {
+    var o = e.target;
+    if (o.getAttribute('data-khoa') !== 'nap' || !o.files || !o.files[0]) return;
+    var doc = new FileReader();
+    doc.onload = function () {
+      var jwk = null;
+      try { jwk = JSON.parse(doc.result); } catch (loi) { jwk = null; }
+      var loiFile = kiemTraFileKhoa(congKhai, jwk);
+      if (loiFile) { baoLoi(loiFile); return; }
+      docKhoaBiMat().then(function (banGhi) {
+        if (banGhi && !khoaKhop(jwk, banGhi) && !window.confirm('Máy này đang có một khoá khác. Thay bằng khoá trong file?')) return null;
+        return luuKhoaBiMat(jwk).then(ve);
+      }).then(null, function (loi) { baoLoi(loi && loi.message ? loi.message : 'Không nạp được khoá.'); });
+    };
+    doc.readAsText(o.files[0]);
+  });
+  ve();
+}
+
 /* ---------- Trang xác nhận (Ms Nguyên dùng) ---------- */
 function khoiChayTrangXacNhan() {
   if (typeof apDungCauHinhChung === 'function') apDungCauHinhChung('');
@@ -1069,15 +1195,40 @@ function khoiChayTrangXacNhan() {
       oThongBao.className = 'thong-bao loi-gui';
       return;
     }
-    oThongBao.textContent = '';
+    var codeVe = form.elements.codeVe.value.trim();
+    var ngayXacNhan = new Date();
+    oThongBao.textContent = 'Đang ký phiếu…';
     oThongBao.className = 'thong-bao';
-    khungPhieu.innerHTML = taoPhieuHtml(don, tau, CONG_TY, LIEN_HE, GIA_TRE_EM, tk, {
-      trangThai: 'Đã thanh toán.', codeVe: form.elements.codeVe.value.trim(), ngayXacNhan: new Date()
+    if (typeof docKhoaBiMat !== 'function') {
+      oThongBao.textContent = 'Chưa tải được phần chữ ký số (js/xac-thuc.js). Kiểm tra mạng rồi tải lại trang.';
+      oThongBao.className = 'thong-bao loi-gui';
+      return;
+    }
+    kyPhieuAnToan(CAU_HINH.khoaCongKhai, docKhoaBiMat, taoNoiDungVe(don, tau, GIA_TRE_EM, codeVe, ngayXacNhan)).then(function (chuoiVe) {
+      var link = taoLinkKiemTraVe(CAU_HINH.tenMien, chuoiVe);
+      var anhQR = taoAnhQR(link);
+      khungPhieu.innerHTML = taoPhieuHtml(don, tau, CONG_TY, LIEN_HE, GIA_TRE_EM, tk, {
+        trangThai: 'Đã thanh toán.', codeVe: codeVe, ngayXacNhan: ngayXacNhan,
+        xacThuc: anhQR ? { qr: anhQR, maNgan: maXacThucNgan(chuoiVe), link: link } : null
+      });
+      oThongBao.textContent = anhQR ? 'Đã ký phiếu. Tải ảnh phiếu rồi gửi cho khách.' : 'Đã ký nhưng chưa tải được thư viện mã QR, kiểm tra mạng rồi bấm tạo lại.';
+      oThongBao.className = anhQR ? 'thong-bao da-gui' : 'thong-bao loi-gui';
+      var oLink = goc.querySelector('#link-kiem-tra');
+      if (oLink) { oLink.href = link; oLink.hidden = false; }
+      khuVucPhieu.hidden = false;
+      canhPhieuVuaKhung(khungPhieu);
+      khuVucPhieu.scrollIntoView({ behavior: 'smooth' });
+    }, function (loi) {
+      oThongBao.textContent = loi && loi.message ? loi.message : 'Không ký được phiếu.';
+      oThongBao.className = 'thong-bao loi-gui';
     });
-    khuVucPhieu.hidden = false;
-    canhPhieuVuaKhung(khungPhieu);
-    khuVucPhieu.scrollIntoView({ behavior: 'smooth' });
   });
+  if (typeof docKhoaBiMat === 'function') {
+    ganQuanLyKhoa(goc);
+  } else {
+    var oKhoa = goc.querySelector('#khung-khoa');
+    if (oKhoa) oKhoa.innerHTML = '<p class="khoa-loi">Chưa tải được phần chữ ký số (js/xac-thuc.js). Kiểm tra mạng rồi tải lại trang.</p>';
+  }
   goc.addEventListener('click', function (e) {
     var nut = e.target.closest('[data-hanh-dong]');
     if (!nut) return;
@@ -1103,7 +1254,7 @@ function khoiChayTrangXacNhan() {
 if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
-    taoMaDon, laMaDon, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
+    taoMaDon, laMaDon, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
     taoDuLieuEmail, guiEmailDatCho, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };

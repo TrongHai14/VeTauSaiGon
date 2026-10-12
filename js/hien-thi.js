@@ -731,6 +731,36 @@ function chayAnhBia(hero, lop, anh) {
   });
 }
 
+// Nút chọn ngày nhanh: Hôm nay, Ngày mai, Thứ 7 này (giống các trang đặt vé lớn).
+function cacNgayNhanh(homNay) {
+  var iso = function (d) {
+    var t = d.getMonth() + 1;
+    var n = d.getDate();
+    return d.getFullYear() + '-' + (t < 10 ? '0' : '') + t + '-' + (n < 10 ? '0' : '') + n;
+  };
+  var cong = function (so) { return new Date(homNay.getFullYear(), homNay.getMonth(), homNay.getDate() + so); };
+  var denThu7 = (6 - homNay.getDay() + 7) % 7;
+  var kq = [['Hôm nay', iso(cong(0))], ['Ngày mai', iso(cong(1))]];
+  if (denThu7 > 1) kq.push(['Thứ 7 này', iso(cong(denThu7))]);
+  else kq.push(['Thứ 7 tới', iso(cong(denThu7 + 7))]);
+  return kq;
+}
+
+function ganChonNgayNhanh(khung, oNgay, homNay) {
+  if (!khung || !oNgay) return;
+  var ds = cacNgayNhanh(homNay);
+  var html = '';
+  for (var i = 0; i < ds.length; i++) html += '<button type="button" data-ngay="' + ds[i][1] + '">' + ds[i][0] + '</button>';
+  khung.innerHTML = html;
+  khung.addEventListener('click', function (e) {
+    var nut = e.target.closest('[data-ngay]');
+    if (!nut) return;
+    oNgay.value = nut.getAttribute('data-ngay');
+    var cacNut = khung.querySelectorAll('button');
+    for (var k = 0; k < cacNut.length; k++) cacNut[k].classList.toggle('chon', cacNut[k] === nut);
+  });
+}
+
 /* ---------- Khởi chạy ---------- */
 function khoiChayTrangChu() {
   apDungCauHinhChung('');
@@ -766,6 +796,7 @@ function khoiChayTrangChu() {
     var thang = homNay.getMonth() + 1;
     var ngay = homNay.getDate();
     formTim.elements.ngay.min = homNay.getFullYear() + '-' + (thang < 10 ? '0' : '') + thang + '-' + (ngay < 10 ? '0' : '') + ngay;
+    ganChonNgayNhanh(document.getElementById('ngay-nhanh'), formTim.elements.ngay, homNay);
     formTim.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!oTau.value) {
@@ -816,7 +847,7 @@ function khoiChayTrangTau() {
 
 if (typeof module !== 'undefined') {
   module.exports = {
-    escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung, layAnhTau, layAnhDaiDien, layAnhKhuyenMai, taoAnhCho, taoAnh, layNhomCon, taoChipNhomCon,
+    escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung, layAnhTau, layAnhDaiDien, layAnhKhuyenMai, taoAnhCho, taoAnh, layNhomCon, taoChipNhomCon, cacNgayNhanh,
     taoTheTau, taoTrangTau, taoNutLienHe, taoKhoiChinhSach, khoiChayTrangChu, khoiChayTrangTau
   };
 }

@@ -47,6 +47,10 @@ Chép ảnh vào thư mục `anh/` theo **đúng tên file**. Web tự hiện �
 | Header, footer, nội dung cố định của các trang | `cong-cu/tao-trang.js`, sửa xong chạy **Tạo lại các trang HTML** |
 | Giao diện, màu sắc | `css/style.css` (màu chính khai ở đầu file, trong `:root`) |
 
+Sửa xong bất kỳ file nào trong `js/` hoặc `css/`, chạy **Tạo lại các trang HTML** để web gắn mã phiên bản mới. Nếu không, trình duyệt của khách có thể vẫn dùng bản cũ trong bộ nhớ đệm, và `npm test` sẽ nhắc.
+
+**Set menu Bến Nghé:** có sẵn khung mẫu (đang để dạng chú thích) trong `js/du-lieu-tau.js`, ngay dưới bảng Buffet của Bến Nghé. Bỏ dấu `//`, điền tên và giá.
+
 Thêm món vào bảng giá thì cũng thêm ô ảnh của món đó vào `anhThucDon` trong `js/cau-hinh.js`. Tên món phải khớp đúng với bảng giá.
 
 ## Cấu trúc
@@ -55,12 +59,14 @@ Thêm món vào bảng giá thì cũng thêm ô ảnh của món đó vào `anhT
 index.html            Trang chủ
 tau/*.html            Trang từng tàu (thực đơn Buffet / Set menu, lịch trình, chính sách)
 dat-cho.html          Đặt chỗ 3 bước: dịch vụ → liên hệ (VAT) → thanh toán chuyển khoản
-xac-nhan.html         Trang của Ms Nguyên: kiểm tra tiền rồi tạo phiếu "Đã thanh toán"
+xac-nhan.html         Trang của Ms Nguyên: kiểm tra tiền, ký số và tạo phiếu "Đã thanh toán"
+kiem-tra-ve.html      Nhân viên quét QR trên phiếu: báo vé hợp lệ / không hợp lệ
 chinh-sach.html       Chính sách trẻ em, điều kiện vé, đổi trả, hướng dẫn sử dụng vé
 js/cau-hinh.js        Ảnh, logo, tài khoản, tên miền
 js/du-lieu-tau.js     Dữ liệu 6 tàu và chính sách
 js/hien-thi.js        Dựng trang chủ, trang tàu, xem ảnh, ảnh thay thế
 js/dat-cho.js         Đặt chỗ, tính tiền, mã QR, email, phiếu xác nhận
+js/xac-thuc.js        Chữ ký số (ECDSA P-256) cho phiếu và trang kiểm tra vé
 css/style.css         Giao diện
 cong-cu/              tao-trang.js (tạo lại HTML), kiem-tra-anh.js (kiểm tra ảnh)
 tests/                Kiểm thử tự động (npm test)
@@ -78,9 +84,35 @@ anh/                  Ảnh của web, theo quy ước tên file ở trên
 **Email đơn không tới** (FormSubmit lỗi hoặc chưa kích hoạt): mở `dat-cho.html?ms=1` (chế độ Ms Nguyên), nhập lại đơn theo tin nhắn Zalo của khách,
 tới bước thanh toán, điền **mã đơn của khách** rồi bấm "Mở trang xác nhận đơn này".
 
-**Lưu ý an toàn:** web tĩnh không có máy chủ, nên phiếu "Đã thanh toán" chỉ để khách lưu lại, **không phải bằng chứng thanh toán**.
-Ai biết cách vẫn có thể tự tạo ra một phiếu giống thật. Khi lên tàu, chỉ tin **code vé điện tử** do Ms Nguyên gửi, và luôn đối chiếu tiền trong tài khoản ngân hàng.
-Muốn tự động xác nhận khi tiền vào thì cần nối thêm cổng thanh toán có máy chủ (SePay, PayOS).
+## Chống làm giả phiếu (chữ ký số + mã QR)
+
+Mỗi phiếu "Đã thanh toán" được **ký số** bằng khoá bí mật chỉ có trên máy Ms Nguyên, và in kèm **mã QR**.
+Nhân viên tàu quét mã QR bằng camera điện thoại sẽ mở trang `kiem-tra-ve.html`. Trang này báo:
+- **VÉ HỢP LỆ**: kèm tàu, ngày, họ tên, số khách, mã đơn, code vé để đối chiếu.
+- **KHÔNG HỢP LỆ**: phiếu bị sửa bất kỳ chi tiết nào, hoặc phiếu tự làm.
+
+Không có khoá bí mật thì không ai tạo được chữ ký hợp lệ.
+
+**Cài khoá (làm một lần, trên máy Ms Nguyên):**
+1. Mở trang xác nhận **trên web thật**: https://tronghai14.github.io/VeTauSaiGon/xac-nhan.html. Không làm trên localhost, vì khoá lưu theo từng địa chỉ web.
+2. Ở mục **Khoá ký phiếu**, bấm **Tạo khoá ký phiếu**. Web tải về file `khoa-bi-mat-ms-nguyen.json`.
+   **Cất kỹ file này** (USB hoặc Google Drive riêng). Không gửi cho ai, không đưa lên GitHub. File đã được chặn trong `.gitignore`.
+3. Web hiện một dòng `khoaCongKhai: {...},`. Mở `js/cau-hinh.js` trong VS Code, thay dòng `khoaCongKhai: null,` bằng dòng đó.
+4. Chạy **Tạo lại các trang HTML**, rồi chạy `npm test` và push lên GitHub.
+
+**Dùng hằng ngày:** tích "đã nhận đủ tiền" rồi bấm "Tạo phiếu", phiếu tự được ký. Dùng máy khác thì bấm **Nạp khoá từ file** và chọn file sao lưu.
+
+**Mất hoặc lộ file khoá:**
+1. Ở mục "Khoá ký phiếu", bấm **Tạo khoá mới (khi mất/lộ khoá)** rồi xác nhận. Web tải về file khoá mới.
+2. Web hiện dòng `khoaCongKhai` mới. Dán dòng đó thay dòng cũ trong `js/cau-hinh.js`, tạo lại trang rồi push lên GitHub.
+3. Trong lúc chờ push xong, web chặn không cho ký phiếu, vì khoá trên máy chưa khớp với web.
+4. Từ khi đổi khoá, các phiếu ký bằng khoá cũ sẽ báo không hợp lệ. Cần gửi lại phiếu mới cho khách sắp đi.
+
+**Khoá lưu trên máy thế nào:** trình duyệt giữ khoá ở dạng **không đọc ra được** (CryptoKey trong IndexedDB): chỉ dùng được để ký, kể cả trang khác trên cùng github.io cũng không đọc được nội dung khoá. Vì vậy hãy cất file sao lưu cẩn thận, vì đó là bản duy nhất đọc ra được. Không nên dùng máy chung, cũng không nên cài tiện ích trình duyệt lạ trên máy ký phiếu.
+
+**Giới hạn:** web tĩnh không chặn được việc một phiếu thật bị chụp lại và dùng hai lần. Khi khách **đổi ngày**, phiếu cũ vẫn báo hợp lệ cho ngày cũ (trang kiểm tra hiện rõ ngày đi, và báo khi ngày đó không phải hôm nay).
+Vì vậy nhân viên vẫn đối chiếu tên, ngày đi, và code vé điện tử của tàu.
+Muốn web tự xác nhận ngay khi tiền vào tài khoản thì cần nối thêm cổng thanh toán có máy chủ (SePay, PayOS).
 
 ## Kiểm thử
 
