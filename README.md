@@ -95,7 +95,7 @@ Nhân viên tàu quét mã QR bằng camera điện thoại sẽ mở trang `kie
 Không có khoá bí mật thì không ai tạo được chữ ký hợp lệ.
 
 **Cài khoá (làm một lần, trên máy Ms Nguyên):**
-1. Mở trang xác nhận **trên web thật**: https://tronghai14.github.io/VeTauSaiGon/xac-nhan.html. Không làm trên localhost, vì khoá lưu theo từng địa chỉ web.
+1. Mở trang xác nhận **trên web thật**: https://vetausaigon.vn/xac-nhan.html. Không làm trên localhost, vì khoá lưu theo từng địa chỉ web.
 2. Ở mục **Khoá ký phiếu**, bấm **Tạo khoá ký phiếu**. Web tải về file `khoa-bi-mat-ms-nguyen.json`.
    **Cất kỹ file này** (USB hoặc Google Drive riêng). Không gửi cho ai, không đưa lên GitHub. File đã được chặn trong `.gitignore`.
 3. Web hiện một dòng `khoaCongKhai: {...},`. Mở `js/cau-hinh.js` trong VS Code, thay dòng `khoaCongKhai: null,` bằng dòng đó.
@@ -126,10 +126,26 @@ Cần cài Node.js. Nên chạy test trước mỗi lần đưa code lên GitHub
 ## Đưa lên mạng (GitHub Pages)
 
 Kho code: https://github.com/TrongHai14/VeTauSaiGon. Bật GitHub Pages ở **Settings → Pages**: chọn nhánh `master`, thư mục `/ (root)`.
-Web sẽ chạy ở https://tronghai14.github.io/VeTauSaiGon/. Mỗi lần push lên `master`, web tự cập nhật.
+Web sẽ chạy ở https://vetausaigon.vn/. Mỗi lần push lên `master`, web tự cập nhật.
 
 Trước khi cho khách dùng, phải kích hoạt FormSubmit: gửi thử một đơn trên web thật, rồi bấm **Activate** trong email FormSubmit gửi tới bookingindochinaqueen@gmail.com.
 
 ## Dây chuyền 4 agent (Claude Code)
 
 `.claude/agents/` có planner, coder, tester và reviewer. Lệnh `/ship <yêu cầu>` chạy lần lượt cả 4. Lệnh này không chạy trên nhánh `master`, nên phải tạo nhánh mới trước, ví dụ `git checkout -b tinh-nang-moi`.
+
+## Tên miền vetausaigon.vn
+
+- File `CNAME` ở thư mục gốc chứa `vetausaigon.vn`. File này báo cho GitHub Pages biết web chạy ở tên miền đó, đừng xoá.
+- DNS của tên miền đang quản lý ở **Cloudflare**. Cần có các bản ghi sau, tất cả để **DNS only** (đám mây màu xám):
+
+| Loại | Tên | Giá trị |
+|---|---|---|
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+| CNAME | `www` | `tronghai14.github.io` |
+
+- Trên GitHub, vào **Settings → Pages**: mục Custom domain phải là `vetausaigon.vn`. Khi GitHub cấp chứng chỉ xong (vài phút đến vài giờ), tích **Enforce HTTPS**.
+- Đổi tên miền thì sửa `tenMien` trong `js/cau-hinh.js` và file `CNAME`, chạy **Tạo lại các trang HTML** rồi push.

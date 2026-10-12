@@ -15,7 +15,7 @@
 var CAU_HINH = {
   // Địa chỉ web khi chạy thật (dùng cho link chia sẻ Zalo/Facebook). Có tên miền riêng thì đổi ở đây
   // rồi chạy: node cong-cu/tao-trang.js
-  tenMien: 'https://tronghai14.github.io/VeTauSaiGon',
+  tenMien: 'https://vetausaigon.vn',
 
   // Logo PNG nền trong suốt. Chưa có file thì web dùng biểu tượng con tàu.
   logo: {

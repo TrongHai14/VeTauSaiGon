@@ -366,7 +366,8 @@ test('node cong-cu/tao-trang.js --ra <tam>: chay duoc, HTML trong repo khop ban 
   for (const f of trang) {
     const h = docTam(f);
     assert.strictEqual(chuan(doc(f)), chuan(h), f + ' trong repo chua duoc tao lai (chay node cong-cu/tao-trang.js)');
-    assert.ok(!h.includes('vetausaigon.vn'), f + ' con vetausaigon.vn');
+    const ogUrl = (/<meta property="og:url" content="([^"]+)"/.exec(h) || [])[1] || '';
+    assert.ok(ogUrl.startsWith(CAU_HINH.tenMien.replace(/\/+$/, '') + '/'), f + ' og:url phai dung tenMien trong cau-hinh.js: ' + ogUrl);
     assert.ok(!/Quận 4|\bQ4\b|Phường 13|P\.\s?13/.test(h), f + ' dia chi cu');
     const sdt = (h.replace(/<path[^>]*>/g, '').replace(/0319143429/g, '').match(/(?:\+84|0)[\s.\-]?\d(?:[\s.\-]?\d){8}\b/g) || [])
       .map((s) => s.replace(/\D/g, '').replace(/^84/, '0'));
