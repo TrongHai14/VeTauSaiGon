@@ -125,13 +125,6 @@ h1, h2, h3 { line-height: 1.25; margin: 0 0 .5em; }
 .khoi-dau h2 { font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -.3px; }
 .khoi-dau p { margin: 4px 0 0; color: var(--chu-phu); }
 
-.diem-manh { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding-top: 32px; }
-.diem-manh > div { display: flex; gap: 12px; align-items: flex-start; background: var(--trang); padding: 16px; border-radius: var(--bo-goc); box-shadow: var(--bong); }
-.diem-manh .tron { width: 40px; height: 40px; border-radius: 50%; background: var(--xanh-nhat); color: var(--xanh); display: grid; place-items: center; flex: none; }
-.diem-manh strong { display: block; font-size: 14px; }
-.diem-manh span { font-size: 13px; color: var(--chu-phu); }
-@media (max-width: 860px) { .diem-manh { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 480px) { .diem-manh { grid-template-columns: 1fr; } }
 
 /* Chip lọc */
 .chip-loc { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -440,7 +433,6 @@ h1, h2, h3 { line-height: 1.25; margin: 0 0 .5em; }
 .luoi-anh-nho button:hover img { transform: scale(1.05); }
 .luoi-anh-nho .con-lai { position: absolute; inset: 0; background: rgba(3, 18, 26, .55); color: #fff; font-weight: 700; display: grid; place-items: center; }
 @media (max-width: 520px) { .luoi-anh-nho { grid-template-columns: repeat(3, 1fr); } }
-.diem-manh p { margin: 0; }
 
 @media (max-width: 620px) {
   .gia-tieu-de { text-align: left; }
@@ -662,10 +654,7 @@ img.anh-cho { background: #0b2a4a; }
 .hoi-dap details p { margin: 0 0 10px; color: var(--chu-phu); }
 
 /* ---------- Logo góc phải header, logo chân trang ---------- */
-.logo-goc-phai { display: flex; align-items: center; flex: none; }
-.logo-anh-gocPhai img { height: 48px; width: 48px; object-fit: cover; border-radius: 10px; display: block; box-shadow: 0 1px 4px rgba(3, 18, 26, .25); }
 .chan-trang .logo-anh-footer img { height: 96px; width: 96px; object-fit: cover; border-radius: 14px; }
-@media (max-width: 760px) { .logo-anh-gocPhai img { height: 40px; width: 40px; } }
 
 /* ---------- Giới thiệu tàu ---------- */
 .gioi-thieu-tau { font-size: 15.5px; line-height: 1.7; margin: 0 0 14px; }
@@ -690,7 +679,31 @@ img.anh-cho { background: #0b2a4a; }
 .uy-tin-logo { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; flex: none; }
 .tt-dai-ly { display: flex; gap: 10px; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--vien); font-size: 12.5px; color: var(--chu-phu); }
 .tt-logo { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; flex: none; }
-.dai-uy-tin { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.dai-uy-tin li { border: 1px solid rgba(242, 200, 107, .45); color: #f2c86b; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 600; }
 .ve-logo { width: 72px; height: 72px; object-fit: cover; border-radius: 12px; display: block; margin: 0 auto 12px; }
 @media (max-width: 520px) { .khoi-uy-tin { flex-direction: column; align-items: flex-start; } }
+
+/* ---------- Logo Nguyên Nguyên Travel (nền trong suốt, đặt trên nền xanh đậm của web) ---------- */
+.logo-anh-header, .logo-anh-footer { display: inline-grid; place-items: center; background: linear-gradient(135deg, #0b2a4a, #0770cd); border-radius: 12px; }
+.logo-anh-header img { height: 44px; width: 44px; display: block; }
+.chan-trang .logo-anh-footer { background: linear-gradient(135deg, #12365c, #0b2a4a); box-shadow: 0 0 0 1px rgba(242, 200, 107, .35); }
+.chan-trang .logo-anh-footer img { height: 96px; width: 96px; border-radius: 0; }
+.phieu-logo, .tt-logo, .ve-logo, .uy-tin-logo { background: linear-gradient(135deg, #0b2a4a, #0770cd); object-fit: contain !important; }
+
+/* ---------- Nút chọn ngôn ngữ ---------- */
+.chon-ngon-ngu { display: inline-flex; flex: none; padding: 3px; border-radius: 999px; background: var(--nen); border: 1px solid var(--vien); }
+.chon-ngon-ngu button { border: 0; background: none; padding: 5px 10px; border-radius: 999px; font-weight: 700; font-size: 13px; color: var(--chu-phu); }
+.chon-ngon-ngu button[aria-pressed="true"] { background: var(--xanh); color: #fff; }
+@media (max-width: 760px) { .dau-trang .khung { gap: 10px; } .chon-ngon-ngu button { padding: 4px 8px; } }
+
+/* ---------- Mạng xã hội ở chân trang ---------- */
+.mang-xa-hoi { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.nut-mxh { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, .08); color: #fff !important; font-weight: 600; font-size: 14px; transition: background .15s; }
+.nut-mxh svg { width: 20px; height: 20px; }
+.nut-mxh-facebook:hover { background: #1877f2; }
+.nut-mxh-zalo:hover { background: #0068ff; }
+.nut-mxh-tiktok:hover { background: #000; }
+.nut-mxh-trong { opacity: .55; border: 1px dashed rgba(255, 255, 255, .5); }
+.ngay-nhanh-hang { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; color: var(--chu-phu); }
+.ngay-nhanh-hang .ngay-nhanh { margin-top: 0; }
+.ngay-nhanh button { font-size: 13px; padding: 5px 12px; }
+html.dang-dich body { visibility: hidden; }

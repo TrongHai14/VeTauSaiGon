@@ -17,7 +17,7 @@ const ICON_THE = SVG('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="
 const TEN_MIEN = String(CAU_HINH.tenMien || '').replace(/\/+$/, '');
 // Ảnh chia sẻ link: ảnh đại diện của tàu, trang chung dùng ảnh bìa đầu tiên.
 const anhChiaSe = (slug) => (slug ? (CAU_HINH.anhTau[slug] || {}).daiDien : CAU_HINH.anhBia[0]) || '';
-const SCRIPT_CHUNG = ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js'];
+const SCRIPT_CHUNG = ['tu-dien-en.js', 'ngon-ngu.js', 'cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js'];
 // ?v=<mã nội dung>: file đổi thì đường dẫn đổi, trình duyệt khách tự tải bản mới (không dùng bản cũ trong bộ nhớ đệm).
 const maPhienBan = (rel) => require('crypto').createHash('sha1').update(fs.readFileSync(path.join(GOC, rel))).digest('hex').slice(0, 8);
 const script = (tt, ds) => ds.map((s) => `  <script src="${tt}js/${s}?v=${maPhienBan('js/' + s)}"></script>`).join('\n');
@@ -46,15 +46,34 @@ function header(tt) {
   return `  <header class="dau-trang">
     <div class="khung">
       <a class="logo" href="${tt}index.html"><span class="logo-hinh" data-logo="header">${ICON_TAU}</span><span>Vé Tàu <b>Sài Gòn</b></span></a>
+      <div class="chon-ngon-ngu" role="group" aria-label="Ngôn ngữ / Language">
+        <button type="button" data-ngon-ngu="vi" lang="vi">VI</button><button type="button" data-ngon-ngu="en" lang="en">EN</button>
+      </div>
       <nav class="menu-chinh">
         <a href="${tt}index.html#danh-sach">Du thuyền</a>
         <a href="${tt}dat-cho.html">Đặt chỗ</a>
         <a href="#lien-he">Liên hệ</a>
       </nav>
       <a class="nut nut-xanh" href="tel:0948170036">${ICON_DT}<span>0948170036</span></a>
-      <a class="logo-goc-phai" href="${tt}index.html" aria-label="${e(CONG_TY.ten)}"><span data-logo="gocPhai" hidden></span></a>
     </div>
   </header>`;
+}
+
+// Nút Facebook, Zalo, TikTok (link trong CAU_HINH.mangXaHoi; trống thì ẩn, chỉ hiện khi xem trên máy).
+const ICON_MXH = {
+  facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8.1v3h2.5V21h2.9z"/></svg>',
+  zalo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.5 3 2 6.9 2 11.7c0 2.7 1.4 5.1 3.6 6.7-.1.9-.5 2.1-1.4 3 0 0 2.6-.2 4.3-1.5 1.1.3 2.3.5 3.5.5 5.5 0 10-3.9 10-8.7S17.5 3 12 3zm-4.6 11.1H5.2v-.9l2.4-3.3H5.3V8.9h3.4v.9l-2.4 3.3h2.1v1zm2.9 0h-1V8.9h1v5.2zm4.4 0h-.9l-.1-.4c-.3.3-.7.5-1.2.5-1.1 0-1.9-.9-1.9-2s.8-2 1.9-2c.5 0 .9.2 1.2.5V10.6h1v3.5zm3.4.1c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>',
+  tiktok: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v2.6c-1.4.1-2.6-.3-3.9-1.1v5.9c0 7.4-8.1 9.7-11.3 4.4-2.1-3.4-.8-9.4 5.9-9.6v2.7c-.5.1-1 .2-1.5.4-1.5.5-2.3 1.4-2.1 3 .5 3.2 6.4 4.1 5.9-2.1V3h3.1z"/></svg>'
+};
+const TEN_MXH = { facebook: 'Facebook', zalo: 'Zalo', tiktok: 'TikTok' };
+function nutMangXaHoi() {
+  const mxh = CAU_HINH.mangXaHoi || {};
+  return ['facebook', 'zalo', 'tiktok'].map((k) => {
+    const link = mxh[k] || '';
+    return link
+      ? `            <a class="nut-mxh nut-mxh-${k}" href="${e(link)}" target="_blank" rel="noopener" aria-label="${TEN_MXH[k]}">${ICON_MXH[k]}<span>${TEN_MXH[k]}</span></a>`
+      : `            <a class="nut-mxh nut-mxh-${k} nut-mxh-trong" href="#" data-mxh-trong hidden title="Chưa có link: điền trong js/cau-hinh.js (mangXaHoi.${k})">${ICON_MXH[k]}<span>${TEN_MXH[k]} (chưa có link)</span></a>`;
+  }).join('\n');
 }
 
 function footer(tt) {
@@ -67,6 +86,9 @@ function footer(tt) {
           <p class="huy-hieu-lon">★ ${e(CONG_TY.vaiTro)}</p>
           <h3>${e(CONG_TY.ten)}</h3>
           <p data-gioi-thieu>${e(CAU_HINH.gioiThieuCongTy)}</p>
+          <div class="mang-xa-hoi">
+${nutMangXaHoi()}
+          </div>
         </div>
         <div>
           <h3>Du thuyền</h3>
@@ -88,13 +110,6 @@ ${CHINH_SACH_CHUNG.map((m) => `            <li><a href="${tt}chinh-sach.html#${m
           </ul>
         </div>
       </div>
-      <ul class="dai-uy-tin">
-        <li>★ ${e(CONG_TY.vaiTro)}</li>
-        <li>MST ${CONG_TY.mst}</li>
-        <li>Xuất hóa đơn VAT</li>
-        <li>Chỉ nhận chuyển khoản ACB ghi trên web</li>
-        <li>Vé có chữ ký số + mã QR</li>
-      </ul>
       <div class="cong-ty">
         <p>© ${new Date().getFullYear()} <strong>${e(CONG_TY.ten)}</strong> · MST: ${CONG_TY.mst} <span class="huy-hieu">${e(CONG_TY.vaiTro)}</span></p>
         <p>Hotline: Ms Nguyên · SĐT: <a href="tel:0948170036">0948170036</a></p>
@@ -131,18 +146,13 @@ ${header('')}
     <form class="o-tim-kiem" id="form-tim">
       <div class="o-tim-kiem-tieu-de"><span class="tab-tim">${ICON_TAU}Du thuyền ăn tối</span></div>
       <div class="luoi-tim">
-        <div class="truong-tim"><label for="tim-tau">Du thuyền</label><select id="tim-tau" name="tau"><option value="">Tất cả du thuyền</option></select></div>
-        <div class="truong-tim"><label for="tim-ngay">Ngày lên tàu</label><input type="date" id="tim-ngay" name="ngay"><div class="ngay-nhanh" id="ngay-nhanh"></div></div>
+        <div class="truong-tim"><label for="tim-tau">Chọn du thuyền</label><select id="tim-tau" name="tau"><option value="">Tất cả du thuyền</option></select></div>
+        <div class="truong-tim"><label for="tim-ngay">Ngày lên tàu</label><input type="date" id="tim-ngay" name="ngay"></div>
         <div class="truong-tim"><label for="tim-khach">Số người lớn</label><input type="number" id="tim-khach" name="khach" min="1" value="2"></div>
         <button type="submit" class="nut">Tìm &amp; đặt chỗ</button>
       </div>
+      <div class="ngay-nhanh-hang"><span>Chọn nhanh ngày:</span><div class="ngay-nhanh" id="ngay-nhanh"></div></div>
     </form>
-    <div class="diem-manh">
-      <div><span class="tron">★</span><p><strong>${e(CONG_TY.vaiTro)}</strong><span>${e(CONG_TY.ten)}</span></p></div>
-      <div><span class="tron">⚓</span><p><strong>6 du thuyền</strong><span>Buffet, set menu và nhạc sống</span></p></div>
-      <div><span class="tron">₫</span><p><strong>Thanh toán chuyển khoản</strong><span>Quét mã QR, có xuất hóa đơn VAT</span></p></div>
-      <div><span class="tron">✓</span><p><strong>Vé có chữ ký số</strong><span>Nhân viên quét mã QR là biết vé thật</span></p></div>
-    </div>
     <section class="khoi" id="danh-sach">
       <div class="khoi-dau">
         <div><h2>Chọn du thuyền</h2><p>Bấm vào tàu để xem thực đơn Buffet và Set menu.</p></div>
@@ -232,7 +242,7 @@ ${header('')}
           <div class="the-form">
             <h2>${ICON_TAU}Du thuyền &amp; ngày</h2>
             <div class="luoi-form">
-${o('dat-cho-tau', 'slugTau', 'Du thuyền', '<select id="dat-cho-tau" name="slugTau"></select>')}
+${o('dat-cho-tau', 'slugTau', 'Chọn du thuyền', '<select id="dat-cho-tau" name="slugTau"></select>')}
 ${o('dat-cho-ngay', 'ngay', 'Ngày lên tàu', '<input type="date" id="dat-cho-ngay" name="ngay">')}
             </div>
           </div>
@@ -251,7 +261,7 @@ ${o('dat-cho-so-dien-thoai', 'soDienThoai', 'Số điện thoại (Zalo)', '<inp
 ${o('dat-cho-email', 'email', 'Email <small>(nhận vé điện tử PDF)</small>', '<input type="email" id="dat-cho-email" name="email" autocomplete="email" placeholder="ban@example.com">', ' ca-dong')}
 ${o('dat-cho-ghi-chu', 'ghiChu', 'Ghi chú <small>(không bắt buộc)</small>', '<textarea id="dat-cho-ghi-chu" name="ghiChu" placeholder="Sinh nhật, kỷ niệm, số bé dùng set menu…"></textarea>', ' ca-dong')}
             </div>
-            <label class="o-chon"><input type="checkbox" name="vat" id="dat-cho-vat"><span><strong>Tôi cần xuất hóa đơn VAT</strong><small>Thanh toán vào tài khoản công ty ${e(CONG_TY.ten)}</small></span></label>
+            <label class="o-chon"><input type="checkbox" name="vat" id="dat-cho-vat"><span><strong>Tôi cần xuất hóa đơn VAT</strong><small>Thanh toán vào tài khoản của ${e(CONG_TY.ten)}</small></span></label>
             <div class="luoi-form" id="khung-vat" hidden>
 ${o('dat-cho-cong-ty-ten', 'congTyTen', 'Tên công ty', '<input type="text" id="dat-cho-cong-ty-ten" name="congTyTen">', ' ca-dong')}
 ${o('dat-cho-cong-ty-mst', 'congTyMst', 'Mã số thuế', '<input type="text" inputmode="numeric" id="dat-cho-cong-ty-mst" name="congTyMst">')}
@@ -305,7 +315,7 @@ ${script('', SCRIPT_CHUNG.concat(['dat-cho.js']))}
 ghi('xac-nhan.html', `${dau('', { tieuDe: 'Xác nhận thanh toán | Vé Tàu Sài Gòn', moTa: 'Trang nội bộ tạo phiếu xác nhận sau khi đã nhận thanh toán.', anh: anhChiaSe(null), url: TEN_MIEN + '/xac-nhan.html', anChiMuc: true })}
 <body class="trang-dat-cho">
 ${header('')}
-  <main class="khung" id="xac-nhan">
+  <main class="khung" id="xac-nhan" data-khong-dich>
     <div class="dau-trang-dat">
       <h1>Xác nhận thanh toán &amp; tạo phiếu</h1>
       <p>Trang dành cho Ms Nguyên. Chỉ tạo phiếu khi đã thấy tiền vào tài khoản. Phiếu chỉ để khách lưu; khi lên tàu, nhân viên kiểm <b>code vé điện tử</b>.</p>

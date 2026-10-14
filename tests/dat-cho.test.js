@@ -280,7 +280,7 @@ test('uy tin: phieu co logo dau phieu va logo chim; buoc thanh toan va tom tat d
   const don = donBuffet();
   const phieu = dc.taoPhieuHtml(don, tau('indochina-queen'), CONG_TY, LIEN_HE, GIA_TRE_EM, dc.layTaiKhoan(TT, don),
     { trangThai: 'Đã thanh toán.', codeVe: '', ngayXacNhan: new Date() });
-  assert.ok(phieu.includes('class="phieu-logo" src="anh/logo/logo-nguyen-nguyen.jpg"'), 'logo dau phieu');
+  assert.ok(phieu.includes('class="phieu-logo" src="anh/logo/logo-nguyen-nguyen-trong-suot.png"'), 'logo dau phieu');
   assert.ok(phieu.includes('class="phieu-chim-anh"'), 'logo chim');
   assert.ok(phieu.includes('onerror="this.parentNode && this.parentNode.removeChild(this)"'), 'thieu file logo thi tu an');
   const tt = dc.taoKhoiThanhToan(don, tau('indochina-queen'), GIA_TRE_EM, TT);

@@ -149,3 +149,18 @@ Trước khi cho khách dùng, phải kích hoạt FormSubmit: gửi thử một
 
 - Trên GitHub, vào **Settings → Pages**: mục Custom domain phải là `vetausaigon.vn`. Khi GitHub cấp chứng chỉ xong (vài phút đến vài giờ), tích **Enforce HTTPS**.
 - Đổi tên miền thì sửa `tenMien` trong `js/cau-hinh.js` và file `CNAME`, chạy **Tạo lại các trang HTML** rồi push.
+
+## Song ngữ Việt / Anh (nút VI | EN)
+
+- Web viết bằng tiếng Việt. Khách bấm **EN** thì mọi chữ trên trang được thay bằng bản tiếng Anh trong **`js/tu-dien-en.js`**. Bộ dịch nằm ở `js/ngon-ngu.js`, không cần sửa.
+- Web nhớ lựa chọn của khách khi chuyển trang. Link tiếng Anh để gửi khách nước ngoài: thêm `?lang=en`, ví dụ https://vetausaigon.vn/?lang=en
+- **Sửa hoặc thêm câu tiếng Việt** (giới thiệu tàu, chính sách, thực đơn…) thì thêm luôn dòng tiếng Anh tương ứng vào `TU_DIEN_EN`, theo mẫu `'câu tiếng Việt': 'English sentence',`. Quên thì `npm test` sẽ báo đúng câu còn thiếu. Câu chưa có bản dịch thì web vẫn hiện tiếng Việt, không bị lỗi.
+- Phiếu xác nhận, trang xác nhận nội bộ, email và tin nhắn Zalo gửi Ms Nguyên luôn giữ tiếng Việt. Khi khách dùng tiếng Anh, email ghi "Ngôn ngữ khách: Tiếng Anh" để Ms Nguyên trả lời bằng tiếng Anh.
+
+## Nút mạng xã hội ở chân trang
+
+Điền link trong `js/cau-hinh.js`, mục `mangXaHoi` (facebook, zalo, tiktok), rồi chạy **Tạo lại các trang HTML**. Ô nào để trống thì nút đó không hiện trên web, chỉ hiện mờ khi xem trên máy để nhắc là còn thiếu.
+
+## Logo
+
+Logo Nguyên Nguyên Travel đã tách nền: `anh/logo/logo-nguyen-nguyen-trong-suot.png`. Web tự đặt logo trên nền xanh đậm cho hợp tông màu trang. Bản gốc có nền đen nằm ở `anh-cu/logo/`.

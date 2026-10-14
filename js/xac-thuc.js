@@ -260,7 +260,7 @@ function taoKetQuaKiemTra(kq, homNay, e) {
   }
   var v = kq.ve;
   var dungNgay = v.n === homNay;
-  var logo = typeof CAU_HINH !== 'undefined' && CAU_HINH.logo ? (CAU_HINH.logo.gocPhai || '') : '';
+  var logo = typeof CAU_HINH !== 'undefined' && CAU_HINH.logo ? (CAU_HINH.logo.header || '') : '';
   return '<div class="ve-ket-qua ve-dung">' +
     (logo ? '<img class="ve-logo" src="' + e(logo) + '" alt="Nguyên Nguyên Travel" onerror="this.parentNode && this.parentNode.removeChild(this)">' : '') +
     '<div class="ve-dau">✓</div><h1>VÉ HỢP LỆ</h1>' +

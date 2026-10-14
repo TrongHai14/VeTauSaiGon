@@ -8,7 +8,7 @@ const { DANH_SACH_TAU } = require(path.join(GOC, 'js/du-lieu-tau.js'));
 const GIOI_HAN = 500 * 1024;
 
 const nhom = [];
-nhom.push(['Logo', [CAU_HINH.logo.header, CAU_HINH.logo.gocPhai, CAU_HINH.logo.footer].filter((f, i, ds) => ds.indexOf(f) === i)]);
+nhom.push(['Logo', [CAU_HINH.logo.header, CAU_HINH.logo.footer].filter((f, i, ds) => ds.indexOf(f) === i)]);
 nhom.push(['Ảnh bìa trang chủ', CAU_HINH.anhBia.concat(CAU_HINH.videoBia ? [CAU_HINH.videoBia] : [])]);
 for (const t of DANH_SACH_TAU) {
   const a = CAU_HINH.anhTau[t.slug] || {};

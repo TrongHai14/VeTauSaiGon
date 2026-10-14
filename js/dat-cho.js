@@ -292,6 +292,11 @@ function tomTatDon(don, tau, bangTreEm) {
   return { dong: dong, tong: tinhTongDon(dong), khach: demKhach(don, tau, bangTreEm) };
 }
 
+// Khách đang xem web bằng tiếng Anh không (nút EN). Báo cho Ms Nguyên để trả lời bằng tiếng Anh.
+function laKhachTiengAnh() {
+  return typeof layNgonNgu === 'function' && layNgonNgu() === 'en';
+}
+
 function soanTinNhanDatCho(don, tau, bangTreEm, taiKhoan) {
   var tt = tomTatDon(don, tau, bangTreEm);
   var dong = [
@@ -310,6 +315,7 @@ function soanTinNhanDatCho(don, tau, bangTreEm, taiKhoan) {
   if (taiKhoan) dong.push('- Đã chuyển vào: ' + taiKhoan.nganHang + ' ' + taiKhoan.soTaiKhoan + ' (' + taiKhoan.chuTaiKhoan + ')');
   if (don.vat && don.congTy) dong.push('- Xuất VAT: ' + don.congTy.ten + ' – MST ' + don.congTy.mst);
   dong.push('- Họ tên: ' + don.hoTen.trim(), '- SĐT: ' + chuanHoaSoDienThoai(don.soDienThoai));
+  if (laKhachTiengAnh()) dong.unshift('[English-speaking guest / Khách dùng tiếng Anh]');
   if (don.ghiChu && don.ghiChu.trim()) dong.push('- Ghi chú: ' + don.ghiChu.trim());
   return dong.join('\n');
 }
@@ -346,6 +352,7 @@ function taoDuLieuEmail(don, tau, bangTreEm, taiKhoan, linkXacNhan) {
       : 'Không'
   };
   if (don.ghiChu && don.ghiChu.trim()) kq['Ghi chú'] = don.ghiChu.trim();
+  kq['Ngôn ngữ khách'] = laKhachTiengAnh() ? 'Tiếng Anh (English) – trả lời khách bằng tiếng Anh' : 'Tiếng Việt';
   var canhBaoTre = canhBaoTreEm(don, tau, bangTreEm);
   if (canhBaoTre) kq['Cần báo phụ phí trẻ em'] = canhBaoTre;
   if (linkXacNhan) kq['Link tạo phiếu sau khi kiểm tra tiền'] = linkXacNhan;
@@ -459,7 +466,8 @@ function taoPhieuHtml(don, tau, congTy, lienHe, bangTreEm, taiKhoan, thongTin) {
     ? soVnd(tt.dong[0].gia) + ' x ' + tt.dong[0].soLuong + ' = ' + soVnd(tt.tong) + ' vnd'
     : soVnd(tt.tong) + ' vnd';
 
-  return '<div class="phieu" id="phieu"><div class="phieu-goc"></div>' +
+  // Phiếu luôn giữ tiếng Việt (mẫu phiếu chính thức), kể cả khi trang đang ở tiếng Anh.
+  return '<div class="phieu" id="phieu" data-khong-dich><div class="phieu-goc"></div>' +
     (layLogoDaiLy() ? '<div class="phieu-chim">' + taoAnhLogo('', 'phieu-chim-anh') + '</div>' : '') +
     '<div class="phieu-noi">' +
     '<div class="phieu-dau">' + taoAnhLogo('', 'phieu-logo') +
@@ -536,10 +544,10 @@ function layCongTy() {
   return { ten: '', mst: '', vaiTro: '' };
 }
 
-// Đường dẫn logo đại lý (CAU_HINH.logo.gocPhai); '' nếu chưa cấu hình.
+// Đường dẫn logo đại lý (CAU_HINH.logo.header); '' nếu chưa cấu hình.
 function layLogoDaiLy() {
   var ch = typeof CAU_HINH !== 'undefined' ? CAU_HINH : null;
-  return (ch && ch.logo && (ch.logo.gocPhai || ch.logo.footer)) || '';
+  return (ch && ch.logo && (ch.logo.header || ch.logo.footer)) || '';
 }
 
 // Ảnh logo; thiếu file thì tự ẩn (không hiện ảnh vỡ).
@@ -883,6 +891,28 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     oThongBao.textContent = noiDung;
     oThongBao.className = 'thong-bao' + (lop ? ' ' + lop : '');
   }
+  // Khách sửa ô nào thì bỏ thông báo lỗi của ô đó (tránh hiểu nhầm là vẫn còn lỗi).
+  function xoaLoiTruong(ten) {
+    var oLoi = goc.querySelector('[data-loi="' + ten + '"]');
+    if (!oLoi || !oLoi.textContent) return;
+    oLoi.textContent = '';
+    if (oLoi.parentNode && oLoi.parentNode.classList) oLoi.parentNode.classList.remove('co-loi');
+  }
+  function xoaLoiKhiSua(e) {
+    var ten = e.target && e.target.name;
+    if (!ten) return;
+    if (ten === 'ngay') {
+      if (laNgayCoThat(e.target.value) && e.target.value >= ngayHomNayDiaPhuong(new Date())) xoaLoiTruong('ngay');
+      return;
+    }
+    if (ten === 'buffetMa' || ten.indexOf('mon:') === 0 || ten === 'nguoiLon') { xoaLoiTruong('mon'); return; }
+    if (ten === 'dongY' && e.target.checked) { xoaLoiTruong('dongY'); return; }
+    if (ten === 'vat') return;
+    if (String(e.target.value || '').trim()) xoaLoiTruong(ten);
+  }
+  form.addEventListener('input', xoaLoiKhiSua);
+  form.addEventListener('change', xoaLoiKhiSua);
+
   function baoLoi(ketQua, thuTu) {
     var cacOLoi = goc.querySelectorAll('.loi');
     for (var i = 0; i < cacOLoi.length; i++) {

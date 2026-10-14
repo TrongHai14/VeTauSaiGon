@@ -19,9 +19,17 @@ var CAU_HINH = {
 
   // Logo PNG nền trong suốt. Chưa có file thì web dùng biểu tượng con tàu.
   logo: {
-    header: 'anh/logo/logo.png',                 // logo bên trái header (thay biểu tượng con tàu), hiện cao 40px
-    gocPhai: 'anh/logo/logo-nguyen-nguyen.jpg',  // logo Nguyên Nguyên Travel ở góc phải header, hiện cao 48px
-    footer: 'anh/logo/logo-nguyen-nguyen.jpg'    // logo ở chân trang (nền xanh đậm), hiện cao 96px
+    // Logo Nguyên Nguyên Travel nền trong suốt; web tự đặt nền xanh đậm theo tông màu trang.
+    header: 'anh/logo/logo-nguyen-nguyen-trong-suot.png',  // cạnh chữ "Vé Tàu Sài Gòn" ở header, hiện cao 44px
+    footer: 'anh/logo/logo-nguyen-nguyen-trong-suot.png'   // ở chân trang, hiện cao 96px
+  },
+
+  // Nút mạng xã hội ở chân trang. Để trống ('') thì nút đó không hiện trên web.
+  // Sửa xong chạy "Tạo lại các trang HTML" (node cong-cu/tao-trang.js).
+  mangXaHoi: {
+    facebook: '',                              // ví dụ 'https://www.facebook.com/tenTrang'
+    zalo: 'https://zalo.me/0948170036',
+    tiktok: ''                                 // ví dụ 'https://www.tiktok.com/@tenkenh'
   },
 
   // Ảnh bìa trang chủ: chạy lần lượt (mờ dần + phóng nhẹ). Ảnh ngang ≥ 1600px.

@@ -138,8 +138,7 @@ Danh sách lấy từ `js/cau-hinh.js`. Kiểm tra ảnh còn thiếu: `node con
 
 ## `anh/logo/`
 
-- `logo.png`
-- `logo-nguyen-nguyen.jpg`
+- `logo-nguyen-nguyen-trong-suot.png`
 
 ## `anh/saigon-princess/`
 

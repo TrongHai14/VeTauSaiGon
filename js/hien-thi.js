@@ -663,8 +663,13 @@ function apDungCauHinhChung(tienTo) {
   for (var i = 0; i < cacLogo.length; i++) {
     var viTri = cacLogo[i].getAttribute('data-logo');
     var dsThu = [logo[viTri]];
-    if (viTri === 'footer') dsThu.push(logo.gocPhai, logo.header);
+    if (viTri === 'footer') dsThu.push(logo.header);
     datLogo(cacLogo[i], viTri, dsThu.filter(function (x) { return !!x; }));
+  }
+  // Nút mạng xã hội chưa có link: chỉ hiện khi xem trên máy, để biết còn thiếu.
+  if (laCheDoThietKe()) {
+    var cacMxh = document.querySelectorAll('[data-mxh-trong]');
+    for (var m = 0; m < cacMxh.length; m++) cacMxh[m].hidden = false;
   }
   var gioiThieu = document.querySelector('[data-gioi-thieu]');
   if (gioiThieu && ch.gioiThieuCongTy) gioiThieu.textContent = ch.gioiThieuCongTy;

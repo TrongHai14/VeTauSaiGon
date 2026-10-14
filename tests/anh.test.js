@@ -47,7 +47,9 @@ test('moi tau co o anh dai dien, thu vien, anh menu cho TUNG mon chon duoc', () 
 test('ten file anh: khong dau, khong khoang trang, .jpg/.png/.mp4, khong trung', () => {
   const ds = tatCaAnh();
   for (const f of ds) assert.match(f, /^anh\/[a-z0-9\-\/]+\.(jpg|jpeg|png|webp|mp4)$/, f);
-  assert.strictEqual(new Set(ds).size, ds.length, 'co duong dan bi trung');
+  // Logo header và footer được phép dùng chung một file; các ảnh khác không được trùng.
+  const khongLogo = ds.filter((f) => f.indexOf('anh/logo/') !== 0);
+  assert.strictEqual(new Set(khongLogo).size, khongLogo.length, 'co duong dan bi trung');
 });
 
 test('anh da co trong thu muc anh/ deu < 512000 byte', () => {

@@ -146,23 +146,42 @@ test('dat-cho.html: email nhan ve va o dong y dieu kien ve', () => {
   assert.ok(html.includes('nhận vé điện tử PDF') && html.includes('24 giờ'));
 });
 
-test('logo Nguyen Nguyen Travel: o goc phai header moi trang, file co that va < 500KB', () => {
-  assert.strictEqual(CAU_HINH.logo.gocPhai, 'anh/logo/logo-nguyen-nguyen.jpg');
-  const p = path.join(GOC, CAU_HINH.logo.gocPhai);
+test('logo Nguyen Nguyen Travel nen trong suot: canh chu Ve Tau Sai Gon o header va o footer; khong con logo goc phai', () => {
+  assert.strictEqual(CAU_HINH.logo.header, 'anh/logo/logo-nguyen-nguyen-trong-suot.png');
+  assert.strictEqual(CAU_HINH.logo.footer, CAU_HINH.logo.header);
+  const p = path.join(GOC, CAU_HINH.logo.header);
   assert.ok(fs.existsSync(p) && fs.statSync(p).size < 512000);
+  assert.strictEqual(fs.readFileSync(p).slice(1, 4).toString(), 'PNG', 'logo la PNG (co nen trong suot)');
   for (const f of TAT_CA) {
     const html = doc(f);
-    const a = html.indexOf('class="logo-goc-phai"');
-    assert.ok(a > 0 && html.indexOf('<span data-logo="gocPhai" hidden></span>', a) > a, f);
-    assert.ok(a < html.indexOf('</header>'), f + ' logo nam trong header');
+    assert.ok(html.indexOf('data-logo="header"') > 0 && html.indexOf('data-logo="header"') < html.indexOf('</header>'), f);
+    assert.ok(!html.includes('logo-goc-phai') && !html.includes('gocPhai'), f + ' con logo goc phai');
   }
 });
 
-test('footer moi trang co dai huy hieu uy tin (dai ly chinh thuc, MST, VAT, chu ky so)', () => {
+test('bo 4 the o trang chu va 5 huy hieu o footer; nut VI/EN o header nam giua logo va menu', () => {
+  assert.ok(!doc('index.html').includes('class="diem-manh"'));
   for (const f of TAT_CA) {
     const html = doc(f);
-    const a = html.indexOf('<ul class="dai-uy-tin">');
-    assert.ok(a > html.indexOf('<footer'), f);
-    for (const chu of ['Đại lý chính thức', 'MST 0319143429', 'Xuất hóa đơn VAT', 'Vé có chữ ký số']) assert.ok(html.indexOf(chu, a) > a, f + ' thieu ' + chu);
+    assert.ok(!html.includes('class="dai-uy-tin"'), f + ' con huy hieu footer');
+    const logo = html.indexOf('class="logo"');
+    const nn = html.indexOf('class="chon-ngon-ngu"');
+    const menu = html.indexOf('class="menu-chinh"');
+    assert.ok(logo > 0 && logo < nn && nn < menu, f + ' VI/EN nam giua logo va menu');
+    assert.ok(html.includes('data-ngon-ngu="vi"') && html.includes('data-ngon-ngu="en"'), f);
+  }
+});
+
+test('footer co nut Facebook, Zalo, TikTok; link trong cau-hinh, trong thi an', () => {
+  const mxh = CAU_HINH.mangXaHoi;
+  assert.ok(mxh && 'facebook' in mxh && 'zalo' in mxh && 'tiktok' in mxh);
+  for (const f of TAT_CA) {
+    const html = doc(f);
+    for (const k of ['facebook', 'zalo', 'tiktok']) {
+      const m = new RegExp('<a class="nut-mxh nut-mxh-' + k + '[^"]*" href="([^"]*)"([^>]*)>').exec(html);
+      assert.ok(m, f + ' thieu nut ' + k);
+      if (mxh[k]) assert.ok(m[1] === mxh[k] && !/hidden/.test(m[2]), f + ' ' + k + ' phai hien voi dung link');
+      else assert.ok(/data-mxh-trong hidden/.test(m[2]), f + ' ' + k + ' chua co link thi an');
+    }
   }
 });
