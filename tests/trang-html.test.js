@@ -185,3 +185,8 @@ test('footer co nut Facebook, Zalo, TikTok; link trong cau-hinh, trong thi an', 
     }
   }
 });
+
+test('css: phan tu co thuoc tinh hidden luon an (nut mang xa hoi chua co link khong hien ra cho khach)', () => {
+  const css = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'css', 'style.css'), 'utf8');
+  assert.ok(/\[hidden\]\s*\{\s*display:\s*none\s*!important;\s*\}/.test(css));
+});

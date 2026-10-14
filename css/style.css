@@ -1,4 +1,6 @@
 /* Vé Tàu Sài Gòn – giao diện theo phong cách Traveloka */
+/* Phần tử có thuộc tính hidden luôn ẩn, kể cả khi lớp CSS của nó đặt display (vd. nút mạng xã hội chưa có link). */
+[hidden] { display: none !important; }
 :root {
   --xanh: #0194f3;
   --xanh-dam: #0770cd;
