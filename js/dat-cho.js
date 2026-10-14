@@ -906,7 +906,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
       return;
     }
     if (ten === 'buffetMa' || ten.indexOf('mon:') === 0 || ten === 'nguoiLon') { xoaLoiTruong('mon'); return; }
-    if (ten === 'dongY' && e.target.checked) { xoaLoiTruong('dongY'); return; }
+    if (ten === 'dongY') { if (e.target.checked) xoaLoiTruong('dongY'); return; }
     if (ten === 'vat') return;
     if (String(e.target.value || '').trim()) xoaLoiTruong(ten);
   }
