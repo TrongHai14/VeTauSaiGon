@@ -269,11 +269,11 @@ function taoKetQuaKiemTra(kq, homNay, e) {
     '<dl>' +
     '<dt>Tàu</dt><dd>' + e(v.tt) + '</dd>' +
     '<dt>Ngày lên tàu</dt><dd>' + e(dinhDangNgayVe(v.n)) + '</dd>' +
-    '<dt>Họ tên</dt><dd>' + e(v.h) + '</dd>' +
-    '<dt>Điện thoại</dt><dd>' + e(anSoDienThoai(v.s)) + '</dd>' +
+    '<dt>Họ tên</dt><dd data-khong-dich>' + e(v.h) + '</dd>' +
+    '<dt>Điện thoại</dt><dd data-khong-dich>' + e(anSoDienThoai(v.s)) + '</dd>' +
     '<dt>Số khách</dt><dd>' + e(v.nl + ' người lớn' + (v.te ? ' · ' + v.te + ' trẻ em' : '') + (v.mp ? ' · ' + v.mp + ' bé miễn phí' : '')) + '</dd>' +
-    '<dt>Mã đơn</dt><dd>' + e(v.m) + '</dd>' +
-    (v.c ? '<dt>Code vé</dt><dd>' + e(v.c) + '</dd>' : '') +
+    '<dt>Mã đơn</dt><dd data-khong-dich>' + e(v.m) + '</dd>' +
+    (v.c ? '<dt>Code vé</dt><dd data-khong-dich>' + e(v.c) + '</dd>' : '') +
     '<dt>Xác nhận ngày</dt><dd>' + e(dinhDangNgayVe(v.x)) + '</dd>' +
     '</dl><p class="ghi-chu">Đối chiếu họ tên với CMND/hộ chiếu nếu cần. Vé chỉ có giá trị vào đúng ngày đăng ký.</p></div>';
 }

@@ -316,6 +316,7 @@ var DANH_SACH_TAU = [
 // mienPhi: nhãn ô trẻ miễn phí. nuaGia: nhãn ô trẻ tính 50% giá (null = tàu không tính kiểu 50% cho loại này).
 // ghiChu: dòng nhắc thêm dưới ô đếm.
 // beMienPhiMoiNguoiLon: số bé miễn phí tối đa cho mỗi người lớn (không ghi = quy định chung 2 người lớn kèm 1 bé).
+// phuThuBeVuot: phụ thu cố định cho mỗi bé miễn phí vượt giới hạn (VND); không ghi = Ms Nguyên báo phụ phí sau.
 // treEm50VuotTinhNguoiLon: true = mỗi 2 người lớn chỉ kèm 1 trẻ tính 50%, trẻ 50% thứ 2 trở đi tính giá người lớn.
 // canhBaoTongTre: true = 2 người lớn chỉ được kèm 1 trẻ em (tính cả trẻ mua vé và bé miễn phí); vượt thì báo phụ phí bổ sung.
 var GIA_TRE_EM = {
@@ -334,10 +335,10 @@ var GIA_TRE_EM = {
     setMenu: { mienPhi: 'Dưới 4 tuổi (01 bé đi cùng 02 người lớn)', nuaGia: null, ghiChu: 'Trẻ 4 – dưới 11 tuổi: chọn “Menu Trẻ em” trong danh sách thực đơn.' }
   },
   'saigon-princess': {
-    setMenu: { mienPhi: 'Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)', nuaGia: null, beMienPhiMoiNguoiLon: 1, ghiChu: 'Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).' }
+    setMenu: { mienPhi: 'Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)', nuaGia: null, beMienPhiMoiNguoiLon: 1, phuThuBeVuot: 100000, ghiChu: 'Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).' }
   },
   'ben-thanh-princess': {
-    setMenu: { mienPhi: 'Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)', nuaGia: null, beMienPhiMoiNguoiLon: 1, ghiChu: 'Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).' }
+    setMenu: { mienPhi: 'Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)', nuaGia: null, beMienPhiMoiNguoiLon: 1, phuThuBeVuot: 100000, ghiChu: 'Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).' }
   }
 };
 var LINK_BAN_DO = 'https://www.google.com/maps/search/?api=1&query=' +

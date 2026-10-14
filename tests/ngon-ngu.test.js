@@ -45,7 +45,7 @@ test('dichChuoi: tu dien, mau cau, dinh dang gio va gia; vi thi khong dich', () 
   assert.strictEqual(nn.dichChuoi('Đặt chỗ', 'en'), 'Book');
   assert.strictEqual(nn.dichChuoi('Đặt chỗ', 'vi'), null);
   assert.strictEqual(nn.dichChuoi('  Đặt   chỗ ', 'en'), 'Book', 'gop khoang trang');
-  assert.strictEqual(nn.dichChuoi('Ngày 24/12/2026 · Đón 17h15', 'en'), '24/12/2026 · Pick-up 17:15');
+  assert.strictEqual(nn.dichChuoi('Ngày 24/12/2026 · Đón 17h15', 'en'), '24 Dec 2026 · Pick-up 17:15');
   assert.strictEqual(nn.dichChuoi('561.600 VND', 'en'), '561,600 VND');
   assert.strictEqual(nn.dichChuoi('Set menu từ 469.000đ · Buffet 733.320đ', 'en'), 'Set menus from 469,000 VND · Buffet 733,320 VND');
   assert.strictEqual(nn.dichChuoi('Câu này chưa có trong từ điển', 'en'), null);
@@ -122,4 +122,26 @@ test('phieu xac nhan va trang xac nhan noi bo giu tieng Viet (data-khong-dich)',
     dc.layTaiKhoan(CAU_HINH.thanhToan, donMau()), { trangThai: 'Đã thanh toán.', codeVe: '', ngayXacNhan: new Date() });
   assert.ok(/^<div class="phieu" id="phieu" data-khong-dich>/.test(html));
   assert.ok(doc('xac-nhan.html').includes('<main class="khung" id="xac-nhan" data-khong-dich>'));
+});
+
+test('mau cau: phan ben trong chua co ban dich thi tra null (khong ra cau nua Anh nua Viet)', () => {
+  assert.strictEqual(nn.dichChuoi('Xem menu Món lạ chưa dịch', 'en'), null);
+  assert.strictEqual(nn.dichChuoi('Set menu Món lạ chưa dịch', 'en'), null);
+  assert.notStrictEqual(nn.dichChuoi('Du thuyền Bến Nghé', 'en'), null, 'ten tau giu nguyen van dich duoc');
+});
+
+test('canh bao tre em theo tung tau: Princess bao phu thu 100.000 VND/be, Queen tinh tong tre, Star tu tinh ve tre em', () => {
+  const pr = dc.canhBaoTreEm(donMau({ slugTau: 'saigon-princess', loai: 'setMenu', mon: {}, nguoiLon: 0, treEmMienPhi: 3 }), tau('saigon-princess'), GIA_TRE_EM);
+  // Set menu đếm người lớn theo suất đã chọn: chọn 2 suất người lớn.
+  const nhom = ht.layThucDonTheoLoai(tau('saigon-princess')).setMenu;
+  const maNL = nhom[0].dong.find((d) => !/Trẻ em/.test(d.ten)).ma;
+  const canh = dc.canhBaoTreEm(donMau({ slugTau: 'saigon-princess', loai: 'setMenu', mon: { [maNL]: 2 }, treEm50: 0, treEmMienPhi: 3 }), tau('saigon-princess'), GIA_TRE_EM);
+  assert.strictEqual(pr, null, 'chua chon suat nao thi chua canh bao');
+  assert.match(canh, /2 người lớn chỉ được kèm tối đa 2 bé miễn phí\. Đơn có 3 bé, 1 bé vượt phụ thu 100\.000 VND\/bé\./);
+  assert.match(nn.dichChuoi(canh, 'en'), /each extra child \(1\) is charged 100,000 VND\./);
+  const qu = dc.canhBaoTreEm(donMau({ treEm50: 1, treEmMienPhi: 1 }), tau('indochina-queen'), GIA_TRE_EM);
+  assert.match(qu, /2 người lớn chỉ được kèm 1 trẻ em\. Đơn có 2 trẻ em/);
+  const st = dc.canhBaoTreEm(donMau({ slugTau: 'indochina-star', treEm50: 0, treEmMienPhi: 2 }), tau('indochina-star'), GIA_TRE_EM);
+  assert.strictEqual(st, null, 'Indochina Star buffet: be mien phi thu 2 tu tinh ve tre em, khong can canh bao');
+  for (const c of [canh, qu]) assert.notStrictEqual(nn.dichChuoi(c, 'en'), null, c);
 });

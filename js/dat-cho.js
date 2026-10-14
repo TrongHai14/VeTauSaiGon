@@ -187,6 +187,11 @@ function canhBaoTreEm(don, tau, bangTreEm) {
       ' người lớn, Ms Nguyên sẽ thông báo lại phụ phí bổ sung (nếu có).';
   }
   if (khach.treEmMienPhi <= gioiHan) return null;
+  if (cs.phuThuBeVuot) {
+    // Tàu có mức phụ thu cố định cho bé vượt (ví dụ 2 tàu Princess: 100.000 VND/bé).
+    return 'Theo quy định của tàu, ' + khach.nguoiLon + ' người lớn chỉ được kèm tối đa ' + gioiHan + ' bé miễn phí. Đơn có ' +
+      khach.treEmMienPhi + ' bé, ' + (khach.treEmMienPhi - gioiHan) + ' bé vượt phụ thu ' + hamHienThi.dinhDangGia(cs.phuThuBeVuot) + '/bé.';
+  }
   return 'Theo quy định của tàu, ' + khach.nguoiLon + ' người lớn chỉ được kèm tối đa ' + gioiHan +
     ' bé miễn phí. Đơn có ' + khach.treEmMienPhi + ' bé, Ms Nguyên sẽ thông báo lại phụ phí bổ sung (nếu có).';
 }
@@ -908,7 +913,13 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     if (ten === 'buffetMa' || ten.indexOf('mon:') === 0 || ten === 'nguoiLon') { xoaLoiTruong('mon'); return; }
     if (ten === 'dongY') { if (e.target.checked) xoaLoiTruong('dongY'); return; }
     if (ten === 'vat') return;
-    if (String(e.target.value || '').trim()) xoaLoiTruong(ten);
+    // Chỉ tắt lỗi khi ô đã điền đúng (gõ dở số điện thoại, email, MST thì lỗi vẫn hiện).
+    var gt = String(e.target.value || '');
+    var dung = ten === 'soDienThoai' ? chuanHoaSoDienThoai(gt) !== null
+      : (ten === 'email' || ten === 'congTyEmail') ? laEmail(gt)
+      : ten === 'congTyMst' ? laMaSoThue(gt)
+      : !!gt.trim();
+    if (dung) xoaLoiTruong(ten);
   }
   form.addEventListener('input', xoaLoiKhiSua);
   form.addEventListener('change', xoaLoiKhiSua);

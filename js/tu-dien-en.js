@@ -155,6 +155,7 @@ var TU_DIEN_EN = {
   'Tầng 2': 'Deck 2',
   'Tầng 3': 'Deck 3',
   'Menu Âu': 'European menu',
+  'Set menu – Tầng 2 – Menu Âu': 'Set menu – Deck 2 – European menu',
   'Menu Á': 'Asian menu',
   'Menu Việt': 'Vietnamese menu',
   'Menu Ấn': 'Indian menu',
@@ -479,11 +480,22 @@ function dichTungDoan(chuoi) {
   var tu = TU_DIEN_EN;
   if (Object.prototype.hasOwnProperty.call(tu, chuoi)) return tu[chuoi];
   return chuoi.split(' – ').map(function (doan) {
-    return Object.prototype.hasOwnProperty.call(tu, doan) ? tu[doan] : doan;
+    if (Object.prototype.hasOwnProperty.call(tu, doan)) return tu[doan];
+    // Đoạn còn chữ Việt mà không phải tên tàu: báo cho dichChuoi biết câu này chưa dịch được.
+    if (/[À-ỹđĐ]/.test(doan) && !TEN_TAU_DUNG_NGUYEN.test(doan)) MAU_DICH_EN.thieu = true;
+    return doan;
   }).join(' – ');
 }
 
 var CAC_TAU_EN = '(Indochina Star|Bến Nghé|Indochina Queen|Elite of Saigon|Saigon Princess|Bến Thành Princess)';
+// 24/12/2026 -> 24 Dec 2026 (khách nước ngoài không nhầm ngày với tháng).
+var THANG_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function ngayTiengAnh(ddmmyyyy) {
+  var p = ddmmyyyy.split('/');
+  var thang = THANG_EN[Number(p[1]) - 1];
+  return thang ? p[0] + ' ' + thang + ' ' + p[2] : ddmmyyyy;
+}
+var TEN_TAU_DUNG_NGUYEN =new RegExp('^' + CAC_TAU_EN + '$');
 var LOAI_TRE_EN = {
   'người lớn': 'adult',
   'trẻ em 50%': 'child 50%',
@@ -508,8 +520,8 @@ var MAU_DICH_EN = [
   [/^Xem thêm (\d+) thực đơn ▾$/, 'Show $1 more menus ▾'],
   [/^Xem tất cả (\d+) ảnh$/, 'View all $1 photos'],
   [/^Xem ảnh (\d+)$/, 'View photo $1'],
-  [/^Ngày (\d{2}\/\d{2}\/\d{4}) · Đón (\S+)$/, '$1 · Pick-up $2'],
-  [/^Ngày (\d{2}\/\d{2}\/\d{4})$/, '$1'],
+  [/^Ngày (\d{2}\/\d{2}\/\d{4}) · Đón (\S+)$/, function (_, ngay, gio) { return ngayTiengAnh(ngay) + ' · Pick-up ' + gio; }],
+  [/^Ngày (\d{2}\/\d{2}\/\d{4})$/, function (_, ngay) { return ngayTiengAnh(ngay); }],
   [/^Chưa chọn ngày · Đón (\S+)$/, 'No date yet · Pick-up $1'],
   [/^Chưa chọn ngày$/, 'No date yet'],
   [/^Đón khách (\S+)$/, 'Pick-up $1'],
@@ -519,7 +531,8 @@ var MAU_DICH_EN = [
   [new RegExp('^Tàu ' + CAC_TAU_EN + ' chỉ phục vụ (buffet|set menu)\\. Vui lòng chọn (buffet|set menu) ở trên hoặc nhắn Zalo để được tư vấn\\.$'), '$1 only serves $2. Please choose $3 above or message us on Zalo for advice.'],
   [new RegExp('^Tàu ' + CAC_TAU_EN + ' chưa có danh sách (buffet|set menu) để đặt online \\((.+)\\)\\.$'), function (_, tau, loai, mt) { return tau + ' has no ' + loai + ' list for online booking yet (' + dichTungDoan(mt) + ').'; }],
   [/^Theo quy định của tàu, 2 người lớn chỉ được kèm 1 trẻ em\. Đơn có (\d+) trẻ em cho (\d+) người lớn, Ms Nguyên sẽ thông báo lại phụ phí bổ sung \(nếu có\)\.$/, 'Per the cruise’s rules, each 2 adults may bring 1 child. This booking has $1 children for $2 adults; Ms Nguyên will let you know about any extra charge.'],
-  [/^Theo quy định của tàu, (\d+) người lớn chỉ được kèm tối đa (\d+) bé miễn phí\. Đơn có (\d+) bé, Ms Nguyên sẽ thông báo lại phụ phí bổ sung \(nếu có\)\.$/, 'Per the cruise’s rules, $1 adults may bring at most $2 free children. This booking has $3; Ms Nguyên will let you know about any extra charge.'],
+  [/^Theo quy định của tàu, (\d+) người lớn chỉ được kèm tối đa (\d+) bé miễn phí\. Đơn có (\d+) bé, (\d+) bé vượt phụ thu (.+)\/bé\.$/, 'Per the cruise’s rules, $1 adults may bring at most $2 free children. This booking has $3 free children; each extra child ($4) is charged $5.'],
+  [/^Theo quy định của tàu, (\d+) người lớn chỉ được kèm tối đa (\d+) bé miễn phí\. Đơn có (\d+) bé, Ms Nguyên sẽ thông báo lại phụ phí bổ sung \(nếu có\)\.$/, 'Per the cruise’s rules, $1 adults may bring at most $2 free children. This booking has $3 free children; Ms Nguyên will let you know about any extra charge.'],
   [/^(.+) \((người lớn|trẻ em 50%|bé thứ 2 trở đi, vé trẻ em|trẻ 1m–1,3m thứ 2 trở đi, tính như người lớn)\)$/, function (_, ten, loai) { return dichTungDoan(ten) + ' (' + LOAI_TRE_EN[loai] + ')'; }],
   [/^Set menu (.+)$/, function (_, mon) { return 'Set menu ' + dichTungDoan(mon); }],
   [/^(.+) – tính 50% giá vé$/, function (_, nhan) { return dichTungDoan(nhan) + ' – 50% of the ticket price'; }],

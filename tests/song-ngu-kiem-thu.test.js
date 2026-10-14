@@ -27,7 +27,7 @@ function taoNgucCanh(opts) {
   const luu = Object.assign({}, opts.luu || {});
   const ghiLai = [];
   const ctx = {
-    location: { search: opts.search || '', pathname: opts.pathname || '/dat-cho.html', hash: opts.hash || '', href: '' },
+    location: { origin: '', search: opts.search || '', pathname: opts.pathname || '/dat-cho.html', hash: opts.hash || '', href: '' },
     localStorage: opts.localStorageLoi
       ? { getItem() { throw new Error('bi chan'); }, setItem() { throw new Error('bi chan'); } }
       : { getItem(k) { return Object.prototype.hasOwnProperty.call(luu, k) ? luu[k] : null; }, setItem(k, v) { luu[k] = String(v); ghiLai.push([k, String(v)]); } },
@@ -124,6 +124,7 @@ test('khoiChayNgonNgu + MutationObserver gia: dich chu moi them, khong dich lai 
   const body = the('BODY', {}, [the('P', {}, [nutCu])]);
   const html = the('HTML', {});
   html.className = '';
+  html.classList = { add() {}, remove() {} };
   let goiLai = null, soLanQuanSat = 0;
   const document = { body, documentElement: html, title: 'Liên hệ', querySelectorAll: () => [] };
   const ctx = taoNgucCanh({
@@ -252,12 +253,13 @@ test('mau cau: so 2 chu so, ten mon co dau ngoac, ten tau ngoai danh sach', () =
   assert.strictEqual(d('Chay (10)'), 'Vegetarian (10)');
   assert.strictEqual(d('Trẻ em (12)'), 'Kids (12)');
   assert.strictEqual(d('Đón khách 18h00'), 'Pick-up 18:00');
-  assert.strictEqual(d('Ngày 24/12/2026 · Đón 18h00'), '24/12/2026 · Pick-up 18:00');
+  assert.strictEqual(d('Ngày 24/12/2026 · Đón 18h00'), '24 Dec 2026 · Pick-up 18:00');
   assert.strictEqual(d('Du thuyền Indochina Queen'), 'Indochina Queen cruise');
   assert.strictEqual(d('Du thuyền Bến Thành Princess – ảnh 12'), 'Bến Thành Princess cruise – photo 12');
   // Ten mon co dau ngoac: khong sap, so o cuoi giu nguyen, phan ngoac khong bi mat
   const ngoac = d('Buffet Hải Sản (Đặc Biệt) (12)');
-  assert.ok(ngoac !== null && ngoac.endsWith('(12)') && ngoac.includes('(Đặc Biệt)'), String(ngoac));
+  // Tên món lạ chưa có trong từ điển: giữ nguyên tiếng Việt (null) thay vì ra câu nửa Anh nửa Việt.
+  assert.ok(ngoac === null || ngoac.endsWith('(12)') && ngoac.includes('(Đặc Biệt)'), String(ngoac));
   const xem = d('Xem menu Món (A) (B)');
   assert.ok(xem === null || xem.includes('(A) (B)'), String(xem));
   // Ten tau ngoai danh sach: giu tieng Viet (null), khong sap
@@ -400,7 +402,7 @@ function taoXoaLoi() {
   }
   const ctx = vm.createContext({ goc, Date, String });
   const nguon = (ten) => { const i = js.indexOf('function ' + ten + '('); return js.slice(i, js.indexOf('\n}\n', i) + 3); };
-  vm.runInContext(nguon('laNgayCoThat') + nguon('ngayHomNayDiaPhuong') + maHam + '\nthis.xoaLoiKhiSua = xoaLoiKhiSua;', ctx);
+  vm.runInContext(nguon('laNgayCoThat') + nguon('ngayHomNayDiaPhuong') + nguon('chuanHoaSoDienThoai') + nguon('laEmail') + nguon('laMaSoThue') + maHam + '\nthis.xoaLoiKhiSua = xoaLoiKhiSua;', ctx);
   return { ctx, oLoi };
 }
 const sk = (name, value, checked) => ({ target: { name, value, checked } });
@@ -433,8 +435,14 @@ test('xoaLoiKhiSua: go vao o nao thi loi o do tat; o trong thi giu loi', () => {
   assert.ok(!daTat(oLoi.soDienThoai) && !daTat(oLoi.email) && !daTat(oLoi.ngay));
   ctx.xoaLoiKhiSua(sk('email', '   '));
   assert.ok(!daTat(oLoi.email), 'chi co khoang trang thi chua tat');
+  ctx.xoaLoiKhiSua(sk('email', 'a@b'));
+  assert.ok(!daTat(oLoi.email), 'email go do chua tat');
   ctx.xoaLoiKhiSua(sk('email', 'a@b.vn'));
   assert.ok(daTat(oLoi.email));
+  ctx.xoaLoiKhiSua(sk('soDienThoai', '0948'));
+  assert.ok(!daTat(oLoi.soDienThoai), 'so dien thoai go do chua tat');
+  ctx.xoaLoiKhiSua(sk('soDienThoai', '0948170036'));
+  assert.ok(daTat(oLoi.soDienThoai));
   ctx.xoaLoiKhiSua(sk('slugTau', 'indochina-queen'));
   assert.ok(daTat(oLoi.slugTau));
 });

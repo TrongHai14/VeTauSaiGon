@@ -30,7 +30,7 @@ function datNgonNgu(ma) {
   try { localStorage.setItem(KHOA_NGON_NGU, ma); } catch (loi) { /* bỏ qua */ }
   // Bỏ ?lang= cũ trên link rồi tải lại trang (giữ phần # của trang).
   var tim = String(location.search || '').replace(/([?&])lang=(vi|en)(&|$)/, function (_, dau, __, sau) { return sau ? dau : ''; }).replace(/[?&]$/, '');
-  location.href = location.pathname + (ma === 'en' ? (tim ? tim + '&' : '?') + 'lang=en' : tim) + location.hash;
+  location.href = location.origin + location.pathname + (ma === 'en' ? (tim ? tim + '&' : '?') + 'lang=en' : tim) + location.hash;
 }
 
 // Chuẩn hoá để tra từ điển: gộp khoảng trắng, bỏ khoảng trắng hai đầu.
@@ -58,7 +58,10 @@ function dichChuoi(chuoi, ngonNgu) {
     var kq = mau[i][0].exec(khoa);
     if (!kq) continue;
     var thay = mau[i][1];
+    mau.thieu = false;
     var ra = typeof thay === 'function' ? thay.apply(null, kq) : khoa.replace(mau[i][0], thay);
+    // Mẫu khớp nhưng phần bên trong còn tiếng Việt chưa có bản dịch: coi như chưa dịch (giữ nguyên câu Việt).
+    if (mau.thieu) return null;
     return dinhDangSoAnh(ra);
   }
   // Câu không có chữ tiếng Việt (giá, giờ, tên tàu…) chỉ cần đổi định dạng số.
@@ -176,13 +179,13 @@ function khoiChayNgonNgu() {
 if (typeof document !== 'undefined' && document.body) {
   // Đang chọn EN: ẩn trang trong chớp mắt cho tới khi dịch xong (không thấy chữ Việt nháy lên).
   if (layNgonNgu() === 'en') {
-    document.documentElement.className += ' dang-dich';
-    setTimeout(function () { document.documentElement.className = document.documentElement.className.replace(/s*dang-dich/, ''); }, 1500);
+    document.documentElement.classList.add('dang-dich');
+    setTimeout(function () { document.documentElement.classList.remove('dang-dich'); }, 1500);
   }
   // Chạy sau khi các script khác dựng xong trang (cuối hàng đợi).
   setTimeout(function () {
     khoiChayNgonNgu();
-    document.documentElement.className = document.documentElement.className.replace(/s*dang-dich/, '');
+    document.documentElement.classList.remove('dang-dich');
   }, 0);
 }
 
