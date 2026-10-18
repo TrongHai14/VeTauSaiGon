@@ -63,6 +63,7 @@ dat-cho.html          Đặt chỗ 3 bước: dịch vụ → liên hệ (VAT) �
 xac-nhan.html         Trang của Ms Nguyên: kiểm tra tiền, ký số và tạo phiếu "Đã thanh toán"
 kiem-tra-ve.html      Nhân viên quét QR trên phiếu: báo vé hợp lệ / không hợp lệ
 chinh-sach.html       Chính sách trẻ em, điều kiện vé, đổi trả, hướng dẫn sử dụng vé
+faq.html              Câu hỏi thường gặp (menu FAQ); câu trẻ em liệt kê chính sách từng tàu lấy từ GIA_TRE_EM
 js/cau-hinh.js        Ảnh, logo, tài khoản, tên miền
 js/du-lieu-tau.js     Dữ liệu 6 tàu và chính sách
 js/hien-thi.js        Dựng trang chủ, trang tàu, xem ảnh, ảnh thay thế
@@ -164,3 +165,11 @@ Trước khi cho khách dùng, phải kích hoạt FormSubmit: gửi thử một
 ## Logo
 
 Logo Nguyên Nguyên Travel đã tách nền: `anh/logo/logo-nguyen-nguyen-trong-suot.png`. Web tự đặt logo trên nền xanh đậm cho hợp tông màu trang. Bản gốc có nền đen nằm ở `anh-cu/logo/`.
+
+## Giao diện chung (đợt góp ý 18/10)
+
+- **Bo góc:** cả web dùng một kiểu bo góc `--bo-goc` (12px) trong `css/style.css`. Muốn đổi thì chỉ sửa một dòng này. Hình tròn (nút liên hệ nổi, số bước) giữ tròn.
+- **Trang chủ:** màn hình đầu là ảnh bìa tràn màn hình với nút **Đặt chỗ ngay**; bấm nút thì cuộn xuống ô tìm và đặt chỗ. Ảnh bìa lấy từ `anhBia` trong `js/cau-hinh.js` (anh/bia/bia-01.jpg …), nên chọn ảnh ngang, đẹp, rõ tàu.
+- **Header:** Du thuyền · Đặt chỗ · FAQ · Liên hệ. Không đặt số điện thoại trên header; số điện thoại nằm ở nút liên hệ nổi.
+- **Nút liên hệ nổi** (góc dưới bên phải, mọi trang): Gọi 0948170036 và Nhắn Zalo.
+- **FAQ:** trang `faq.html`, câu hỏi nằm trong `CAU_HOI_FAQ` ở `cong-cu/tao-trang.js`.

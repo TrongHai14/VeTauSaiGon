@@ -27,9 +27,9 @@ var CAU_HINH = {
   // Nút mạng xã hội ở chân trang. Để trống ('') thì nút đó không hiện trên web.
   // Sửa xong chạy "Tạo lại các trang HTML" (node cong-cu/tao-trang.js).
   mangXaHoi: {
-    facebook: '',                              // ví dụ 'https://www.facebook.com/tenTrang'
+    facebook: 'https://www.facebook.com/share/19dfPzqptZ/',
     zalo: 'https://zalo.me/0948170036',
-    tiktok: ''                                 // ví dụ 'https://www.tiktok.com/@tenkenh'
+    tiktok: 'https://www.tiktok.com/@nguyennguyentravel'
   },
 
   // Ảnh bìa trang chủ: chạy lần lượt (mờ dần + phóng nhẹ). Ảnh ngang ≥ 1600px.

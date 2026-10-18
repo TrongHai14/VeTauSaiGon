@@ -14,31 +14,33 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=2d7eb86c">
+  <link rel="stylesheet" href="css/style.css?v=7866668f">
 </head>
 <body>
   <header class="dau-trang">
     <div class="khung">
       <a class="logo" href="index.html"><span class="logo-hinh" data-logo="header"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 5"/><path d="M7 12V7h10v5"/><path d="M12 4v3"/></svg></span><span>Vé Tàu <b>Sài Gòn</b></span></a>
       <div class="chon-ngon-ngu" role="group" aria-label="Ngôn ngữ / Language">
-        <button type="button" data-ngon-ngu="vi" lang="vi">VI</button><button type="button" data-ngon-ngu="en" lang="en">EN</button>
+        <button type="button" data-ngon-ngu="vi" lang="vi" aria-label="VI – Tiếng Việt"><svg class="co" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#da251d"/><path fill="#ff0" d="M15 4l1.18 3.63h3.82l-3.09 2.24 1.18 3.63L15 11.26l-3.09 2.24 1.18-3.63L10 7.63h3.82z"/></svg><span>VI</span></button><button type="button" data-ngon-ngu="en" lang="en" aria-label="EN – English"><svg class="co" viewBox="0 0 60 40" aria-hidden="true"><clipPath id="co-anh-cat"><rect width="60" height="40"/></clipPath><g clip-path="url(#co-anh-cat)"><rect width="60" height="40" fill="#012169"/><path d="M0 0l60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40M60 0L0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></g></svg><span>EN</span></button>
       </div>
       <nav class="menu-chinh">
         <a href="index.html#danh-sach">Du thuyền</a>
         <a href="dat-cho.html">Đặt chỗ</a>
+        <a href="faq.html">FAQ</a>
         <a href="#lien-he">Liên hệ</a>
       </nav>
-      <a class="nut nut-xanh" href="tel:0948170036"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span>0948170036</span></a>
     </div>
   </header>
-  <section class="hero">
+  <section class="hero hero-toan-man">
     <div class="khung">
       <span class="nhan-hero">★ Đại lý chính thức · 6 du thuyền</span>
       <h1>Du thuyền ăn tối trên sông Sài Gòn</h1>
       <p>Buffet, set menu và nhạc sống trên 6 du thuyền. Chọn tàu, chọn thực đơn và đặt chỗ trong vài phút.</p>
+      <a class="nut nut-hero" href="#dat-ngay">Đặt chỗ ngay</a>
     </div>
+    <a class="hero-xuong" href="#dat-ngay" aria-label="Xem tiếp" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </section>
-  <main class="khung">
+  <main class="khung" id="dat-ngay">
     <form class="o-tim-kiem" id="form-tim">
       <div class="o-tim-kiem-tieu-de"><span class="tab-tim"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 5"/><path d="M7 12V7h10v5"/><path d="M12 4v3"/></svg>Du thuyền ăn tối</span></div>
       <div class="luoi-tim">
@@ -62,39 +64,12 @@
         <noscript>Vui lòng bật JavaScript để xem danh sách tàu hoặc gọi 0948170036.</noscript>
       </div>
     </section>
-    <section class="khoi" id="so-sanh">
-      <div class="khoi-dau"><div><h2>So sánh nhanh 6 du thuyền</h2><p>Giờ chạy, loại thực đơn và giá thấp nhất cho người lớn.</p></div></div>
-      <div class="bang-so-sanh-khung">
-        <table class="bang-so-sanh">
-          <thead><tr><th>Du thuyền</th><th>Thực đơn</th><th>Đón khách</th><th>Khởi hành</th><th>Cập bến</th><th>Giá từ / khách</th><th></th></tr></thead>
-          <tbody>
-            <tr><th scope="row"><a href="tau/indochina-star.html">Indochina Star</a></th><td><span class="nhan-nho">Buffet</span></td><td>18h00</td><td>19h45</td><td>21h15</td><td class="gia">615.600 VND</td><td><a class="nut nut-nho" href="tau/indochina-star.html">Xem</a></td></tr>
-            <tr><th scope="row"><a href="tau/ben-nghe.html">Bến Nghé</a></th><td><span class="nhan-nho">Buffet</span> <span class="nhan-nho">Set menu</span></td><td>17h15</td><td>20h00</td><td>21h30</td><td class="gia">733.320 VND</td><td><a class="nut nut-nho" href="tau/ben-nghe.html">Xem</a></td></tr>
-            <tr><th scope="row"><a href="tau/indochina-queen.html">Indochina Queen</a></th><td><span class="nhan-nho">Buffet</span> <span class="nhan-nho">Set menu</span></td><td>18h00</td><td>19h45</td><td>21h15</td><td class="gia">561.600 VND</td><td><a class="nut nut-nho" href="tau/indochina-queen.html">Xem</a></td></tr>
-            <tr><th scope="row"><a href="tau/elite-of-saigon.html">Elite of Saigon</a></th><td><span class="nhan-nho">Buffet</span> <span class="nhan-nho">Set menu</span></td><td>18h00</td><td>19h30</td><td>22h00</td><td class="gia">1.969.000 VND</td><td><a class="nut nut-nho" href="tau/elite-of-saigon.html">Xem</a></td></tr>
-            <tr><th scope="row"><a href="tau/saigon-princess.html">Saigon Princess</a></th><td><span class="nhan-nho">Set menu</span></td><td>18h00</td><td>19h30</td><td>21h30</td><td class="gia">950.000 VND</td><td><a class="nut nut-nho" href="tau/saigon-princess.html">Xem</a></td></tr>
-            <tr><th scope="row"><a href="tau/ben-thanh-princess.html">Bến Thành Princess</a></th><td><span class="nhan-nho">Set menu</span></td><td>18h00</td><td>19h30</td><td>21h30</td><td class="gia">950.000 VND</td><td><a class="nut nut-nho" href="tau/ben-thanh-princess.html">Xem</a></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
     <section class="khoi">
       <div class="khoi-dau"><div><h2>Đặt chỗ chỉ 3 bước</h2></div></div>
       <div class="cac-buoc">
         <div><h3>Chọn tàu &amp; thực đơn</h3><p>Chọn Buffet hoặc Set menu, bấm “Xem menu” để xem món trước khi đặt.</p></div>
         <div><h3>Điền thông tin &amp; thanh toán</h3><p>Quét mã QR chuyển khoản. Cần hóa đơn VAT thì chuyển vào tài khoản công ty.</p></div>
         <div><h3>Nhận phiếu &amp; code vé</h3><p>Ms Nguyên kiểm tra thanh toán và gửi phiếu xác nhận, code vé điện tử qua Zalo.</p></div>
-      </div>
-    </section>
-    <section class="khoi" id="hoi-dap">
-      <div class="khoi-dau"><div><h2>Câu hỏi thường gặp</h2><p>Xem đầy đủ tại <a href="chinh-sach.html">Chính sách &amp; điều kiện vé</a>.</p></div></div>
-      <div class="chinh-sach hoi-dap">
-        <details open><summary>Thanh toán thế nào? Có xuất hóa đơn VAT không?</summary><p>Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích &quot;Tôi cần xuất hóa đơn VAT&quot; và chuyển vào tài khoản Công ty TNHH Nguyên Nguyên Global.</p></details>
-        <details><summary>Bao lâu thì nhận được vé?</summary><p>Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.</p></details>
-        <details><summary>Làm sao biết phiếu là thật?</summary><p>Mỗi phiếu có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy &quot;VÉ HỢP LỆ&quot; cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ.</p></details>
-        <details><summary>Trẻ em tính giá thế nào?</summary><p>Mỗi tàu có chính sách riêng, ghi ngay ở ô đếm trẻ em khi đặt chỗ. Thường: trẻ dưới 1m miễn phí (2 người lớn kèm 1 bé), trẻ 1m – dưới 1,3m mua vé trẻ em, từ 1,3m mua vé người lớn.</p></details>
-        <details><summary>Có đổi ngày hoặc hủy vé được không?</summary><p>Không hoàn/hủy vé trong ngày sử dụng. Đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới.</p></details>
-        <details><summary>Đón khách ở đâu? Nên có mặt lúc nào?</summary><p>Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.</p></details>
       </div>
     </section>
     <div class="bang-lien-he">
@@ -114,9 +89,9 @@
           <h3>Công ty TNHH Nguyên Nguyên Global</h3>
           <p data-gioi-thieu>Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. Chúng tôi tư vấn chọn tàu, chọn thực đơn, giữ chỗ và xuất hóa đơn VAT cho khách lẻ, gia đình và doanh nghiệp.</p>
           <div class="mang-xa-hoi">
-            <a class="nut-mxh nut-mxh-facebook nut-mxh-trong" href="#" data-mxh-trong hidden title="Chưa có link: điền trong js/cau-hinh.js (mangXaHoi.facebook)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8.1v3h2.5V21h2.9z"/></svg><span>Facebook (chưa có link)</span></a>
+            <a class="nut-mxh nut-mxh-facebook" href="https://www.facebook.com/share/19dfPzqptZ/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8.1v3h2.5V21h2.9z"/></svg><span>Facebook</span></a>
             <a class="nut-mxh nut-mxh-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener" aria-label="Zalo"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.5 3 2 6.9 2 11.7c0 2.7 1.4 5.1 3.6 6.7-.1.9-.5 2.1-1.4 3 0 0 2.6-.2 4.3-1.5 1.1.3 2.3.5 3.5.5 5.5 0 10-3.9 10-8.7S17.5 3 12 3zm-4.6 11.1H5.2v-.9l2.4-3.3H5.3V8.9h3.4v.9l-2.4 3.3h2.1v1zm2.9 0h-1V8.9h1v5.2zm4.4 0h-.9l-.1-.4c-.3.3-.7.5-1.2.5-1.1 0-1.9-.9-1.9-2s.8-2 1.9-2c.5 0 .9.2 1.2.5V10.6h1v3.5zm3.4.1c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg><span>Zalo</span></a>
-            <a class="nut-mxh nut-mxh-tiktok nut-mxh-trong" href="#" data-mxh-trong hidden title="Chưa có link: điền trong js/cau-hinh.js (mangXaHoi.tiktok)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v2.6c-1.4.1-2.6-.3-3.9-1.1v5.9c0 7.4-8.1 9.7-11.3 4.4-2.1-3.4-.8-9.4 5.9-9.6v2.7c-.5.1-1 .2-1.5.4-1.5.5-2.3 1.4-2.1 3 .5 3.2 6.4 4.1 5.9-2.1V3h3.1z"/></svg><span>TikTok (chưa có link)</span></a>
+            <a class="nut-mxh nut-mxh-tiktok" href="https://www.tiktok.com/@nguyennguyentravel" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v2.6c-1.4.1-2.6-.3-3.9-1.1v5.9c0 7.4-8.1 9.7-11.3 4.4-2.1-3.4-.8-9.4 5.9-9.6v2.7c-.5.1-1 .2-1.5.4-1.5.5-2.3 1.4-2.1 3 .5 3.2 6.4 4.1 5.9-2.1V3h3.1z"/></svg><span>TikTok</span></a>
           </div>
         </div>
         <div>
@@ -154,15 +129,16 @@
       </div>
     </div>
   </footer>
-  <div class="thanh-lien-he" id="thanh-lien-he">
-    <a class="nut nut-xanh" href="tel:0948170036">Gọi 0948170036</a>
-    <a class="nut nut-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener">Nhắn Zalo</a>
+  <div class="thanh-lien-he" id="thanh-lien-he" hidden></div>
+  <div class="lien-he-noi" role="group" aria-label="Liên hệ nhanh">
+    <a class="lh-noi lh-noi-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener" aria-label="Nhắn Zalo 0948170036"><span class="lh-noi-chu">Nhắn Zalo</span><span class="lh-noi-tron"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.5 3 2 6.9 2 11.7c0 2.7 1.4 5.1 3.6 6.7-.1.9-.5 2.1-1.4 3 0 0 2.6-.2 4.3-1.5 1.1.3 2.3.5 3.5.5 5.5 0 10-3.9 10-8.7S17.5 3 12 3zm-4.6 11.1H5.2v-.9l2.4-3.3H5.3V8.9h3.4v.9l-2.4 3.3h2.1v1zm2.9 0h-1V8.9h1v5.2zm4.4 0h-.9l-.1-.4c-.3.3-.7.5-1.2.5-1.1 0-1.9-.9-1.9-2s.8-2 1.9-2c.5 0 .9.2 1.2.5V10.6h1v3.5zm3.4.1c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg></span></a>
+    <a class="lh-noi lh-noi-goi" href="tel:0948170036" aria-label="Gọi 0948170036"><span class="lh-noi-chu">Gọi 0948170036</span><span class="lh-noi-tron"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg></span></a>
   </div>
-  <script src="js/tu-dien-en.js?v=183f17d4"></script>
+  <script src="js/tu-dien-en.js?v=95548cfd"></script>
   <script src="js/ngon-ngu.js?v=ea2784a1"></script>
-  <script src="js/cau-hinh.js?v=964799a6"></script>
-  <script src="js/du-lieu-tau.js?v=4a3c829b"></script>
-  <script src="js/hien-thi.js?v=d0283f0d"></script>
+  <script src="js/cau-hinh.js?v=a0254f36"></script>
+  <script src="js/du-lieu-tau.js?v=2d64aa84"></script>
+  <script src="js/hien-thi.js?v=455b35c2"></script>
   <script>khoiChayTrangChu();</script>
 </body>
 </html>

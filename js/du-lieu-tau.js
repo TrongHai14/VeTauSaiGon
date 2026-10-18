@@ -349,11 +349,11 @@ var CHINH_SACH_CHUNG = [
   {
     id: 'tre-em-chung', tieuDe: 'Chính sách trẻ em',
     nhom: [{ tieuDe: null, dong: [
-      'Trẻ từ 0–4 tuổi (dưới 1m): miễn phí lên tàu, bố mẹ tự lo. 2 người lớn chỉ được kèm 1 bé miễn phí, bé thứ 2 mua vé trẻ em.',
-      'Trẻ từ 5–9 tuổi (từ 1,0m đến dưới 1,3m): mua vé trẻ em (tính 50%).',
-      'Trẻ em từ 10 tuổi trở lên (từ 1,3m): mua vé người lớn.',
-      '2 người lớn chỉ được kèm 1 trẻ em; nếu số trẻ em vượt quá quy định sẽ được thông báo lại phụ phí bổ sung.',
-      'Một số tàu có chính sách trẻ em riêng, xem mục “Chính sách trẻ em” trên trang của từng tàu.'
+      // Mỗi tàu một chính sách (độ tuổi, chiều cao, số bé miễn phí): không ghi quy định chung ở đây.
+      // Chính sách từng tàu: chinhSachTreEm của từng tàu (trang tàu) và GIA_TRE_EM (ô đếm trẻ em, trang FAQ, trang chính sách).
+      'Mỗi tàu có chính sách trẻ em riêng (độ tuổi, chiều cao, số bé miễn phí đi kèm người lớn).',
+      'Xem mục “Chính sách trẻ em” trên trang của từng tàu, hoặc ô đếm trẻ em khi đặt chỗ.',
+      'Nếu số trẻ em vượt quá quy định của tàu, Ms Nguyên sẽ thông báo lại phụ phí bổ sung (nếu có).'
     ] }]
   },
   {

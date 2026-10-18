@@ -844,8 +844,8 @@ function khoiChayTrangTau() {
   khung.innerHTML = taoTrangTau(tau, LIEN_HE, '../');
   var thanh = document.getElementById('thanh-lien-he');
   if (thanh) {
+    thanh.hidden = false;
     thanh.innerHTML = '<div class="gia-nho">' + taoKhoiGia(tau, 'Giá từ') + '</div>' +
-      '<a class="nut nut-zalo" href="' + escapeHtml(LIEN_HE.linkZalo) + '" target="_blank" rel="noopener">Zalo</a>' +
       '<a class="nut" href="' + escapeHtml(taoLinkDatCho('../', tau.slug, null)) + '">Đặt chỗ</a>';
   }
   var khuyenMai = [];

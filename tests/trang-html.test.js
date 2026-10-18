@@ -55,7 +55,7 @@ test('index.html: meta, khung, o tim kiem, script', () => {
   const mt = meta(html, 'name', 'description');
   assert.ok(mt && mt.length <= 160);
   kiemTraOgImage(html, CAU_HINH.anhBia[0]);
-  for (const k of KHUNG.concat(['id="danh-sach-tau"', 'id="form-tim"', 'class="hero"'])) assert.ok(html.includes(k), k);
+  for (const k of KHUNG.concat(['id="danh-sach-tau"', 'id="form-tim"', 'class="hero hero-toan-man"', 'href="#dat-ngay">Đặt chỗ ngay<', 'id="dat-ngay"'])) assert.ok(html.includes(k), k);
   assert.ok(dungThuTu(viTriScript(html, '', ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js'])));
   assert.ok(html.includes('khoiChayTrangChu()'));
 });
@@ -189,4 +189,75 @@ test('footer co nut Facebook, Zalo, TikTok; link trong cau-hinh, trong thi an', 
 test('css: phan tu co thuoc tinh hidden luon an (nut mang xa hoi chua co link khong hien ra cho khach)', () => {
   const css = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'css', 'style.css'), 'utf8');
   assert.ok(/\[hidden\]\s*\{\s*display:\s*none\s*!important;\s*\}/.test(css));
+});
+
+// ---------- Đợt góp ý 18/10: header, FAQ, nút liên hệ nổi, bỏ mục so sánh ----------
+const TAT_CA_TRANG = ['index.html', 'dat-cho.html', 'chinh-sach.html', 'faq.html', 'kiem-tra-ve.html', 'xac-nhan.html']
+  .concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
+
+test('header: menu co FAQ, khong con nut so dien thoai; nut VI/EN co co', () => {
+  for (const f of TAT_CA_TRANG) {
+    const html = doc(f);
+    const h = html.slice(html.indexOf('<header'), html.indexOf('</header>'));
+    const tt = f.startsWith('tau/') ? '../' : '';
+    assert.ok(h.includes('<a href="' + tt + 'faq.html">FAQ</a>'), f + ' FAQ');
+    assert.ok(!h.includes('tel:'), f + ' header khong co so dien thoai');
+    assert.strictEqual((h.match(/<svg class="co"/g) || []).length, 2, f + ' 2 la co');
+  }
+});
+
+test('nut lien he noi goc phai co tren moi trang cho khach (goi + Zalo), trang noi bo thi khong; thanh duoi an san', () => {
+  for (const f of ['xac-nhan.html', 'kiem-tra-ve.html']) assert.ok(!doc(f).includes('class="lien-he-noi"'), f + ' trang noi bo');
+  for (const f of TAT_CA_TRANG) {
+    const html = doc(f);
+    assert.ok(html.includes('<div class="thanh-lien-he" id="thanh-lien-he" hidden></div>'), f + ' thanh duoi');
+    if (f === 'xac-nhan.html' || f === 'kiem-tra-ve.html') continue;
+    const noi = html.slice(html.indexOf('<div class="lien-he-noi" role="group"'));
+    assert.ok(noi.startsWith('<div class="lien-he-noi"'), f + ' co nut noi');
+    assert.ok(noi.includes('href="tel:0948170036"') && noi.includes('href="https://zalo.me/0948170036"'), f);
+    assert.ok(html.includes('<div class="thanh-lien-he" id="thanh-lien-he" hidden></div>'), f + ' thanh duoi');
+  }
+});
+
+test('trang chu: anh tau tran man hinh voi nut Dat cho ngay; khong con muc so sanh, hoi dap chuyen sang faq.html', () => {
+  const html = doc('index.html');
+  assert.ok(/<section class="hero hero-toan-man">[\s\S]*<a class="nut nut-hero" href="#dat-ngay">Đặt chỗ ngay<\/a>/.test(html));
+  assert.ok(html.indexOf('id="dat-ngay"') < html.indexOf('id="form-tim"'));
+  for (const f of TAT_CA_TRANG) assert.ok(!/so sánh|so-sanh/i.test(doc(f)), f + ' khong co chu so sanh');
+  assert.ok(!html.includes('id="hoi-dap"'));
+  const faq = doc('faq.html');
+  assert.strictEqual((faq.match(/<details/g) || []).length, 6);
+  // Trẻ em: mỗi tàu một dòng, lấy từ GIA_TRE_EM.
+  const { GIA_TRE_EM } = require('../js/du-lieu-tau.js');
+  for (const t of DANH_SACH_TAU) {
+    assert.ok(faq.includes('<a href="tau/' + t.slug + '.html"><b>'), t.slug);
+    for (const loai of Object.keys(GIA_TRE_EM[t.slug] || {})) assert.ok(faq.includes(GIA_TRE_EM[t.slug][loai].mienPhi.replace(/&/g, '&amp;')), t.slug + ' ' + loai);
+  }
+});
+
+test('mang xa hoi: Facebook va TikTok da co link, khong kem ma theo doi', () => {
+  assert.strictEqual(CAU_HINH.mangXaHoi.facebook, 'https://www.facebook.com/share/19dfPzqptZ/');
+  assert.strictEqual(CAU_HINH.mangXaHoi.tiktok, 'https://www.tiktok.com/@nguyennguyentravel');
+  const html = doc('index.html');
+  assert.ok(html.includes('href="https://www.tiktok.com/@nguyennguyentravel" target="_blank" rel="noopener"'));
+  assert.ok(!html.includes('data-mxh-trong'));
+});
+
+test('css: mot kieu bo goc cho toan web (chi con var(--bo-goc), hinh tron 50% va cham nho)', () => {
+  const css = doc('css/style.css');
+  const cacGiaTri = [...css.matchAll(/border-radius:\s*([^;}]+)/g)].map((m) => m[1].trim());
+  const la = cacGiaTri.filter((v) => !/^(var\(--bo-goc\)|calc\(var\(--bo-goc\) - 3px\)|50%|0|4px|3px)$/.test(v));
+  assert.deepStrictEqual(la, []);
+});
+
+test('chinh sach tre em: khong ghi mot quy dinh chung cho moi tau; chinh-sach.html liet ke tung tau', () => {
+  const { CHINH_SACH_CHUNG, GIA_TRE_EM } = require('../js/du-lieu-tau.js');
+  const chung = CHINH_SACH_CHUNG.find((m) => m.id === 'tre-em-chung').nhom[0].dong.join(' ');
+  assert.ok(!/\d+\s*[–-]\s*\d+ tuổi|\d+(,\d+)?\s*m\b/.test(chung), 'muc chung khong ghi do tuoi/chieu cao cu the: ' + chung);
+  const html = doc('chinh-sach.html');
+  const muc = html.slice(html.indexOf('id="tre-em-chung"'), html.indexOf('</details>', html.indexOf('id="tre-em-chung"')));
+  for (const t of DANH_SACH_TAU) {
+    assert.ok(muc.includes('<a href="tau/' + t.slug + '.html"><b>'), t.slug);
+    for (const loai of Object.keys(GIA_TRE_EM[t.slug] || {})) assert.ok(muc.includes(GIA_TRE_EM[t.slug][loai].mienPhi), t.slug + ' ' + loai);
+  }
 });

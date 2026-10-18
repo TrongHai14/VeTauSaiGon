@@ -3,9 +3,9 @@
 const fs = require('fs');
 const path = require('path');
 const GOC = path.join(__dirname, '..');
-const { DANH_SACH_TAU, CONG_TY, CHINH_SACH_CHUNG, LINK_BAN_DO } = require(path.join(GOC, 'js/du-lieu-tau.js'));
+const { DANH_SACH_TAU, CONG_TY, CHINH_SACH_CHUNG, LINK_BAN_DO, GIA_TRE_EM } = require(path.join(GOC, 'js/du-lieu-tau.js'));
 const { CAU_HINH } = require(path.join(GOC, 'js/cau-hinh.js'));
-const { escapeHtml: e, taoKhoiChinhSach, giaThapNhat, layNhanTau, dinhDangGia } = require(path.join(GOC, 'js/hien-thi.js'));
+const { escapeHtml: e, taoKhoiChinhSach } = require(path.join(GOC, 'js/hien-thi.js'));
 
 const FONT = '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
   '  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">';
@@ -47,16 +47,28 @@ function header(tt) {
     <div class="khung">
       <a class="logo" href="${tt}index.html"><span class="logo-hinh" data-logo="header">${ICON_TAU}</span><span>Vé Tàu <b>Sài Gòn</b></span></a>
       <div class="chon-ngon-ngu" role="group" aria-label="Ngôn ngữ / Language">
-        <button type="button" data-ngon-ngu="vi" lang="vi">VI</button><button type="button" data-ngon-ngu="en" lang="en">EN</button>
+        <button type="button" data-ngon-ngu="vi" lang="vi" aria-label="VI – Tiếng Việt">${CO_VN}<span>VI</span></button><button type="button" data-ngon-ngu="en" lang="en" aria-label="EN – English">${CO_ANH}<span>EN</span></button>
       </div>
       <nav class="menu-chinh">
         <a href="${tt}index.html#danh-sach">Du thuyền</a>
         <a href="${tt}dat-cho.html">Đặt chỗ</a>
+        <a href="${tt}faq.html">FAQ</a>
         <a href="#lien-he">Liên hệ</a>
       </nav>
-      <a class="nut nut-xanh" href="tel:0948170036">${ICON_DT}<span>0948170036</span></a>
     </div>
   </header>`;
+}
+
+// Cờ trên nút VI/EN (SVG, vì Windows không hiện được emoji cờ).
+const CO_VN = '<svg class="co" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#da251d"/><path fill="#ff0" d="M15 4l1.18 3.63h3.82l-3.09 2.24 1.18 3.63L15 11.26l-3.09 2.24 1.18-3.63L10 7.63h3.82z"/></svg>';
+const CO_ANH = '<svg class="co" viewBox="0 0 60 40" aria-hidden="true"><clipPath id="co-anh-cat"><rect width="60" height="40"/></clipPath><g clip-path="url(#co-anh-cat)"><rect width="60" height="40" fill="#012169"/><path d="M0 0l60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40M60 0L0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></g></svg>';
+
+// Nút liên hệ nổi góc dưới bên phải (mọi trang): gọi điện và nhắn Zalo.
+function lienHeNoi() {
+  return `  <div class="lien-he-noi" role="group" aria-label="Liên hệ nhanh">
+    <a class="lh-noi lh-noi-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener" aria-label="Nhắn Zalo 0948170036"><span class="lh-noi-chu">Nhắn Zalo</span><span class="lh-noi-tron">${ICON_MXH.zalo}</span></a>
+    <a class="lh-noi lh-noi-goi" href="tel:0948170036" aria-label="Gọi 0948170036"><span class="lh-noi-chu">Gọi 0948170036</span><span class="lh-noi-tron">${ICON_DT}</span></a>
+  </div>`;
 }
 
 // Nút Facebook, Zalo, TikTok (link trong CAU_HINH.mangXaHoi; trống thì ẩn, chỉ hiện khi xem trên máy).
@@ -76,7 +88,8 @@ function nutMangXaHoi() {
   }).join('\n');
 }
 
-function footer(tt) {
+// noiBo: trang nội bộ (Ms Nguyên xác nhận, nhân viên quét vé) không hiện nút liên hệ nổi.
+function footer(tt, noiBo) {
   const lienKet = DANH_SACH_TAU.map((t) => `            <li><a href="${tt}tau/${t.slug}.html">${e(t.ten)}</a></li>`).join('\n');
   return `  <footer class="chan-trang" id="lien-he">
     <div class="khung">
@@ -116,10 +129,7 @@ ${CHINH_SACH_CHUNG.map((m) => `            <li><a href="${tt}chinh-sach.html#${m
       </div>
     </div>
   </footer>
-  <div class="thanh-lien-he" id="thanh-lien-he">
-    <a class="nut nut-xanh" href="tel:0948170036">Gọi 0948170036</a>
-    <a class="nut nut-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener">Nhắn Zalo</a>
-  </div>`;
+  <div class="thanh-lien-he" id="thanh-lien-he" hidden></div>${noiBo ? '' : '\n' + lienHeNoi()}`;
 }
 
 const MO_TA_CHU = 'Đặt vé du thuyền ăn tối trên sông Sài Gòn: 6 tàu, buffet và set menu, đón khách tại Cảng Sài Gòn. Liên hệ Ms Nguyên 0948170036.';
@@ -131,18 +141,44 @@ const ghi = (ten, html) => {
   fs.writeFileSync(path.join(THU_MUC_RA, ten), html);
 };
 
+// Chính sách trẻ em từng tàu (trang FAQ và trang chính sách): mỗi tàu một chính sách, lấy thẳng từ GIA_TRE_EM (cùng dữ liệu với ô đếm trẻ em khi đặt chỗ).
+const TEN_LOAI = { buffet: 'Buffet', setMenu: 'Set menu' };
+const treEmTungTau = DANH_SACH_TAU.map((t) => {
+  const theoLoai = GIA_TRE_EM[t.slug] || {};
+  const dong = Object.keys(theoLoai).map((loai) => {
+    const cs = theoLoai[loai];
+    return '            <li><span class="nhan-nho">' + TEN_LOAI[loai] + '</span> ' +
+      '<span>Miễn phí:</span> <span>' + e(cs.mienPhi) + '</span>' +
+      (cs.nuaGia ? '<span class="cham-ngan"> · </span><span>Vé trẻ em 50%:</span> <span>' + e(cs.nuaGia) + '</span>' : '') +
+      (cs.ghiChu ? '<br><small>' + e(cs.ghiChu) + '</small>' : '') + '</li>';
+  }).join('\n');
+  return '          <li><a href="tau/' + t.slug + '.html"><b>' + e(t.ten) + '</b></a>\n          <ul>\n' + dong + '\n          </ul></li>';
+}).join('\n');
+
+// Câu hỏi thường gặp (trang faq.html).
+const CAU_HOI_FAQ = [
+  ['Thanh toán thế nào? Có xuất hóa đơn VAT không?', 'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản ' + CONG_TY.ten + '.'],
+  ['Bao lâu thì nhận được vé?', 'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.'],
+  ['Làm sao biết phiếu là thật?', 'Mỗi phiếu có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ.'],
+  ['Trẻ em tính giá thế nào?', 'Mỗi tàu có chính sách trẻ em riêng (độ tuổi, chiều cao, số bé miễn phí đi kèm người lớn). Chính sách của từng tàu:'],
+  ['Có đổi ngày hoặc hủy vé được không?', 'Không hoàn/hủy vé trong ngày sử dụng. Đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới.'],
+  ['Đón khách ở đâu? Nên có mặt lúc nào?', 'Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.']
+];
+
 // ---------- index.html ----------
 ghi('index.html', `${dau('', { tieuDe: 'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn', moTa: MO_TA_CHU, anh: anhChiaSe(null), url: TEN_MIEN + '/' })}
 <body>
 ${header('')}
-  <section class="hero">
+  <section class="hero hero-toan-man">
     <div class="khung">
       <span class="nhan-hero">★ ${e(CONG_TY.vaiTro)} · 6 du thuyền</span>
       <h1>Du thuyền ăn tối trên sông Sài Gòn</h1>
       <p>Buffet, set menu và nhạc sống trên 6 du thuyền. Chọn tàu, chọn thực đơn và đặt chỗ trong vài phút.</p>
+      <a class="nut nut-hero" href="#dat-ngay">Đặt chỗ ngay</a>
     </div>
+    <a class="hero-xuong" href="#dat-ngay" aria-label="Xem tiếp" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </section>
-  <main class="khung">
+  <main class="khung" id="dat-ngay">
     <form class="o-tim-kiem" id="form-tim">
       <div class="o-tim-kiem-tieu-de"><span class="tab-tim">${ICON_TAU}Du thuyền ăn tối</span></div>
       <div class="luoi-tim">
@@ -166,44 +202,12 @@ ${header('')}
         <noscript>Vui lòng bật JavaScript để xem danh sách tàu hoặc gọi 0948170036.</noscript>
       </div>
     </section>
-    <section class="khoi" id="so-sanh">
-      <div class="khoi-dau"><div><h2>So sánh nhanh 6 du thuyền</h2><p>Giờ chạy, loại thực đơn và giá thấp nhất cho người lớn.</p></div></div>
-      <div class="bang-so-sanh-khung">
-        <table class="bang-so-sanh">
-          <thead><tr><th>Du thuyền</th><th>Thực đơn</th><th>Đón khách</th><th>Khởi hành</th><th>Cập bến</th><th>Giá từ / khách</th><th></th></tr></thead>
-          <tbody>
-${DANH_SACH_TAU.map((t) => {
-    const gia = giaThapNhat(t);
-    const g = t.gioChay || {};
-    return '            <tr><th scope="row"><a href="tau/' + t.slug + '.html">' + e(t.ten) + '</a></th>' +
-      '<td>' + layNhanTau(t).map((n) => '<span class="nhan-nho">' + e(n) + '</span>').join(' ') + '</td>' +
-      '<td>' + e(g.donKhach || '') + '</td><td>' + e(g.khoiHanh || '') + '</td><td>' + e(g.capBen || '') + '</td>' +
-      '<td class="gia">' + e(gia ? dinhDangGia(gia) : 'Liên hệ') + '</td>' +
-      '<td><a class="nut nut-nho" href="tau/' + t.slug + '.html">Xem</a></td></tr>';
-  }).join('\n')}
-          </tbody>
-        </table>
-      </div>
-    </section>
     <section class="khoi">
       <div class="khoi-dau"><div><h2>Đặt chỗ chỉ 3 bước</h2></div></div>
       <div class="cac-buoc">
         <div><h3>Chọn tàu &amp; thực đơn</h3><p>Chọn Buffet hoặc Set menu, bấm “Xem menu” để xem món trước khi đặt.</p></div>
         <div><h3>Điền thông tin &amp; thanh toán</h3><p>Quét mã QR chuyển khoản. Cần hóa đơn VAT thì chuyển vào tài khoản công ty.</p></div>
         <div><h3>Nhận phiếu &amp; code vé</h3><p>Ms Nguyên kiểm tra thanh toán và gửi phiếu xác nhận, code vé điện tử qua Zalo.</p></div>
-      </div>
-    </section>
-    <section class="khoi" id="hoi-dap">
-      <div class="khoi-dau"><div><h2>Câu hỏi thường gặp</h2><p>Xem đầy đủ tại <a href="chinh-sach.html">Chính sách &amp; điều kiện vé</a>.</p></div></div>
-      <div class="chinh-sach hoi-dap">
-${[
-    ['Thanh toán thế nào? Có xuất hóa đơn VAT không?', 'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản ' + CONG_TY.ten + '.'],
-    ['Bao lâu thì nhận được vé?', 'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.'],
-    ['Làm sao biết phiếu là thật?', 'Mỗi phiếu có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ.'],
-    ['Trẻ em tính giá thế nào?', 'Mỗi tàu có chính sách riêng, ghi ngay ở ô đếm trẻ em khi đặt chỗ. Thường: trẻ dưới 1m miễn phí (2 người lớn kèm 1 bé), trẻ 1m – dưới 1,3m mua vé trẻ em, từ 1,3m mua vé người lớn.'],
-    ['Có đổi ngày hoặc hủy vé được không?', 'Không hoàn/hủy vé trong ngày sử dụng. Đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới.'],
-    ['Đón khách ở đâu? Nên có mặt lúc nào?', 'Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.']
-  ].map(([h, d], i) => '        <details' + (i === 0 ? ' open' : '') + '><summary>' + e(h) + '</summary><p>' + e(d) + '</p></details>').join('\n')}
       </div>
     </section>
     <div class="bang-lien-he">
@@ -343,7 +347,7 @@ ${header('')}
       </section>
     </div>
   </main>
-${footer('')}
+${footer('', true)}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha512-ZDSPMa/JM1D+7kdg2x3BsruQ6T/JpJo3jWDWkCZsP+5yVyp1KfESqLI+7RqB5k24F7p2cV7i2YHh/890y6P6Sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 ${script('', SCRIPT_CHUNG.concat(['xac-thuc.js', 'dat-cho.js']))}
@@ -359,11 +363,34 @@ ${header('')}
   <main class="khung">
     <div class="dau-trang-dat">
       <h1>Chính sách &amp; điều kiện vé</h1>
-      <p>Áp dụng cho vé du thuyền đặt qua ${e(CONG_TY.ten)}. Một số tàu có chính sách trẻ em riêng, xem trên trang của từng tàu.</p>
+      <p>Áp dụng cho vé du thuyền đặt qua ${e(CONG_TY.ten)}. Mỗi tàu có chính sách trẻ em riêng, xem mục Chính sách trẻ em bên dưới.</p>
     </div>
     <section class="muc" style="margin-top:16px">
-${taoKhoiChinhSach(CHINH_SACH_CHUNG, true)}
+${taoKhoiChinhSach(CHINH_SACH_CHUNG, true).replace('</ul></details>', () => '</ul>\n        <h4>Chính sách trẻ em từng tàu</h4>\n        <ul class="tre-em-tung-tau">\n' + treEmTungTau + '\n        </ul></details>')}
       <p class="dia-diem">Điểm đón: 05 Nguyễn Tất Thành, phường Xóm Chiếu (bên cạnh Bến Nhà Rồng) · <a href="${e(LINK_BAN_DO)}" target="_blank" rel="noopener">Xem bản đồ</a></p>
+    </section>
+  </main>
+${footer('')}
+${script('', SCRIPT_CHUNG)}
+  <script>apDungCauHinhChung('');</script>
+</body>
+</html>
+`);
+
+// ---------- faq.html (câu hỏi thường gặp) ----------
+ghi('faq.html', `${dau('', { tieuDe: 'Câu hỏi thường gặp (FAQ) | Vé Tàu Sài Gòn', moTa: 'Câu hỏi thường gặp khi đặt vé du thuyền sông Sài Gòn: thanh toán, nhận vé, chính sách trẻ em từng tàu, đổi ngày, điểm đón.', anh: anhChiaSe(null), url: TEN_MIEN + '/faq.html' })}
+<body>
+${header('')}
+  <main class="khung">
+    <div class="dau-trang-dat">
+      <h1>Câu hỏi thường gặp (FAQ)</h1>
+      <p>Xem đầy đủ tại <a href="chinh-sach.html">Chính sách &amp; điều kiện vé</a>. Cần hỗ trợ thêm, gọi hoặc nhắn Zalo Ms Nguyên 0948170036.</p>
+    </div>
+    <section class="khoi" id="hoi-dap">
+      <div class="chinh-sach hoi-dap">
+${CAU_HOI_FAQ.map(([h, d], i) => '        <details' + (i === 0 ? ' open' : '') + '><summary>' + e(h) + '</summary><p>' + e(d) + '</p>' +
+    (h === 'Trẻ em tính giá thế nào?' ? '\n        <ul class="tre-em-tung-tau">\n' + treEmTungTau + '\n        </ul>' : '') + '</details>').join('\n')}
+      </div>
     </section>
   </main>
 ${footer('')}
@@ -380,7 +407,7 @@ ${header('')}
   <main class="khung" id="kiem-tra-ve">
     <noscript>Vui lòng bật JavaScript để kiểm tra vé hoặc gọi 0948170036.</noscript>
   </main>
-${footer('')}
+${footer('', true)}
 ${script('', SCRIPT_CHUNG.concat(['xac-thuc.js']))}
   <script>khoiChayTrangKiemTraVe();</script>
 </body>
@@ -406,4 +433,4 @@ ${script('../', SCRIPT_CHUNG)}
 </html>
 `);
 }
-console.log('Đã tạo lại', 5 + DANH_SACH_TAU.length, 'trang.');
+console.log('Đã tạo lại', 6 + DANH_SACH_TAU.length, 'trang.');

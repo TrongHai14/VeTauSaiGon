@@ -878,9 +878,9 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     if (khungTomTat) khungTomTat.innerHTML = taoTomTatDon(don, tauHienTai(), bangTreEm, '');
     if (thanhDuoi) {
       var tong = tomTatDon(don, tauHienTai(), bangTreEm).tong;
+      thanhDuoi.hidden = false;
       thanhDuoi.innerHTML = '<div class="gia-nho"><small>Tổng thanh toán</small><strong>' +
         (tong > 0 ? escapeHtmlDatCho(hamHienThi.dinhDangGia(tong)) : '—') + '</strong></div>' +
-        '<a class="nut nut-zalo" href="' + escapeHtmlDatCho(lienHe.linkZalo) + '" target="_blank" rel="noopener">Zalo</a>' +
         '<button type="button" class="nut" data-xem-don>Xem đơn</button>';
     }
   }

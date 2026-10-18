@@ -53,7 +53,7 @@ test('dichChuoi: tu dien, mau cau, dinh dang gio va gia; vi thi khong dich', () 
 });
 
 test('cac trang HTML: moi chu tieng Viet (header, footer, noi dung tinh) deu co ban dich', () => {
-  const trang = ['index.html', 'dat-cho.html', 'chinh-sach.html', 'kiem-tra-ve.html', 'xac-nhan.html']
+  const trang = ['index.html', 'dat-cho.html', 'chinh-sach.html', 'faq.html', 'kiem-tra-ve.html', 'xac-nhan.html']
     .concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
   for (const f of trang) {
     const html = doc(f);
