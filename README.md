@@ -196,3 +196,12 @@ Mỗi tàu có `thongSo` trong `js/du-lieu-tau.js` (sức chứa, số tầng, k
 ## Nút liên hệ nổi
 
 Góc dưới bên phải có một nút tròn. Bấm vào sẽ mở ra 3 nút: Gọi, Messenger, Zalo. Link Messenger nằm ở `mangXaHoi.messenger` trong `js/cau-hinh.js`; nếu để trống thì nút Messenger không hiện.
+
+## Lịch chỗ online (Google Sheet, 50 chỗ đại lý mỗi tàu mỗi ngày)
+
+Có thể nối lịch với Google Sheet để chỗ tự trừ khi khách đặt và tự trả lại khi khách quá hạn chưa thanh toán. Hướng dẫn cài từng bước nằm ở [cong-cu/google-sheet/HUONG-DAN.md](cong-cu/google-sheet/HUONG-DAN.md); mã chạy trong Sheet là [cong-cu/google-sheet/lich-cho.gs](cong-cu/google-sheet/lich-cho.gs).
+
+- Khi chưa điền `lichChoOnline.url` trong `js/cau-hinh.js`, web chạy như cũ, chỉ dùng `js/lich-cho-du-lieu.js`.
+- Lịch gửi kèm số khách: ngày nào không đủ chỗ cho số khách đó thì bị khoá. Khách chỉ thấy còn chỗ hoặc hết chỗ, không thấy con số.
+- Khách bấm "Tiếp tục" sang bước thanh toán thì web giữ chỗ 1 tiếng để khách chuyển khoản; khách bấm "Tôi đã chuyển khoản" thì chỗ giữ tới khi Ms Nguyên xác nhận. Nếu vừa hết chỗ, khách được đưa về bước 1 để chọn ngày khác. Nếu lỗi mạng, khách vẫn thanh toán được và email gửi Ms Nguyên ghi "CHƯA giữ được chỗ tự động".
+- Ms Nguyên tạo phiếu ở trang xác nhận và nhập Mã quản lý thì đơn tự đổi sang "Đã thanh toán".

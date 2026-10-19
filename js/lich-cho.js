@@ -16,6 +16,62 @@ function ngayHomNayVN(bayGio) {
   return chuoiNgayLich(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
 }
 
+// ---------- Lịch online (Google Sheet) ----------
+// LICH_ONLINE[slug + '|' + soKhach][ngay] = 'het': ngày không đủ chỗ cho đúng số khách đó (Web App trả về).
+// KHACH_DANG_XEM[slug] = soKhach của đơn đang đặt: lịch và bước kiểm tra đọc đúng bảng của số khách này.
+var LICH_ONLINE = {};
+var KHACH_DANG_XEM = {};
+var THOI_GIAN_CHO_ONLINE = 12000;
+// Chuẩn hoá số khách (số, hoặc { khach, be }) thành khoá 'khach|be'.
+function khoaKhach(x) {
+  if (x && typeof x === 'object') return Math.max(1, x.khach | 0) + '|' + Math.max(0, x.be | 0);
+  return Math.max(1, x | 0) + '|0';
+}
+// Promise có hạn chờ: quá ms thì trả giaTriHetGio (mạng chậm, Web App khởi động lâu).
+function coHanCho(hua, ms, giaTriHetGio) {
+  return new Promise(function (xong) {
+    var daXong = false;
+    var hen = setTimeout(function () { if (!daXong) { daXong = true; xong(giaTriHetGio); } }, ms);
+    hua.then(function (kq) { if (!daXong) { daXong = true; clearTimeout(hen); xong(kq); } },
+      function () { if (!daXong) { daXong = true; clearTimeout(hen); xong(giaTriHetGio); } });
+  });
+}
+function urlLichOnline() {
+  var ch = typeof CAU_HINH !== 'undefined' ? CAU_HINH : null;
+  var url = ch && ch.lichChoOnline && ch.lichChoOnline.url;
+  return typeof url === 'string' && /^https:\/\/script\.google(usercontent)?\.com\//.test(url) ? url : '';
+}
+// Tải ngày hết chỗ của 1 tàu trong 1 tháng (thang: 'YYYY-MM') cho số khách khach (số hoặc { khach, be }). xong(thanhCong).
+function taiLichOnline(slug, thang, khach, xong) {
+  var url = urlLichOnline();
+  if (!url || !slug || typeof fetch !== 'function') { xong(false); return; }
+  var k = khoaKhach(khach).split('|');
+  var hua = fetch(url + '?action=lich&tau=' + encodeURIComponent(slug) + '&thang=' + encodeURIComponent(thang) + '&khach=' + k[0] + '&be=' + k[1])
+    .then(function (tl) { return tl.json(); });
+  coHanCho(hua, THOI_GIAN_CHO_ONLINE, null).then(function (kq) {
+    if (!kq || kq.ok !== true || !kq.het || typeof kq.het.length !== 'number') { xong(false); return; }
+    // Lưu theo đúng số khách đã hỏi: phản hồi về muộn của số khách cũ không làm sai bảng hiện tại.
+    var khoa = slug + '|' + k[0] + '|' + k[1];
+    var bang = LICH_ONLINE[khoa] || (LICH_ONLINE[khoa] = {});
+    for (var ngay in bang) if (ngay.slice(0, 7) === thang) delete bang[ngay];
+    for (var i = 0; i < kq.het.length; i++) if (MAU_NGAY_LICH.test(kq.het[i])) bang[kq.het[i]] = 'het';
+    xong(true);
+  });
+}
+
+// Gửi yêu cầu giữ chỗ khi khách sang bước thanh toán. Trả Promise<{ ok, loi?, giuDen? }>;
+// chưa cài lịch online thì { ok: false, loi: 'chua-cai' }, mạng lỗi thì { ok: false, loi: 'mang' }.
+function giuChoOnline(thongTin) {
+  var url = urlLichOnline();
+  if (!url || typeof fetch !== 'function') return Promise.resolve({ ok: false, loi: 'chua-cai' });
+  // text/plain: Apps Script không trả lời yêu cầu "preflight" của trình duyệt.
+  var hua = fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(thongTin) })
+    .then(function (tl) { return tl.json(); });
+  return coHanCho(hua, THOI_GIAN_CHO_ONLINE, null).then(function (kq) {
+    return kq && typeof kq.ok === 'boolean' ? kq : { ok: false, loi: 'mang' };
+  });
+}
+
 // Bảng ngày của một tàu, đã chuẩn hoá ('HET' → 'het', bỏ khoảng trắng). Ghi sai định dạng thì báo ở Console.
 var daCanhBaoLich = {};
 function layBangLich(slug, lich) {
@@ -32,6 +88,9 @@ function layBangLich(slug, lich) {
       console.warn('lich-cho-du-lieu.js: bỏ qua "' + ngay + '": "' + bang[ngay] + '" của ' + slug + ' (viết dạng \'2026-12-24\': \'het\' hoặc \'it\')');
     }
   }
+  // Lịch online: ngày hết chỗ ghi đè (chỉ khi không truyền lich riêng, tức đang chạy trên web).
+  var online = !lich && LICH_ONLINE[slug + '|' + (KHACH_DANG_XEM[slug] || '1|0')];
+  if (online) for (var n in online) ra[n] = 'het';
   return ra;
 }
 
@@ -80,8 +139,11 @@ function taoLichThang(slug, nam, thang, homNay, ngayChon, lich) {
 
 // Gắn lịch vào khung. layTau(): slug tàu đang chọn. chonNgay(ngay): gọi khi khách bấm một ngày.
 // Trả về { ve(ngayChon) } để vẽ lại khi đổi tàu hoặc đổi ngày từ nơi khác; khung không có thì trả null.
-function ganLichCho(khung, homNay, layTau, chonNgay, ngayDau) {
+// tuyChon (không bắt buộc): { layKhach: fn → số chỗ cần, khiCapNhat: fn() gọi sau khi tải xong lịch online }.
+function ganLichCho(khung, homNay, layTau, chonNgay, ngayDau, tuyChon) {
   if (!khung) return null;
+  tuyChon = tuyChon || {};
+  var daTai = {};
   var nam = Number(homNay.slice(0, 4));
   var thang = Number(homNay.slice(5, 7));
   if (ngayDau && ngayDau >= homNay) { nam = Number(ngayDau.slice(0, 4)); thang = Number(ngayDau.slice(5, 7)); }
@@ -94,7 +156,30 @@ function ganLichCho(khung, homNay, layTau, chonNgay, ngayDau) {
     thongBao.setAttribute('aria-live', 'polite');
     khung.parentNode.insertBefore(thongBao, khung.nextSibling);
   }
-  function ve() { khung.innerHTML = taoLichThang(layTau(), nam, thang, homNay, ngayChon); }
+  function ve() {
+    var slugVe = layTau();
+    if (slugVe) KHACH_DANG_XEM[slugVe] = khoaKhach(typeof tuyChon.layKhach === 'function' ? tuyChon.layKhach() : 1);
+    khung.innerHTML = taoLichThang(slugVe, nam, thang, homNay, ngayChon);
+    taiThangNay();
+  }
+  // Tải ngày hết chỗ online của tháng đang xem (mỗi tàu/tháng/số khách tải 1 lần), xong thì vẽ lại.
+  function taiThangNay() {
+    var slug = layTau();
+    if (!slug || !urlLichOnline()) return;
+    var khach = typeof tuyChon.layKhach === 'function' ? tuyChon.layKhach() : 1;
+    KHACH_DANG_XEM[slug] = khoaKhach(khach);
+    var thangChuoi = nam + '-' + haiSoLich(thang);
+    var khoa = slug + '|' + thangChuoi + '|' + KHACH_DANG_XEM[slug];
+    if (daTai[khoa]) return;
+    daTai[khoa] = true;
+    if (khung.classList) khung.classList.add('dang-tai');
+    taiLichOnline(slug, thangChuoi, khach, function (ok) {
+      if (khung.classList) khung.classList.remove('dang-tai');
+      if (!ok) { delete daTai[khoa]; return; }
+      khung.innerHTML = taoLichThang(layTau(), nam, thang, homNay, ngayChon);
+      if (typeof tuyChon.khiCapNhat === 'function') tuyChon.khiCapNhat();
+    });
+  }
   // Vẽ lại xoá nút đang được chọn bằng bàn phím: đặt lại focus vào đúng nút.
   function focusLai(chon) {
     if (!khung.querySelector) return;
@@ -126,6 +211,11 @@ function ganLichCho(khung, homNay, layTau, chonNgay, ngayDau) {
     ve: function (ngayMoi) {
       if (typeof ngayMoi === 'string') ngayChon = ngayMoi;
       ve();
+    },
+    // Tải lại lịch online (vd. sau khi giữ chỗ thất bại vì vừa hết chỗ).
+    taiLai: function () {
+      daTai = {};
+      ve();
     }
   };
 }
@@ -136,6 +226,7 @@ if (typeof module !== 'undefined') {
   }
   module.exports = {
     LICH_CHO: LICH_CHO, trangThaiNgay: trangThaiNgay, taoLichThang: taoLichThang, ganLichCho: ganLichCho,
-    TEN_TRANG_THAI_CHO: TEN_TRANG_THAI_CHO, ngayHomNayVN: ngayHomNayVN, layBangLich: layBangLich
+    TEN_TRANG_THAI_CHO: TEN_TRANG_THAI_CHO, ngayHomNayVN: ngayHomNayVN, layBangLich: layBangLich,
+    LICH_ONLINE: LICH_ONLINE, KHACH_DANG_XEM: KHACH_DANG_XEM, taiLichOnline: taiLichOnline, giuChoOnline: giuChoOnline, urlLichOnline: urlLichOnline, coHanCho: coHanCho
   };
 }

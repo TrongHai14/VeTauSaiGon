@@ -24,6 +24,12 @@ var CAU_HINH = {
     footer: 'anh/logo/logo-nguyen-nguyen-trong-suot.png'   // ở chân trang, hiện cao 96px
   },
 
+  // Lịch còn chỗ online (Google Sheet + Apps Script, xem cong-cu/google-sheet/HUONG-DAN.md).
+  // url: link Web App dạng https://script.google.com/macros/s/.../exec. Để trống = chỉ dùng js/lich-cho-du-lieu.js.
+  lichChoOnline: {
+    url: ''
+  },
+
   // Nút mạng xã hội ở chân trang. Để trống ('') thì nút đó không hiện trên web.
   // Sửa xong chạy "Tạo lại các trang HTML" (node cong-cu/tao-trang.js).
   mangXaHoi: {

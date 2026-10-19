@@ -326,6 +326,7 @@ ${header('')}
         <form class="the-form" id="form-xac-nhan" novalidate>
           <label class="o-chon"><input type="checkbox" name="daNhanTien"><span><strong>Tôi đã kiểm tra: tài khoản đã nhận đủ tiền</strong><small>Đúng số tiền và nội dung chuyển khoản ở trên</small></span></label>
           <div class="o-nhap" style="margin-top:14px"><label for="code-ve">Code vé điện tử <small>(nếu đã có)</small></label><input type="text" id="code-ve" name="codeVe"></div>
+          <div class="o-nhap" id="o-ma-quan-ly" style="margin-top:14px" hidden><label for="ma-quan-ly">Mã quản lý lịch chỗ <small>(tab “Cài đặt” trong Google Sheet; nhập 1 lần, máy này sẽ nhớ)</small></label><input type="password" id="ma-quan-ly" name="maQuanLy" autocomplete="off"><button type="button" class="nut-chep" data-quen-ma style="margin-top:6px">Quên mã trên máy này</button></div>
           <div class="nut-buoc"><button type="submit" class="nut">Tạo phiếu “Đã thanh toán”</button></div>
           <p class="thong-bao" id="thong-bao" role="status"></p>
         </form>

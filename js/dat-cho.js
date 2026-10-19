@@ -10,13 +10,17 @@ var hamHienThi = (typeof escapeHtml === 'function')
 var escapeHtmlDatCho = hamHienThi.escapeHtml;
 // Lịch còn chỗ (js/lich-cho.js): trên trình duyệt là hàm toàn cục, khi chạy test thì require.
 var hamLichCho = (typeof trangThaiNgay === 'function')
-  ? { trangThaiNgay: trangThaiNgay, ganLichCho: ganLichCho, ngayHomNayVN: ngayHomNayVN }
+  ? {
+    trangThaiNgay: trangThaiNgay, ganLichCho: ganLichCho, ngayHomNayVN: ngayHomNayVN,
+    giuChoOnline: typeof giuChoOnline === 'function' ? giuChoOnline : function () { return Promise.resolve({ ok: false, loi: 'chua-cai' }); }
+  }
   : (typeof require === 'function' ? require('./lich-cho.js')
     // Trang nào chưa nạp lich-cho.js: coi mọi ngày còn chỗ, không có lịch (ô ngày trở lại ô chọn ngày thường).
     : {
       trangThaiNgay: function () { return 'con'; },
       ganLichCho: function () { return null; },
-      ngayHomNayVN: function () { return ngayHomNayDiaPhuong(new Date()); }
+      ngayHomNayVN: function () { return ngayHomNayDiaPhuong(new Date()); },
+      giuChoOnline: function () { return Promise.resolve({ ok: false, loi: 'chua-cai' }); }
     });
 if (typeof kyVe !== 'function' && typeof module !== 'undefined') {
   var hamXacThuc = require('./xac-thuc.js');
@@ -283,6 +287,22 @@ function taoMaDon(date, ngauNhien) {
   return 'VT' + hai(date.getFullYear() % 100) + hai(date.getMonth() + 1) + hai(date.getDate()) + duoi;
 }
 
+function soChoCuaDon(don, tau, bangTreEm) {
+  var khach = tomTatDon(don, tau, bangTreEm).khach;
+  return { nguoiLon: khach.nguoiLon, treEm: khach.treEm50, beMienPhi: khach.treEmMienPhi, tong: khach.nguoiLon + khach.treEm50 };
+}
+
+// Lời nhắn hạn giữ chỗ ở bước thanh toán. giuDen: chuỗi ISO từ Web App.
+function taoLoiNhanGiuCho(giuDen) {
+  var d = new Date(giuDen);
+  if (!giuDen || isNaN(d.getTime())) return '';
+  var vn = new Date(d.getTime() + 7 * 3600 * 1000);
+  var hai2 = function (n) { return (n < 10 ? '0' : '') + n; };
+  return '<p class="giu-cho">Đã giữ chỗ cho quý khách đến <b>' + hai2(vn.getUTCHours()) + ':' + hai2(vn.getUTCMinutes()) + ' ngày ' +
+    hai2(vn.getUTCDate()) + '/' + hai2(vn.getUTCMonth() + 1) + '/' + vn.getUTCFullYear() +
+    '</b>. Vui lòng chuyển khoản và bấm “Tôi đã chuyển khoản” trước thời hạn này; quá hạn, chỗ sẽ tự trả lại cho khách khác.</p>';
+}
+
 function laMaDon(ma) {
   return /^VT\d{6}[A-Z0-9]{4}$/.test(String(ma || ''));
 }
@@ -371,6 +391,16 @@ function taoDuLieuEmail(don, tau, bangTreEm, taiKhoan, linkXacNhan) {
   kq['Ngôn ngữ khách'] = laKhachTiengAnh() ? 'Tiếng Anh (English) – trả lời khách bằng tiếng Anh' : 'Tiếng Việt';
   var canhBaoTre = canhBaoTreEm(don, tau, bangTreEm);
   if (canhBaoTre) kq['Cần báo phụ phí trẻ em'] = canhBaoTre;
+  if (don.giuCho === 'da-giu') kq['Giữ chỗ'] = 'Đã giữ trên Google Sheet đến ' + (don.giuDen ? new Date(don.giuDen).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : '');
+  else if (don.giuCho === 'loi') {
+    kq['Giữ chỗ'] = 'CHƯA giữ được chỗ tự động (' + ({ mang: 'lỗi mạng', ban: 'máy chủ bận hoặc quá nhiều lượt', 'du-lieu': 'dữ liệu đơn không hợp lệ', 'may-chu': 'lỗi máy chủ' }[don.loiGiuCho] || 'lỗi') +
+      ') – kiểm tra Google Sheet và thêm đơn bằng tay';
+  }
+  if (don.daChuyen === 'ok') kq['Báo chuyển khoản'] = 'Khách đã bấm "Tôi đã chuyển khoản" – chỗ đang giữ ở trạng thái "Chờ xác nhận"';
+  else if (don.daChuyen === 'vuot') kq['Báo chuyển khoản'] = 'Khách báo đã chuyển khoản SAU KHI hết hạn giữ chỗ – ngày này đang vượt ' + don.vuotCho + ' chỗ, kiểm tra với tàu';
+  else if (don.daChuyen === 'da-huy') kq['Báo chuyển khoản'] = 'Khách báo đã chuyển khoản nhưng đơn ĐÃ BỊ HỦY trên Google Sheet – kiểm tra tiền và chỗ với tàu';
+  else if (don.daChuyen === 'loi' && don.loiChuyen === 'khong-co-don') kq['Báo chuyển khoản'] = 'Khách báo đã chuyển khoản nhưng Google Sheet CHƯA CÓ dòng của đơn này – thêm dòng "Chờ xác nhận" bằng tay';
+  else if (don.daChuyen === 'loi') kq['Báo chuyển khoản'] = 'CHƯA báo được lên Google Sheet (mã lỗi ' + (don.loiChuyen || 'mang') + ') – đổi đơn sang "Chờ xác nhận" bằng tay để chỗ không tự hết hạn';
   if (linkXacNhan) kq['Link tạo phiếu sau khi kiểm tra tiền'] = linkXacNhan;
   return kq;
 }
@@ -880,6 +910,17 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   // Lịch còn chỗ / hết chỗ (js/lich-cho.js): bấm ngày nào thì điền vào ô ngày (ô ẩn).
   var oNgayDaChon = document.getElementById('ngay-da-chon');
   function hienNgayDaChon() { if (oNgayDaChon) oNgayDaChon.textContent = don.ngay ? '· ' + dinhDangNgay(don.ngay) : ''; }
+  // Ngày đang chọn vừa thành hết chỗ (lịch online, hoặc không đủ chỗ cho số khách): bỏ chọn và nhắc khách.
+  function boChonNgayHetCho() {
+    if (!don.ngay || !don.slugTau || hamLichCho.trangThaiNgay(don.slugTau, don.ngay, hamLichCho.ngayHomNayVN()) !== 'het') return;
+    don.ngay = '';
+    el.ngay.value = '';
+    hienNgayDaChon();
+    if (lich) lich.ve('');
+    var oLoiNgay = goc.querySelector('[data-loi="ngay"]');
+    if (oLoiNgay) oLoiNgay.textContent = 'Ngày đã chọn không còn đủ chỗ, vui lòng chọn ngày khác.';
+    veTomTat();
+  }
   // Mở link ?ngay= đúng ngày tàu đã hết chỗ: bỏ chọn ngày đó.
   if (don.ngay && don.slugTau && hamLichCho.trangThaiNgay(don.slugTau, don.ngay, hamLichCho.ngayHomNayVN()) === 'het') {
     don.ngay = '';
@@ -890,7 +931,10 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   try {
     lich = hamLichCho.ganLichCho(khungLich, hamLichCho.ngayHomNayVN(),
       function () { return don.slugTau; },
-      function (ngay) { el.ngay.value = ngay; el.ngay.dispatchEvent(new Event('change', { bubbles: true })); }, don.ngay);
+      function (ngay) { el.ngay.value = ngay; el.ngay.dispatchEvent(new Event('change', { bubbles: true })); }, don.ngay, {
+        layKhach: function () { var c = soChoCuaDon(don, tauHienTai(), bangTreEm); return { khach: Math.max(1, c.tong), be: c.beMienPhi }; },
+        khiCapNhat: boChonNgayHetCho
+      });
   } catch (loiLich) {
     lich = null;
   }
@@ -908,7 +952,11 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     khungMon.innerHTML = taoKhoiChonMon(tauHienTai(), don, bangTreEm, lienHe);
   }
   var thanhDuoi = document.getElementById('thanh-lien-he');
+  var soKhachLich = 0;
   function veTomTat() {
+    var choMoi = soChoCuaDon(don, tauHienTai(), bangTreEm);
+    var soMoi = choMoi.tong + '|' + choMoi.beMienPhi;
+    if (typeof lich !== 'undefined' && lich && soMoi !== soKhachLich) { soKhachLich = soMoi; lich.ve(); boChonNgayHetCho(); }
     if (khungTomTat) khungTomTat.innerHTML = taoTomTatDon(don, tauHienTai(), bangTreEm, '');
     if (thanhDuoi) {
       var tong = tomTatDon(don, tauHienTai(), bangTreEm).tong;
@@ -1103,8 +1151,55 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
         don.ngayDat = ngayHomNayDiaPhuong(new Date());
       }
       if (don.vat) don.taiKhoan = 'congTy';
-      khungThanhToan.innerHTML = taoKhoiThanhToan(don, tauHienTai(), bangTreEm, cauHinhThanhToan) + taoKhoiMsNguyen(cheDoMsNguyen, don);
-      denBuoc(3);
+      var hienThanhToan = function () {
+        khungThanhToan.innerHTML = taoLoiNhanGiuCho(don.giuDen) + taoKhoiThanhToan(don, tauHienTai(), bangTreEm, cauHinhThanhToan) + taoKhoiMsNguyen(cheDoMsNguyen, don);
+        denBuoc(3);
+      };
+      // Chế độ Ms Nguyên (nhập lại đơn từ Zalo): không giữ chỗ tự động.
+      if (cheDoMsNguyen) { hienThanhToan(); return; }
+      var cho = soChoCuaDon(don, tauHienTai(), bangTreEm);
+      nut.disabled = true;
+      thongBao('Đang kiểm tra và giữ chỗ…', '');
+      hamLichCho.giuChoOnline({
+        action: 'giu', maDon: don.maDon, tau: don.slugTau, ngay: don.ngay,
+        nguoiLon: cho.nguoiLon, treEm: cho.treEm, beMienPhi: cho.beMienPhi,
+        hoTen: don.hoTen.trim(), sdt: chuanHoaSoDienThoai(don.soDienThoai) || don.soDienThoai
+      }).then(function (kq) {
+        nut.disabled = false;
+        thongBao('', '');
+        if (kq.ok) {
+          don.giuCho = 'da-giu';
+          don.giuDen = kq.giuDen || '';
+          hienThanhToan();
+        } else if (kq.loi === 'da-chuyen') {
+          thongBao('Đơn này đã báo chuyển khoản nên không đổi được tàu hoặc ngày trên web. Vui lòng nhắn Zalo Ms Nguyên 0948170036 để đổi.', 'loi-gui');
+        } else if (kq.loi === 'doan-dong' || kq.loi === 'nhieu-don') {
+          // Đoàn đông hoặc SĐT đang có đơn chờ thanh toán: nhờ khách liên hệ Ms Nguyên.
+          don.giuCho = '';
+          var loiDoan = kq.loi === 'doan-dong'
+            ? 'Đoàn đông vui lòng gọi hoặc nhắn Zalo Ms Nguyên 0948170036 để được giữ chỗ.'
+            : 'Số điện thoại này đang có đơn chờ chuyển khoản. Vui lòng hoàn tất đơn đó hoặc nhắn Zalo Ms Nguyên 0948170036.';
+          thongBao(loiDoan, 'loi-gui');
+        } else if (kq.loi === 'het' || kq.loi === 'ngay-qua' || kq.loi === 'sat-gio') {
+          // Vừa hết chỗ (khách khác đặt trước): quay lại chọn ngày khác.
+          don.giuCho = '';
+          don.giuDen = '';
+          if (lich) lich.taiLai();
+          denBuoc(1);
+          var oLoiNgay = goc.querySelector('[data-loi="ngay"]');
+          var loiNhan = kq.loi === 'het' ? 'Ngày này vừa hết chỗ cho ' + cho.tong + ' khách, vui lòng chọn ngày khác hoặc nhắn Zalo để được hỗ trợ.'
+            : kq.loi === 'sat-gio' ? 'Đã quá giờ nhận đặt online cho ngày này, vui lòng gọi hoặc nhắn Zalo Ms Nguyên.'
+              : 'Vui lòng chọn ngày từ hôm nay trở đi.';
+          if (oLoiNgay) oLoiNgay.textContent = loiNhan;
+          thongBao(loiNhan, 'loi-gui');
+        } else {
+          // Chưa cài lịch online, hoặc mạng lỗi: vẫn cho thanh toán; email báo Ms Nguyên kiểm tra chỗ.
+          don.giuCho = kq.loi === 'chua-cai' ? '' : 'loi';
+          don.loiGiuCho = kq.loi || '';
+          don.giuDen = '';
+          hienThanhToan();
+        }
+      });
     } else if (hanhDong === 'da-chuyen') {
       if (dangGui) return;
       var tau = tauHienTai();
@@ -1114,7 +1209,15 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
       dangGui = true;
       nut.disabled = true;
       thongBao('Đang gửi thông tin cho Ms Nguyên…', '');
-      guiEmailDatCho(taoDuLieuEmail(don, tau, bangTreEm, tk, linkXacNhan), typeof fetch === 'function' ? fetch.bind(window) : null).then(function (ok) {
+      // Gửi cả khi lần giữ chỗ bị lỗi mạng (máy chủ có thể đã giữ được); không có đơn thì máy chủ trả khong-co-don.
+      var baoChuyen = (don.giuCho === 'da-giu' || don.giuCho === 'loi')
+        ? hamLichCho.giuChoOnline({ action: 'daChuyen', maDon: don.maDon, sdt: chuanHoaSoDienThoai(don.soDienThoai) || don.soDienThoai })
+        : Promise.resolve(null);
+      baoChuyen.then(function (kqChuyen) {
+        if (kqChuyen && kqChuyen.ok) { don.daChuyen = kqChuyen.vuot ? 'vuot' : 'ok'; don.vuotCho = kqChuyen.vuot || 0; }
+        else if (kqChuyen) { don.daChuyen = kqChuyen.loi === 'da-huy' ? 'da-huy' : 'loi'; don.loiChuyen = kqChuyen.loi || ''; }
+        return guiEmailDatCho(taoDuLieuEmail(don, tau, bangTreEm, tk, linkXacNhan), typeof fetch === 'function' ? fetch.bind(window) : null);
+      }).then(function (ok) {
         dangGui = false;
         nut.disabled = false;
         goc.querySelector('#ma-don-cho').textContent = don.maDon;
@@ -1311,6 +1414,33 @@ function khoiChayTrangXacNhan() {
       : '');
   var form = goc.querySelector('#form-xac-nhan');
   var khungPhieu = goc.querySelector('#khung-phieu');
+  // Lịch chỗ online: tạo phiếu xong thì đổi đơn trên Google Sheet sang "Đã thanh toán" (để chỗ không tự trả lại).
+  var KHOA_MA_QUAN_LY = 'veTauSaiGon.maQuanLyLich';
+  var oMaQuanLy = goc.querySelector('#o-ma-quan-ly');
+  var coLichOnline = typeof urlLichOnline === 'function' && !!urlLichOnline();
+  if (oMaQuanLy && coLichOnline) {
+    oMaQuanLy.hidden = false;
+    try { form.elements.maQuanLy.value = localStorage.getItem(KHOA_MA_QUAN_LY) || ''; } catch (loiLuu) { /* bỏ qua */ }
+    var nutQuen = oMaQuanLy.querySelector('[data-quen-ma]');
+    if (nutQuen) nutQuen.addEventListener('click', function () {
+      try { localStorage.removeItem(KHOA_MA_QUAN_LY); } catch (loiLuu) { /* bỏ qua */ }
+      form.elements.maQuanLy.value = '';
+    });
+  }
+  function baoDaThanhToanLenSheet() {
+    if (!coLichOnline || !form.elements.maQuanLy) return Promise.resolve('');
+    var ma = form.elements.maQuanLy.value.trim();
+    if (!ma) return Promise.resolve(' Chưa nhập Mã quản lý lịch chỗ: nhớ đổi đơn này sang “Đã thanh toán” trong Google Sheet.');
+    try { localStorage.setItem(KHOA_MA_QUAN_LY, ma); } catch (loiLuu) { /* bỏ qua */ }
+    return giuChoOnline({ action: 'xacNhan', maDon: don.maDon, ma: ma }).then(function (kq) {
+      if (kq.ok && kq.vuot) return ' Đã đổi sang “Đã thanh toán”, NHƯNG đơn đã quá hạn giữ chỗ và ngày này đang vượt ' + kq.vuot + ' chỗ – kiểm tra với tàu.' + (kq.daHuy ? ' (Đơn trước đó đang “Hủy”.)' : '');
+      if (kq.ok && kq.daHuy) return ' Đã đổi sang “Đã thanh toán” (đơn trước đó đang “Hủy”, kiểm tra lại).';
+      if (kq.ok) return ' Đã đổi đơn sang “Đã thanh toán” trong Google Sheet.';
+      if (kq.loi === 'ma') return ' Mã quản lý lịch chỗ không đúng: đổi đơn sang “Đã thanh toán” trong Google Sheet bằng tay.';
+      if (kq.loi === 'khong-co-don') return ' Không thấy đơn này trong Google Sheet (khách đặt lúc lịch online chưa bật?): thêm dòng “Đã thanh toán” bằng tay.';
+      return ' Chưa cập nhật được Google Sheet (lỗi mạng): đổi đơn sang “Đã thanh toán” bằng tay.';
+    });
+  }
   var khuVucPhieu = goc.querySelector('#khu-vuc-phieu');
   var oThongBao = goc.querySelector('#thong-bao');
 
@@ -1339,6 +1469,7 @@ function khoiChayTrangXacNhan() {
       });
       oThongBao.textContent = anhQR ? 'Đã ký phiếu. Tải ảnh phiếu rồi gửi cho khách.' : 'Đã ký nhưng chưa tải được thư viện mã QR, kiểm tra mạng rồi bấm tạo lại.';
       oThongBao.className = anhQR ? 'thong-bao da-gui' : 'thong-bao loi-gui';
+      baoDaThanhToanLenSheet().then(function (them) { if (them) oThongBao.textContent += them; });
       var oLink = goc.querySelector('#link-kiem-tra');
       if (oLink) { oLink.href = link; oLink.hidden = false; }
       khuVucPhieu.hidden = false;
@@ -1381,7 +1512,7 @@ if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
     taoMaDon, laMaDon, taoKhoiUyTin, layLogoDaiLy, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
-    taoDuLieuEmail, guiEmailDatCho, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
+    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };
 }

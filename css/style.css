@@ -807,3 +807,10 @@ html.dang-dich body { visibility: hidden; }
 
 /* Chỉ cho trình đọc màn hình (ẩn khỏi mắt nhìn). */
 .an-man-hinh { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Giữ chỗ (lịch online Google Sheet) ---------- */
+.giu-cho { margin: 0 0 12px; padding: 10px 12px; border-radius: var(--bo-goc); background: #e8f7ee; color: #0f6b3a; font-size: 14px; }
+.lich-cho.dang-tai { position: relative; }
+.lich-cho.dang-tai::after { content: ''; position: absolute; top: 14px; right: 56px; width: 14px; height: 14px; border: 2px solid var(--vien); border-top-color: var(--xanh); border-radius: 50%; animation: lich-quay .8s linear infinite; }
+@keyframes lich-quay { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .lich-cho.dang-tai::after { animation: none; } }
