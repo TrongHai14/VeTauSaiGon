@@ -38,7 +38,7 @@ test('buffet 3 nguoi lon + 3 be mien phi: chi 1 be mien phi, 2 be con lai tinh 5
   const tt = tong(d);
   assert.strictEqual(tt.tong, 3 * 615600 + 2 * 307800);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 3, treEm50: 2, treEmMienPhi: 1 });
-  assert.match(dc.canhBaoTreEm(d, tau('indochina-queen')), /2 người lớn chỉ được kèm 1 trẻ em/, 'Queen: 3 tre cho 3 nguoi lon vuot quy dinh (giai-dap.md muc 7)');
+  assert.strictEqual(dc.canhBaoTreEm(d, tau('indochina-queen')), null, 'Queen (giong Star tu 19/10/2026): be vuot da tu tinh 50%');
   assert.strictEqual(dc.canhBaoTreEm(Object.assign({}, d, { slugTau: 'indochina-star', buffetMa: '0:0' }), tau('indochina-star')), null, 'Star: be vuot da tu tinh 50%');
 });
 

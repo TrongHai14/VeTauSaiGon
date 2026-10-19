@@ -171,5 +171,28 @@ Logo Nguyên Nguyên Travel đã tách nền: `anh/logo/logo-nguyen-nguyen-trong
 - **Bo góc:** cả web dùng một kiểu bo góc `--bo-goc` (12px) trong `css/style.css`. Muốn đổi thì chỉ sửa một dòng này. Hình tròn (nút liên hệ nổi, số bước) giữ tròn.
 - **Trang chủ:** màn hình đầu là ảnh bìa tràn màn hình với nút **Đặt chỗ ngay**; bấm nút thì cuộn xuống ô tìm và đặt chỗ. Ảnh bìa lấy từ `anhBia` trong `js/cau-hinh.js` (anh/bia/bia-01.jpg …), nên chọn ảnh ngang, đẹp, rõ tàu.
 - **Header:** Du thuyền · Đặt chỗ · FAQ · Liên hệ. Không đặt số điện thoại trên header; số điện thoại nằm ở nút liên hệ nổi.
-- **Nút liên hệ nổi** (góc dưới bên phải, mọi trang): Gọi 0948170036 và Nhắn Zalo.
+- **Nút liên hệ nổi** (góc dưới bên phải, mọi trang cho khách): một nút tròn, bấm mở ra Gọi 0948170036, Messenger và Zalo (xem mục "Nút liên hệ nổi" bên dưới).
 - **FAQ:** trang `faq.html`, câu hỏi nằm trong `CAU_HOI_FAQ` ở `cong-cu/tao-trang.js`.
+
+## Lịch còn chỗ / hết chỗ
+
+Trang đặt chỗ và trang từng tàu có lịch tháng. Mỗi ngày hiện một trong các trạng thái: **Còn chỗ** (xanh), **Còn ít chỗ** (cam), **Hết chỗ** (xám, gạch ngang, không bấm được). Ngày đã qua tự khoá.
+
+Ms Nguyên chỉ cần sửa file `js/lich-cho-du-lieu.js` (phần `LICH_CHO`) rồi lưu lại, không cần chạy công cụ tạo trang. Web thật có thể mất khoảng 10 phút mới cập nhật. Lỡ gõ sai làm file lỗi thì web không hỏng, chỉ tạm coi mọi ngày là còn chỗ; ngày ghi sai dạng (ví dụ 24/12/2026) sẽ bị bỏ qua và báo ở F12 > Console.
+
+```js
+'indochina-queen': {
+  '2026-12-24': 'het',   // hết chỗ
+  '2026-12-31': 'it'     // còn ít chỗ
+},
+```
+
+Ngày nào không ghi thì coi là còn chỗ. Nếu khách cố chọn ngày hết chỗ, bước 1 sẽ báo lỗi "Ngày này tàu đã hết chỗ".
+
+## Thông số tàu
+
+Mỗi tàu có `thongSo` trong `js/du-lieu-tau.js` (sức chứa, số tầng, kích thước…). Phần này hiện ở mục Giới thiệu của trang tàu; riêng sức chứa còn hiện trên thẻ tàu ở trang chủ. Số liệu lấy từ trang chính thức của tàu. Riêng Bến Nghé lấy theo các đại lý vé, vì tàu này không có trang chính thức.
+
+## Nút liên hệ nổi
+
+Góc dưới bên phải có một nút tròn. Bấm vào sẽ mở ra 3 nút: Gọi, Messenger, Zalo. Link Messenger nằm ở `mangXaHoi.messenger` trong `js/cau-hinh.js`; nếu để trống thì nút Messenger không hiện.

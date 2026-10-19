@@ -212,9 +212,13 @@ test('nut lien he noi goc phai co tren moi trang cho khach (goi + Zalo), trang n
     const html = doc(f);
     assert.ok(html.includes('<div class="thanh-lien-he" id="thanh-lien-he" hidden></div>'), f + ' thanh duoi');
     if (f === 'xac-nhan.html' || f === 'kiem-tra-ve.html') continue;
-    const noi = html.slice(html.indexOf('<div class="lien-he-noi" role="group"'));
-    assert.ok(noi.startsWith('<div class="lien-he-noi"'), f + ' co nut noi');
+    const i = html.indexOf('<div class="lien-he-noi" id="lien-he-noi">');
+    assert.ok(i > 0, f + ' co nut noi');
+    const noi = html.slice(i, html.indexOf('<script', i));
+    // Gom 1 nút: Gọi, Messenger, Zalo nằm trong danh sách; nút mở có aria-expanded.
     assert.ok(noi.includes('href="tel:0948170036"') && noi.includes('href="https://zalo.me/0948170036"'), f);
+    assert.ok(noi.includes('href="https://m.me/antoitrenduthuyensaigon"'), f + ' messenger');
+    assert.ok(noi.includes('<button type="button" class="lh-mo" aria-expanded="false" aria-controls="lh-ds"'), f + ' nut mo');
     assert.ok(html.includes('<div class="thanh-lien-he" id="thanh-lien-he" hidden></div>'), f + ' thanh duoi');
   }
 });

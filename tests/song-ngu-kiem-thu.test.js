@@ -403,6 +403,8 @@ function taoXoaLoi() {
   const ctx = vm.createContext({ goc, Date, String });
   const nguon = (ten) => { const i = js.indexOf('function ' + ten + '('); return js.slice(i, js.indexOf('\n}\n', i) + 3); };
   vm.runInContext(nguon('laNgayCoThat') + nguon('ngayHomNayDiaPhuong') + nguon('chuanHoaSoDienThoai') + nguon('laEmail') + nguon('laMaSoThue') + maHam + '\nthis.xoaLoiKhiSua = xoaLoiKhiSua;', ctx);
+  // "Hôm nay" lấy từ hamLichCho (giờ Việt Nam); trong test dùng cùng hàm với phần kiểm tra.
+  ctx.hamLichCho = { ngayHomNayVN: () => vm.runInContext('ngayHomNayDiaPhuong(new Date())', ctx) };
   return { ctx, oLoi };
 }
 const sk = (name, value, checked) => ({ target: { name, value, checked } });

@@ -212,6 +212,13 @@ function taoKhoiGia(tau, nhanNho) {
   return '<small>' + nhanNho + '</small><strong>' + escapeHtml(dinhDangGia(gia)) + '</strong>';
 }
 
+// Giá trị một thông số của tàu theo nhãn (vd 'Sức chứa'), không có thì ''.
+function layThongSo(tau, nhan) {
+  var ds = tau.thongSo || [];
+  for (var i = 0; i < ds.length; i++) if (ds[i].nhan === nhan) return ds[i].giaTri;
+  return '';
+}
+
 function taoTheTau(tau, tienTo) {
   var gio = tau.gioChay || {};
   var nhan = layNhanTau(tau);
@@ -227,6 +234,7 @@ function taoTheTau(tau, tienTo) {
     '<p class="the-tau-gio">' +
     (gio.donKhach ? '<span>' + icon('gio') + 'Đón ' + escapeHtml(gio.donKhach) + '</span>' : '') +
     (gio.khoiHanh ? '<span>' + icon('tau') + 'Khởi hành ' + escapeHtml(gio.khoiHanh) + '</span>' : '') +
+    (layThongSo(tau, 'Sức chứa') ? '<span>' + icon('nguoi') + escapeHtml(layThongSo(tau, 'Sức chứa')) + '</span>' : '') +
     '</p>' +
     (tau.moTaNgan ? '<p class="the-tau-mo-ta">' + escapeHtml(tau.moTaNgan) + '</p>' : '') +
     '<div class="the-tau-chan"><p class="the-tau-gia">' + taoKhoiGia(tau, 'Giá từ / khách') + '</p>' +
@@ -371,12 +379,19 @@ function taoMucThucDon(tau, tienTo, lienHe) {
 
 // Mục "Giới thiệu tàu": đoạn giới thiệu ngắn + các điểm nổi bật.
 function taoMucGioiThieu(tau) {
-  if (!tau.gioiThieu && !(tau.noiBat && tau.noiBat.length)) return '';
+  if (!tau.gioiThieu && !(tau.noiBat && tau.noiBat.length) && !(tau.thongSo && tau.thongSo.length)) return '';
   var html = tau.gioiThieu ? '<p class="gioi-thieu-tau">' + escapeHtml(tau.gioiThieu) + '</p>' : '';
   if (tau.noiBat && tau.noiBat.length) {
     html += '<ul class="noi-bat">';
     for (var i = 0; i < tau.noiBat.length; i++) html += '<li>' + icon('dung') + '<span>' + escapeHtml(tau.noiBat[i]) + '</span></li>';
     html += '</ul>';
+  }
+  if (tau.thongSo && tau.thongSo.length) {
+    html += '<dl class="thong-so-tau">';
+    for (var k = 0; k < tau.thongSo.length; k++) {
+      html += '<div><dt>' + escapeHtml(tau.thongSo[k].nhan) + '</dt><dd>' + escapeHtml(tau.thongSo[k].giaTri) + '</dd></div>';
+    }
+    html += '</dl><p class="ghi-chu">Thông số tham khảo, có thể thay đổi theo thực tế.</p>';
   }
   return taoMuc('gioi-thieu', 'tau', 'Giới thiệu tàu ' + escapeHtml(tau.ten), html);
 }
@@ -458,7 +473,7 @@ function taoTheDatNhanh(tau, lienHe, tienTo) {
     (gio.capBen ? '<li><span>Cập bến</span><strong>' + escapeHtml(gio.capBen) + '</strong></li>' : '') +
     '</ul>' +
     '<a class="nut nut-rong" href="' + escapeHtml(taoLinkDatCho(tienTo, tau.slug, null)) + '">Đặt chỗ ngay</a>' +
-    '<a class="nut nut-vien nut-rong" href="' + escapeHtml(lienHe.linkGoi) + '">' + icon('dienThoai') + 'Gọi ' + escapeHtml(lienHe.soDienThoai) + '</a>' +
+    '<a class="nut nut-vien nut-rong" href="#lich-cho">' + icon('lich') + 'Xem lịch còn chỗ</a>' +
     '<p class="phu">' + escapeHtml(lienHe.tenNguoiLienHe) + ' xác nhận chỗ qua Zalo hoặc điện thoại</p>' +
     '</div></aside>';
 }
@@ -480,13 +495,15 @@ function taoTrangTau(tau, lienHe, tienTo) {
     ['gioi-thieu', 'Giới thiệu', taoMucGioiThieu(tau)],
     ['thuc-don', 'Thực đơn & giá', taoMucThucDon(tau, tienTo, lienHe)],
     ['khuyen-mai', 'Khuyến mãi', taoMucKhuyenMai(tau, tienTo)],
+    ['lich-cho', 'Lịch còn chỗ', taoMuc('lich-cho', 'lich', 'Lịch còn chỗ',
+      '<div class="lich-cho" id="lich-tau"></div><p class="ghi-chu">Bấm vào ngày còn chỗ để đặt. Ngày hết chỗ không chọn được.</p>')],
     ['lich-trinh', 'Lịch trình', taoMucLichTrinh(tau)],
     ['tre-em', 'Trẻ em', tau.chinhSachTreEm && tau.chinhSachTreEm.length > 0
       ? taoMuc('tre-em', 'treEm', 'Chính sách trẻ em', taoDanhSachDau(tau.chinhSachTreEm)) : ''],
     ['giai-tri', 'Giải trí', tau.giaiTri && tau.giaiTri.length > 0
       ? taoMuc('giai-tri', 'nhac', 'Dịch vụ giải trí', taoDanhSachDau(tau.giaiTri)) : ''],
     ['dieu-kien', 'Điều kiện vé', taoMuc('dieu-kien', 'khien', 'Điều kiện vé &amp; chính sách',
-      taoKhoiChinhSach(CHINH_SACH_CHUNG, false) +
+      taoKhoiChinhSach(CHINH_SACH_CHUNG.filter(function (m) { return m.id !== 'tre-em-chung'; }), false) +
       '<p class="ghi-chu">Xem đầy đủ tại <a href="' + escapeHtml(tienTo + 'chinh-sach.html') + '">Chính sách &amp; điều kiện vé</a>.</p>')]
   ];
   var tab = '';
@@ -497,8 +514,8 @@ function taoTrangTau(tau, lienHe, tienTo) {
     noiDung += cacMuc[i][2];
   }
   html += '<nav class="thanh-tab">' + tab + '</nav>';
-  noiDung += taoMuc('lien-he', 'dienThoai', 'Liên hệ đặt chỗ', taoNutLienHe(lienHe) +
-    '<p class="dia-diem">' + icon('ghim') + escapeHtml(tau.diaChi || '') + '</p>');
+  // Liên hệ (gọi, Messenger, Zalo) gom vào nút liên hệ nổi góc phải; ở đây chỉ còn điểm đón.
+  noiDung += '<p class="dia-diem">' + icon('ghim') + escapeHtml(tau.diaChi || '') + '</p>';
   html += '<div class="bo-cuc-tau"><div class="cot-chinh">' + noiDung + '</div>' + taoTheDatNhanh(tau, lienHe, tienTo) + '</div>';
   return html;
 }
@@ -642,8 +659,29 @@ function layCauHinh() {
 }
 
 // Thay biểu tượng mặc định bằng logo thật nếu đã điền, và đổ phần giới thiệu công ty vào chân trang.
+// Nút liên hệ nổi: thu gọn thành 1 nút; bấm thì mở Gọi / Messenger / Zalo, bấm lại, bấm ra ngoài hoặc Esc thì đóng.
+function ganLienHeNoi() {
+  var hop = document.getElementById && document.getElementById('lien-he-noi');
+  if (!hop || hop.__daGan || !hop.querySelector || !hop.classList) return;
+  hop.__daGan = true;
+  var nut = hop.querySelector('.lh-mo');
+  if (!nut) return;
+  function dat(mo) {
+    hop.classList.toggle('mo', mo);
+    nut.setAttribute('aria-expanded', String(mo));
+  }
+  hop.classList.add('thu-gon');
+  nut.addEventListener('click', function (e) { e.stopPropagation(); dat(!hop.classList.contains('mo')); });
+  document.addEventListener('click', function (e) { if (!hop.contains(e.target)) dat(false); });
+  if (hop.addEventListener) hop.addEventListener('focusout', function (e) { if (e.relatedTarget && !hop.contains(e.relatedTarget)) dat(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && hop.classList.contains('mo')) { dat(false); nut.focus(); }
+  });
+}
+
 function apDungCauHinhChung(tienTo) {
   if (typeof document === 'undefined' || !document.querySelectorAll) return;
+  ganLienHeNoi();
   var ch = layCauHinh();
   var logo = ch.logo || {};
   var cacLogo = document.querySelectorAll('[data-logo]');
@@ -750,6 +788,11 @@ function chayAnhBia(hero, lop, anh) {
   });
 }
 
+// Hôm nay theo giờ Việt Nam (js/lich-cho.js), dạng YYYY-MM-DD; chưa nạp lich-cho.js thì theo giờ máy.
+function ngayHomNay() {
+  return typeof ngayHomNayVN === 'function' ? ngayHomNayVN() : cacNgayNhanh(new Date())[0][1];
+}
+
 // Nút chọn ngày nhanh: Hôm nay, Ngày mai, Thứ 7 này (giống các trang đặt vé lớn).
 function cacNgayNhanh(homNay) {
   var iso = function (d) {
@@ -811,10 +854,10 @@ function khoiChayTrangChu() {
       option += '<option value="' + escapeHtml(DANH_SACH_TAU[j].slug) + '">' + escapeHtml(DANH_SACH_TAU[j].ten) + '</option>';
     }
     oTau.innerHTML = option;
-    var homNay = new Date();
-    var thang = homNay.getMonth() + 1;
-    var ngay = homNay.getDate();
-    formTim.elements.ngay.min = homNay.getFullYear() + '-' + (thang < 10 ? '0' : '') + thang + '-' + (ngay < 10 ? '0' : '') + ngay;
+    // Hôm nay theo giờ Việt Nam (cùng mốc với lịch và kiểm tra ở trang đặt chỗ).
+    var chuoiHomNay = ngayHomNay();
+    var homNay = new Date(Number(chuoiHomNay.slice(0, 4)), Number(chuoiHomNay.slice(5, 7)) - 1, Number(chuoiHomNay.slice(8, 10)));
+    formTim.elements.ngay.min = chuoiHomNay;
     ganChonNgayNhanh(document.getElementById('ngay-nhanh'), formTim.elements.ngay, homNay);
     formTim.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -842,6 +885,20 @@ function khoiChayTrangTau() {
   }
   if (!khung) return;
   khung.innerHTML = taoTrangTau(tau, LIEN_HE, '../');
+  var lichTau = null;
+  try {
+    if (typeof ganLichCho === 'function') {
+      lichTau = ganLichCho(document.getElementById('lich-tau'), ngayHomNay(), function () { return tau.slug; }, function (ngay) {
+        location.href = taoLinkDatCho('../', tau.slug, null) + '&ngay=' + encodeURIComponent(ngay);
+      }, '');
+    }
+  } catch (loiLich) {
+    lichTau = null;
+  }
+  // Lịch không chạy được: thay bằng lời nhắn, các phần khác của trang vẫn hiện bình thường.
+  if (!lichTau && document.getElementById('lich-tau')) {
+    document.getElementById('lich-tau').innerHTML = '<p>Vui lòng chọn ngày ở bước đặt chỗ hoặc nhắn Zalo để kiểm tra chỗ.</p>';
+  }
   var thanh = document.getElementById('thanh-lien-he');
   if (thanh) {
     thanh.hidden = false;

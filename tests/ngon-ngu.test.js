@@ -130,7 +130,7 @@ test('mau cau: phan ben trong chua co ban dich thi tra null (khong ra cau nua An
   assert.notStrictEqual(nn.dichChuoi('Du thuyền Bến Nghé', 'en'), null, 'ten tau giu nguyen van dich duoc');
 });
 
-test('canh bao tre em theo tung tau: Princess bao phu thu 100.000 VND/be, Queen tinh tong tre, Star tu tinh ve tre em', () => {
+test('canh bao tre em theo tung tau: Princess bao phu thu 100.000 VND/be, Queen va Star tu tinh ve tre em', () => {
   const pr = dc.canhBaoTreEm(donMau({ slugTau: 'saigon-princess', loai: 'setMenu', mon: {}, nguoiLon: 0, treEmMienPhi: 3 }), tau('saigon-princess'), GIA_TRE_EM);
   // Set menu đếm người lớn theo suất đã chọn: chọn 2 suất người lớn.
   const nhom = ht.layThucDonTheoLoai(tau('saigon-princess')).setMenu;
@@ -140,8 +140,8 @@ test('canh bao tre em theo tung tau: Princess bao phu thu 100.000 VND/be, Queen 
   assert.match(canh, /2 người lớn chỉ được kèm tối đa 2 bé miễn phí\. Đơn có 3 bé, 1 bé vượt phụ thu 100\.000 VND\/bé\./);
   assert.match(nn.dichChuoi(canh, 'en'), /each extra child \(1\) is charged 100,000 VND\./);
   const qu = dc.canhBaoTreEm(donMau({ treEm50: 1, treEmMienPhi: 1 }), tau('indochina-queen'), GIA_TRE_EM);
-  assert.match(qu, /2 người lớn chỉ được kèm 1 trẻ em\. Đơn có 2 trẻ em/);
+  assert.strictEqual(qu, null, 'Queen giong Star: khong canh bao tong tre');
   const st = dc.canhBaoTreEm(donMau({ slugTau: 'indochina-star', treEm50: 0, treEmMienPhi: 2 }), tau('indochina-star'), GIA_TRE_EM);
   assert.strictEqual(st, null, 'Indochina Star buffet: be mien phi thu 2 tu tinh ve tre em, khong can canh bao');
-  for (const c of [canh, qu]) assert.notStrictEqual(nn.dichChuoi(c, 'en'), null, c);
+  for (const c of [canh]) assert.notStrictEqual(nn.dichChuoi(c, 'en'), null, c);
 });

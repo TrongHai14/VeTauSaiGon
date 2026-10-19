@@ -101,8 +101,9 @@ test('khoi thanh toan: co QR tu tao, co 2 lua chon tai khoan; VAT chi con tai kh
 
 test('khoi chon mon: nhan tre em theo tung tau', () => {
   const queen = dc.taoKhoiChonMon(tau('indochina-queen'), donBuffet(), GIA_TRE_EM, LIEN_HE);
-  assert.ok(queen.includes('01–03 tuổi (dưới 1m)') && queen.includes('04–09 tuổi (1m – dưới 1,3m) – tính 50% giá vé'));
-  assert.ok(queen.includes('Tuổi tính theo năm sinh, không tính theo tháng.'));
+  // Queen dùng chung chính sách trẻ em với Star (19/10/2026).
+  assert.ok(queen.includes('0–4 tuổi (dưới 1m)') && queen.includes('5–9 tuổi (1m – dưới 1,3m) – tính 50% giá vé'));
+  assert.ok(!queen.includes('năm sinh'));
   const star = dc.taoKhoiChonMon(tau('indochina-star'), donBuffet({ slugTau: 'indochina-star', buffetMa: '0:0' }), GIA_TRE_EM, LIEN_HE);
   assert.ok(star.includes('0–4 tuổi (dưới 1m)'));
   const princess = dc.taoKhoiChonMon(tau('saigon-princess'), donBuffet({ slugTau: 'saigon-princess', loai: 'setMenu' }), GIA_TRE_EM, LIEN_HE);
@@ -204,18 +205,17 @@ test('canh bao tre em: ca hop le khong bi canh bao, ca vuot that thi co', () => 
   assert.match(dc.canhBaoTreEm(donBuffet({ slugTau: 'saigon-princess', loai: 'setMenu', mon: { '0:0': 2 }, treEmMienPhi: 3 }), p), /tối đa 2 bé miễn phí/);
 });
 
-test('Queen (giai-dap.md muc 7): 2 nguoi lon kem 1 tre em; tre thu 2 mua ve tre em va bao phu phi', () => {
+test('Queen (giong Star): tre 5-9 tuoi tinh 50%, be mien phi thu 2 tu tinh 50%, khong canh bao tong tre', () => {
   const q = tau('indochina-queen');
   const hai = donBuffet({ buffetMa: '0:0', nguoiLon: 2, treEm50: 2, treEmMienPhi: 0 });
   const tt = dc.tomTatDon(hai, q, GIA_TRE_EM);
-  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong]), [[561600, 2], [280800, 2]], 'khong con tinh tre thu 2 nhu nguoi lon');
+  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong]), [[561600, 2], [280800, 2]]);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 2, treEm50: 2, treEmMienPhi: 0 });
   assert.strictEqual(tt.tong, 561600 * 2 + 280800 * 2);
-  assert.match(dc.canhBaoTreEm(hai, q), /2 người lớn chỉ được kèm 1 trẻ em\. Đơn có 2 trẻ em cho 2 người lớn/);
-  assert.match(dc.canhBaoTreEm(donBuffet({ buffetMa: '0:0', treEm50: 1, treEmMienPhi: 1 }), q), /Đơn có 2 trẻ em/, 'tre mua ve + be mien phi cung tinh');
-  assert.strictEqual(dc.canhBaoTreEm(donBuffet({ buffetMa: '0:0', treEm50: 1, treEmMienPhi: 0 }), q), null, '2 nguoi lon + 1 tre hop le');
-  assert.strictEqual(dc.canhBaoTreEm(donBuffet({ buffetMa: '0:0', nguoiLon: 4, treEm50: 1, treEmMienPhi: 1 }), q), null, '4 nguoi lon kem 2 tre hop le');
-  assert.match(dc.canhBaoTreEm(donBuffet({ loai: 'setMenu', mon: { '1:0': 2 }, treEmMienPhi: 2 }), q), /2 người lớn chỉ được kèm 1 trẻ em/, 'set menu Queen cung ap dung');
+  assert.strictEqual(dc.canhBaoTreEm(hai, q), null);
+  assert.strictEqual(dc.canhBaoTreEm(donBuffet({ buffetMa: '0:0', treEm50: 1, treEmMienPhi: 1 }), q), null);
+  const haiBe = dc.tomTatDon(donBuffet({ buffetMa: '0:0', treEm50: 0, treEmMienPhi: 2 }), q, GIA_TRE_EM);
+  assert.deepStrictEqual(haiBe.khach, { nguoiLon: 2, treEm50: 1, treEmMienPhi: 1 }, 'be thu 2 tinh 50%');
 });
 
 test('trang xac nhan: don thieu truong hoac sai kieu bi tu choi (laDonHopLe)', () => {

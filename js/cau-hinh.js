@@ -29,7 +29,9 @@ var CAU_HINH = {
   mangXaHoi: {
     facebook: 'https://www.facebook.com/share/19dfPzqptZ/',
     zalo: 'https://zalo.me/0948170036',
-    tiktok: 'https://www.tiktok.com/@nguyennguyentravel'
+    tiktok: 'https://www.tiktok.com/@nguyennguyentravel',
+    // Nút Messenger trong nút liên hệ nổi (m.me/<tên trang Facebook>). Để trống thì không hiện.
+    messenger: 'https://m.me/antoitrenduthuyensaigon'
   },
 
   // Ảnh bìa trang chủ: chạy lần lượt (mờ dần + phóng nhẹ). Ảnh ngang ≥ 1600px.
@@ -257,5 +259,5 @@ var CAU_HINH = {
 };
 
 if (typeof module !== 'undefined') {
-  module.exports = { CAU_HINH };
+  module.exports = { CAU_HINH: CAU_HINH };
 }

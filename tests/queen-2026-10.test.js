@@ -1,61 +1,47 @@
+// Chính sách trẻ em Indochina Queen: từ 19/10/2026 dùng chung với Indochina Star (cùng chủ tàu).
 const test = require('node:test');
 const assert = require('node:assert');
 global.CAU_HINH = require('../js/cau-hinh.js').CAU_HINH;
 const dc = require('../js/dat-cho.js');
 const { DANH_SACH_TAU, GIA_TRE_EM } = require('../js/du-lieu-tau.js');
 
-const queen = DANH_SACH_TAU.find((t) => t.slug === 'indochina-queen');
-const don = (them) => Object.assign({ slugTau: 'indochina-queen', loai: 'buffet', buffetMa: '0:1', nguoiLon: 2, treEm50: 0, treEmMienPhi: 0, mon: {} }, them);
-const cb = (d) => dc.canhBaoTreEm(d, queen, GIA_TRE_EM);
-const setMenu = (them) => don(Object.assign({ loai: 'setMenu', mon: { '1:0': 2 } }, them));
+const tau = (slug) => DANH_SACH_TAU.find((t) => t.slug === slug);
+const queen = tau('indochina-queen');
+const star = tau('indochina-star');
+const don = (slug, them) => Object.assign({ slugTau: slug, loai: 'buffet', buffetMa: '0:0', nguoiLon: 2, treEm50: 0, treEmMienPhi: 0, mon: {} }, them);
 
-test('Queen: 2 NL + 1 be mien phi hop le', () => assert.strictEqual(cb(don({ treEmMienPhi: 1 })), null));
-
-test('Queen buffet: canh bao khi tong tre (mua ve + mien phi) vuot gioi han', () => {
-  const t = cb(don({ treEm50: 1, treEmMienPhi: 1 }));
-  assert.ok(t && /phụ phí/.test(t) && /2 trẻ em/.test(t));
-  assert.ok(cb(don({ treEm50: 2 })));
-  assert.strictEqual(cb(don({ treEm50: 1 })), null);
+test('Queen va Star: cung chinh sach tre em tren trang tau', () => {
+  assert.deepStrictEqual(queen.chinhSachTreEm, star.chinhSachTreEm);
+  assert.ok(queen.chinhSachTreEm.some((d) => /0-4 tuổi/.test(d)) && queen.chinhSachTreEm.some((d) => /5-9 tuổi/.test(d)));
+  assert.ok(!queen.chinhSachTreEm.some((d) => /năm sinh|01–03|04–09/.test(d)), 'bo chinh sach cu cua Queen');
 });
 
-test('Queen set menu: canh bao khi tong tre vuot gioi han', () => {
-  assert.ok(cb(setMenu({ treEmMienPhi: 2 })));
-  assert.strictEqual(cb(setMenu({ treEmMienPhi: 1 })), null);
+test('Queen va Star: o dem tre em buffet giong nhau (0-4 mien phi, 5-9 tinh 50%, tu 10 tuoi nguoi lon)', () => {
+  assert.deepStrictEqual(GIA_TRE_EM['indochina-queen'].buffet, GIA_TRE_EM['indochina-star'].buffet);
+  assert.match(GIA_TRE_EM['indochina-queen'].setMenu.mienPhi, /0–4 tuổi/);
+  assert.match(GIA_TRE_EM['indochina-queen'].setMenu.ghiChu, /5–9 tuổi/);
 });
 
-test('Queen: 2 NL + 2 be mien phi -> be thu 2 tinh 50% va van canh bao', () => {
-  const d = don({ treEmMienPhi: 2 });
+test('Queen: khong con canh bao tong tre; tinh tien giong Star', () => {
+  for (const [slug, cs] of Object.entries(GIA_TRE_EM)) {
+    for (const [loai, v] of Object.entries(cs)) assert.ok(!v.canhBaoTongTre, slug + '/' + loai);
+  }
+  for (const them of [{ treEm50: 1, treEmMienPhi: 1 }, { treEmMienPhi: 2 }, { treEm50: 2, treEmMienPhi: 3 }]) {
+    const q = dc.tomTatDon(don('indochina-queen', them), queen, GIA_TRE_EM).khach;
+    const s = dc.tomTatDon(don('indochina-star', them), star, GIA_TRE_EM).khach;
+    assert.deepStrictEqual(q, s, JSON.stringify(them));
+    assert.strictEqual(dc.canhBaoTreEm(don('indochina-queen', them), queen, GIA_TRE_EM), dc.canhBaoTreEm(don('indochina-star', them), star, GIA_TRE_EM));
+  }
+});
+
+test('Queen: 2 NL + 2 be mien phi -> be thu 2 tinh 50% (giong Star)', () => {
+  const d = don('indochina-queen', { buffetMa: '0:1', treEmMienPhi: 2 });
   assert.deepStrictEqual(dc.demKhach(d, queen, GIA_TRE_EM), { nguoiLon: 2, treEm50: 1, treEmMienPhi: 1 });
   assert.strictEqual(dc.tomTatDon(d, queen, GIA_TRE_EM).tong, 615600 * 2 + 307800);
-  assert.ok(cb(d));
-});
-
-test('Queen: 4 NL + 2 tre khong canh bao; 4 NL + 3 tre canh bao', () => {
-  assert.strictEqual(cb(don({ nguoiLon: 4, treEm50: 1, treEmMienPhi: 1 })), null);
-  assert.strictEqual(cb(don({ nguoiLon: 4, treEm50: 2 })), null);
-  assert.ok(cb(don({ nguoiLon: 4, treEm50: 2, treEmMienPhi: 1 })));
-});
-
-test('Queen: khong con tinh tre vuot thanh gia nguoi lon', () => {
-  const khach = dc.tomTatDon(don({ treEm50: 2 }), queen, GIA_TRE_EM).khach;
-  assert.strictEqual(khach.nguoiLon, 2);
-  assert.strictEqual(khach.treEm50, 2);
-});
-
-test('Queen: nhan 01-03 va 04-09 tuoi', () => {
-  assert.match(GIA_TRE_EM['indochina-queen'].buffet.mienPhi, /01–03/);
-  assert.match(GIA_TRE_EM['indochina-queen'].setMenu.mienPhi, /01–03/);
-  assert.match(GIA_TRE_EM['indochina-queen'].buffet.nuaGia, /04–09/);
 });
 
 test('Cac tau khac khong bi anh huong', () => {
-  for (const [slug, cs] of Object.entries(GIA_TRE_EM)) {
-    for (const [loai, v] of Object.entries(cs)) assert.strictEqual(!!v.canhBaoTongTre, slug === 'indochina-queen', slug + '/' + loai);
-  }
-  for (const slug of ['indochina-star', 'ben-nghe']) {
-    const t = DANH_SACH_TAU.find((x) => x.slug === slug);
-    assert.strictEqual(dc.canhBaoTreEm({ slugTau: slug, loai: 'buffet', buffetMa: '0:1', nguoiLon: 2, treEm50: 1, treEmMienPhi: 1, mon: {} }, t, GIA_TRE_EM), null, slug);
-  }
-  const elite = DANH_SACH_TAU.find((x) => x.slug === 'elite-of-saigon');
+  const elite = tau('elite-of-saigon');
   assert.ok(dc.canhBaoTreEm({ slugTau: elite.slug, loai: 'setMenu', nguoiLon: 2, treEm50: 0, treEmMienPhi: 3, mon: { '1:0': 2 } }, elite, GIA_TRE_EM));
+  assert.strictEqual(GIA_TRE_EM['saigon-princess'].setMenu.phuThuBeVuot, 100000);
 });

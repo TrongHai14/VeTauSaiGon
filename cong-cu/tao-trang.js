@@ -17,7 +17,7 @@ const ICON_THE = SVG('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="
 const TEN_MIEN = String(CAU_HINH.tenMien || '').replace(/\/+$/, '');
 // Ảnh chia sẻ link: ảnh đại diện của tàu, trang chung dùng ảnh bìa đầu tiên.
 const anhChiaSe = (slug) => (slug ? (CAU_HINH.anhTau[slug] || {}).daiDien : CAU_HINH.anhBia[0]) || '';
-const SCRIPT_CHUNG = ['tu-dien-en.js', 'ngon-ngu.js', 'cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js'];
+const SCRIPT_CHUNG = ['tu-dien-en.js', 'ngon-ngu.js', 'cau-hinh.js', 'du-lieu-tau.js', 'lich-cho-du-lieu.js', 'lich-cho.js', 'hien-thi.js'];
 // ?v=<mã nội dung>: file đổi thì đường dẫn đổi, trình duyệt khách tự tải bản mới (không dùng bản cũ trong bộ nhớ đệm).
 const maPhienBan = (rel) => require('crypto').createHash('sha1').update(fs.readFileSync(path.join(GOC, rel))).digest('hex').slice(0, 8);
 const script = (tt, ds) => ds.map((s) => `  <script src="${tt}js/${s}?v=${maPhienBan('js/' + s)}"></script>`).join('\n');
@@ -63,11 +63,20 @@ function header(tt) {
 const CO_VN = '<svg class="co" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#da251d"/><path fill="#ff0" d="M15 4l1.18 3.63h3.82l-3.09 2.24 1.18 3.63L15 11.26l-3.09 2.24 1.18-3.63L10 7.63h3.82z"/></svg>';
 const CO_ANH = '<svg class="co" viewBox="0 0 60 40" aria-hidden="true"><clipPath id="co-anh-cat"><rect width="60" height="40"/></clipPath><g clip-path="url(#co-anh-cat)"><rect width="60" height="40" fill="#012169"/><path d="M0 0l60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40M60 0L0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></g></svg>';
 
-// Nút liên hệ nổi góc dưới bên phải (mọi trang): gọi điện và nhắn Zalo.
+// Nút liên hệ nổi góc dưới bên phải (mọi trang cho khách): một nút tròn, bấm vào thì mở ra Gọi, Messenger, Zalo
+// (js/hien-thi.js ganLienHeNoi). Không có JS thì 3 nút hiện sẵn.
+const ICON_MESSENGER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5C6.6 2.5 2.5 6.4 2.5 11.6c0 2.7 1.1 5.1 3 6.8v3.1l2.9-1.6c1.1.3 2.3.5 3.6.5 5.4 0 9.5-3.9 9.5-9.1S17.4 2.5 12 2.5zm1 12.2l-2.4-2.6-4.7 2.6 5.2-5.5 2.5 2.6 4.6-2.6-5.2 5.5z"/></svg>';
+const ICON_CHAT = '<svg class="lh-icon-mo" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 5h16v11H9l-5 4z"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 9.5h8M8 12.5h5"/></svg>' +
+  '<svg class="lh-icon-dong" viewBox="0 0 24 24" aria-hidden="true"><path stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>';
 function lienHeNoi() {
-  return `  <div class="lien-he-noi" role="group" aria-label="Liên hệ nhanh">
-    <a class="lh-noi lh-noi-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener" aria-label="Nhắn Zalo 0948170036"><span class="lh-noi-chu">Nhắn Zalo</span><span class="lh-noi-tron">${ICON_MXH.zalo}</span></a>
-    <a class="lh-noi lh-noi-goi" href="tel:0948170036" aria-label="Gọi 0948170036"><span class="lh-noi-chu">Gọi 0948170036</span><span class="lh-noi-tron">${ICON_DT}</span></a>
+  const messenger = (CAU_HINH.mangXaHoi || {}).messenger || '';
+  return `  <div class="lien-he-noi" id="lien-he-noi">
+    <button type="button" class="lh-mo" aria-expanded="false" aria-controls="lh-ds" aria-label="Liên hệ tư vấn"><span class="lh-noi-tron">${ICON_CHAT}</span></button>
+    <div class="lh-ds" id="lh-ds" role="group" aria-label="Liên hệ nhanh">
+      <a class="lh-noi lh-noi-goi" href="tel:0948170036" aria-label="Gọi 0948170036"><span class="lh-noi-chu">Gọi 0948170036</span><span class="lh-noi-tron">${ICON_DT}</span></a>
+${messenger ? `      <a class="lh-noi lh-noi-messenger" href="${e(messenger)}" target="_blank" rel="noopener" aria-label="Nhắn Messenger"><span class="lh-noi-chu">Nhắn Messenger</span><span class="lh-noi-tron">${ICON_MESSENGER}</span></a>
+` : ''}      <a class="lh-noi lh-noi-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener" aria-label="Nhắn Zalo 0948170036"><span class="lh-noi-chu">Nhắn Zalo</span><span class="lh-noi-tron"><b>Zalo</b></span></a>
+    </div>
   </div>`;
 }
 
@@ -202,21 +211,6 @@ ${header('')}
         <noscript>Vui lòng bật JavaScript để xem danh sách tàu hoặc gọi 0948170036.</noscript>
       </div>
     </section>
-    <section class="khoi">
-      <div class="khoi-dau"><div><h2>Đặt chỗ chỉ 3 bước</h2></div></div>
-      <div class="cac-buoc">
-        <div><h3>Chọn tàu &amp; thực đơn</h3><p>Chọn Buffet hoặc Set menu, bấm “Xem menu” để xem món trước khi đặt.</p></div>
-        <div><h3>Điền thông tin &amp; thanh toán</h3><p>Quét mã QR chuyển khoản. Cần hóa đơn VAT thì chuyển vào tài khoản công ty.</p></div>
-        <div><h3>Nhận phiếu &amp; code vé</h3><p>Ms Nguyên kiểm tra thanh toán và gửi phiếu xác nhận, code vé điện tử qua Zalo.</p></div>
-      </div>
-    </section>
-    <div class="bang-lien-he">
-      <div><h2>Cần tư vấn chọn tàu?</h2><p>Ms Nguyên tư vấn chọn tàu và thực đơn phù hợp.</p></div>
-      <div class="nhom">
-        <a class="nut" href="tel:0948170036">Gọi 0948170036</a>
-        <a class="nut nut-vien" href="https://zalo.me/0948170036" target="_blank" rel="noopener">Nhắn Zalo</a>
-      </div>
-    </div>
   </main>
 ${footer('')}
 ${script('', SCRIPT_CHUNG)}
@@ -226,7 +220,7 @@ ${script('', SCRIPT_CHUNG)}
 `);
 
 // ---------- dat-cho.html ----------
-const o = (id, ten, nhan, input, them = '') => `            <div class="o-nhap${them}"><label for="${id}">${nhan}</label>${input}<p class="loi" data-loi="${ten}"></p></div>`;
+const o = (id, ten, nhan, input, them = '') => `            <div class="o-nhap${them}"><label for="${id}">${nhan}</label>${input}<p class="loi" id="loi-${ten}" data-loi="${ten}"></p></div>`;
 ghi('dat-cho.html', `${dau('', { tieuDe: 'Đặt chỗ du thuyền | Vé Tàu Sài Gòn', moTa: 'Chọn tàu, chọn Buffet hoặc Set menu, thanh toán chuyển khoản và nhận phiếu xác nhận, code vé điện tử từ Ms Nguyên.', anh: anhChiaSe(null), url: TEN_MIEN + '/dat-cho.html' })}
 <body class="trang-dat-cho">
 ${header('')}
@@ -247,7 +241,7 @@ ${header('')}
             <h2>${ICON_TAU}Du thuyền &amp; ngày</h2>
             <div class="luoi-form">
 ${o('dat-cho-tau', 'slugTau', 'Chọn du thuyền', '<select id="dat-cho-tau" name="slugTau"></select>')}
-${o('dat-cho-ngay', 'ngay', 'Ngày lên tàu', '<input type="date" id="dat-cho-ngay" name="ngay">')}
+${o('dat-cho-ngay', 'ngay', '<span id="nhan-ngay-len-tau">Ngày lên tàu</span> <small id="ngay-da-chon"></small>', '<input type="hidden" id="dat-cho-ngay" name="ngay"><div class="lich-cho" id="lich-dat-cho" role="group" aria-labelledby="nhan-ngay-len-tau" aria-describedby="loi-ngay"></div>', ' ca-dong')}
             </div>
           </div>
           <div class="the-form">

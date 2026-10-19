@@ -8,6 +8,16 @@ var hamHienThi = (typeof escapeHtml === 'function')
   }
   : require('./hien-thi.js');
 var escapeHtmlDatCho = hamHienThi.escapeHtml;
+// Lịch còn chỗ (js/lich-cho.js): trên trình duyệt là hàm toàn cục, khi chạy test thì require.
+var hamLichCho = (typeof trangThaiNgay === 'function')
+  ? { trangThaiNgay: trangThaiNgay, ganLichCho: ganLichCho, ngayHomNayVN: ngayHomNayVN }
+  : (typeof require === 'function' ? require('./lich-cho.js')
+    // Trang nào chưa nạp lich-cho.js: coi mọi ngày còn chỗ, không có lịch (ô ngày trở lại ô chọn ngày thường).
+    : {
+      trangThaiNgay: function () { return 'con'; },
+      ganLichCho: function () { return null; },
+      ngayHomNayVN: function () { return ngayHomNayDiaPhuong(new Date()); }
+    });
 if (typeof kyVe !== 'function' && typeof module !== 'undefined') {
   var hamXacThuc = require('./xac-thuc.js');
   var kyVe = hamXacThuc.kyVe;
@@ -232,6 +242,7 @@ function kiemTraBuoc1(don, danhSachTau, homNay) {
   var tau = timTauTheoSlug(danhSachTau, don.slugTau);
   if (!tau) loi.slugTau = 'Vui lòng chọn du thuyền.';
   if (typeof don.ngay !== 'string' || !laNgayCoThat(don.ngay) || don.ngay < homNay) loi.ngay = 'Vui lòng chọn ngày từ hôm nay trở đi.';
+  else if (tau && hamLichCho.trangThaiNgay(tau.slug, don.ngay, homNay) === 'het') loi.ngay = 'Ngày này tàu đã hết chỗ, vui lòng chọn ngày khác.';
   if (tau) {
     var theoLoai = hamHienThi.layThucDonTheoLoai(tau);
     if (don.loai !== 'buffet' && don.loai !== 'setMenu') loi.loai = 'Vui lòng chọn Buffet hoặc Set menu.';
@@ -865,8 +876,31 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   if (thamSo.nl && soNguyen(thamSo.nl) > 0) don.nguoiLon = soNguyen(thamSo.nl);
 
   el.slugTau.innerHTML = taoOptionTau(danhSachTau, don.slugTau);
-  el.ngay.min = ngayHomNayDiaPhuong(new Date());
   el.ngay.value = don.ngay;
+  // Lịch còn chỗ / hết chỗ (js/lich-cho.js): bấm ngày nào thì điền vào ô ngày (ô ẩn).
+  var oNgayDaChon = document.getElementById('ngay-da-chon');
+  function hienNgayDaChon() { if (oNgayDaChon) oNgayDaChon.textContent = don.ngay ? '· ' + dinhDangNgay(don.ngay) : ''; }
+  // Mở link ?ngay= đúng ngày tàu đã hết chỗ: bỏ chọn ngày đó.
+  if (don.ngay && don.slugTau && hamLichCho.trangThaiNgay(don.slugTau, don.ngay, hamLichCho.ngayHomNayVN()) === 'het') {
+    don.ngay = '';
+    el.ngay.value = '';
+  }
+  var khungLich = document.getElementById('lich-dat-cho');
+  var lich = null;
+  try {
+    lich = hamLichCho.ganLichCho(khungLich, hamLichCho.ngayHomNayVN(),
+      function () { return don.slugTau; },
+      function (ngay) { el.ngay.value = ngay; el.ngay.dispatchEvent(new Event('change', { bubbles: true })); }, don.ngay);
+  } catch (loiLich) {
+    lich = null;
+  }
+  // Lịch không chạy được (thiếu file, dữ liệu lỗi): trả ô ngày về ô chọn ngày thường để khách vẫn đặt được.
+  if (!lich) {
+    if (khungLich) khungLich.hidden = true;
+    el.ngay.type = 'date';
+    el.ngay.min = hamLichCho.ngayHomNayVN();
+  }
+  hienNgayDaChon();
 
   function tauHienTai() { return timTauTheoSlug(danhSachTau, don.slugTau); }
 
@@ -907,7 +941,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     var ten = e.target && e.target.name;
     if (!ten) return;
     if (ten === 'ngay') {
-      if (laNgayCoThat(e.target.value) && e.target.value >= ngayHomNayDiaPhuong(new Date())) xoaLoiTruong('ngay');
+      if (laNgayCoThat(e.target.value) && e.target.value >= hamLichCho.ngayHomNayVN()) xoaLoiTruong('ngay');
       return;
     }
     if (ten === 'buffetMa' || ten.indexOf('mon:') === 0 || ten === 'nguoiLon') { xoaLoiTruong('mon'); return; }
@@ -988,11 +1022,14 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     don.buffetMa = '';
     don.mon = {};
     don.treEm50 = 0;
+    // Đổi tàu: ngày đang chọn mà tàu mới đã hết chỗ thì bỏ chọn.
+    if (tau && don.ngay && hamLichCho.trangThaiNgay(tau.slug, don.ngay, hamLichCho.ngayHomNayVN()) === 'het') { don.ngay = ''; el.ngay.value = ''; hienNgayDaChon(); }
+    if (lich) lich.ve(don.ngay);
     capNhatNhomAnh();
     veMon();
     veTomTat();
   });
-  el.ngay.addEventListener('change', function () { don.ngay = el.ngay.value; veTomTat(); });
+  el.ngay.addEventListener('change', function () { don.ngay = el.ngay.value; hienNgayDaChon(); veTomTat(); });
 
   khungMon.addEventListener('click', function (e) {
     var chipLoc = e.target.closest('[data-loc-nhom-con]');
@@ -1049,7 +1086,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     var nut = e.target.closest('[data-hanh-dong]');
     if (!nut) return;
     var hanhDong = nut.getAttribute('data-hanh-dong');
-    var homNay = ngayHomNayDiaPhuong(new Date());
+    var homNay = hamLichCho.ngayHomNayVN();
 
     if (hanhDong === 'buoc-2') {
       don.ngay = el.ngay.value;

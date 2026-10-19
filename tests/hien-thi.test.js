@@ -107,6 +107,6 @@ test('gioi thieu tung tau: du 6 tau co doan gioi thieu va 3 diem noi bat, hien o
     assert.ok(html.indexOf('id="gioi-thieu"') < html.indexOf('id="thuc-don"'), t.slug + ' gioi thieu truoc thuc don');
     assert.ok(html.includes('<a href="#gioi-thieu">Giới thiệu</a>'), t.slug + ' co tab');
   }
-  const khong = Object.assign({}, DANH_SACH_TAU[0], { gioiThieu: '', noiBat: [] });
+  const khong = Object.assign({}, DANH_SACH_TAU[0], { gioiThieu: '', noiBat: [], thongSo: [] });
   assert.ok(!ht.taoTrangTau(khong, LIEN_HE, '../').includes('id="gioi-thieu"'), 'khong co noi dung thi an muc');
 });

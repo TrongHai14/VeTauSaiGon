@@ -154,3 +154,13 @@ Tuổi tính theo năm sinh, không tính theo tháng.
 - Trẻ từ 04–09 tuổi (từ 1,0m đến dưới 1,3m): mua vé trẻ em.
 - Trẻ em từ 10 tuổi (từ 1,3m): mua vé người lớn.
 - 2 người lớn chỉ được kèm 1 trẻ em. Nếu số trẻ em vượt quá quy định thì sẽ thông báo lại phụ phí bổ sung. Quy định này thay cho câu "từ trẻ thứ 2 tính như người lớn" ở mục 6.
+
+## 8. Indochina Queen – chính sách trẻ em (cập nhật 19/10/2026, thay cho mục 7)
+
+Queen và Star cùng một chính sách trẻ em, nên Queen dùng y như Star:
+
+- Trẻ em từ 0–4 tuổi (dưới 1m): miễn phí.
+- Trẻ em từ 5–9 tuổi (từ 1m đến dưới 1,3m): tính 50% giá người lớn.
+- Từ 10 tuổi (trên 1,3m): tính vé người lớn.
+
+Bỏ các quy định riêng ở mục 7 (tính tuổi theo năm sinh, mốc 01–03/04–09, cảnh báo "2 người lớn chỉ kèm 1 trẻ em" tính trên tổng số trẻ, set menu có tôm càng/cua tính 70%).

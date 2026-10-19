@@ -727,19 +727,31 @@ html.dang-dich body { visibility: hidden; }
 @media (max-width: 760px) { .hero-toan-man { min-height: calc(100svh - 100px); } #dat-ngay { scroll-margin-top: 108px; } }
 @media (prefers-reduced-motion: reduce) { .hero-xuong { animation: none; } html { scroll-behavior: auto; } }
 
-/* ---------- Nút liên hệ nổi góc dưới bên phải ---------- */
-.lien-he-noi { position: fixed; right: 16px; bottom: 20px; bottom: max(20px, env(safe-area-inset-bottom)); z-index: 70; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+/* ---------- Nút liên hệ nổi góc dưới bên phải: 1 nút, bấm mở Gọi / Messenger / Zalo ---------- */
+.lien-he-noi { position: fixed; right: 16px; bottom: 20px; bottom: max(20px, env(safe-area-inset-bottom)); z-index: 70; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 12px; }
+.lh-ds { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
 .lh-noi { position: relative; display: block; color: #fff; }
 .lh-noi-tron { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 6px 18px rgba(3, 18, 26, .28); transition: transform .15s; }
 .lh-noi-tron svg { width: 28px; height: 28px; }
-.lh-noi-goi .lh-noi-tron { background: var(--cam); position: relative; }
-.lh-noi-goi .lh-noi-tron::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 0 rgba(255, 94, 31, .55); animation: lh-nhay 1.8s ease-out infinite; }
-.lh-noi-zalo .lh-noi-tron { background: #0068ff; }
+.lh-noi-goi .lh-noi-tron { background: var(--cam); }
+.lh-noi-messenger .lh-noi-tron { background: linear-gradient(45deg, #0099ff 0%, #a033ff 55%, #ff5280 85%, #ff7061 100%); }
+.lh-noi-zalo .lh-noi-tron { background: #fff; color: #0068ff; box-shadow: 0 6px 18px rgba(0, 104, 255, .35), inset 0 0 0 2px #0068ff; }
+.lh-noi-zalo b { font-size: 15px; font-weight: 800; letter-spacing: -.2px; }
 .lh-noi-chu { position: absolute; right: calc(100% + 8px); top: 50%; margin-top: -15px; padding: 6px 12px; border-radius: var(--bo-goc); background: rgba(3, 18, 26, .82); font-size: 13px; font-weight: 700; white-space: nowrap; opacity: 0; transform: translateX(6px); transition: opacity .15s, transform .15s; pointer-events: none; line-height: 18px; }
-.lh-noi:hover .lh-noi-chu, .lh-noi:focus-visible .lh-noi-chu { opacity: 1; transform: none; }
-.lh-noi:hover .lh-noi-tron { transform: scale(1.06); }
+.lh-noi:hover .lh-noi-chu, .lh-noi:focus-visible .lh-noi-chu, .lien-he-noi.mo .lh-noi-chu { opacity: 1; transform: none; }
+.lh-noi:hover .lh-noi-tron, .lh-mo:hover .lh-noi-tron { transform: scale(1.06); }
+.lh-mo { border: 0; padding: 0; background: none; color: #fff; cursor: pointer; border-radius: 50%; }
+.lh-mo .lh-noi-tron { width: 58px; height: 58px; background: var(--cam); position: relative; }
+.lh-mo .lh-noi-tron::after { content: ''; position: absolute; inset: 0; border-radius: 50%; animation: lh-nhay 1.8s ease-out infinite; }
+.lh-icon-dong, .lien-he-noi.mo .lh-icon-mo { display: none; }
+.lien-he-noi.mo .lh-icon-dong { display: block; }
+.lien-he-noi.mo .lh-mo .lh-noi-tron::after { animation: none; }
+/* Có JS: thu gọn danh sách, bấm nút mới mở (không JS thì 3 nút hiện sẵn, nút mở ẩn). */
+.lien-he-noi:not(.thu-gon) .lh-mo { display: none; }
+.lien-he-noi.thu-gon .lh-ds { opacity: 0; visibility: hidden; transform: translateY(12px); pointer-events: none; transition: opacity .18s, transform .18s, visibility 0s .18s; }
+.lien-he-noi.thu-gon.mo .lh-ds { opacity: 1; visibility: visible; transform: none; pointer-events: auto; transition: opacity .18s, transform .18s; }
 @keyframes lh-nhay { 0% { box-shadow: 0 0 0 0 rgba(255, 94, 31, .55); } 100% { box-shadow: 0 0 0 16px rgba(255, 94, 31, 0); } }
-@media (prefers-reduced-motion: reduce) { .lh-noi-goi .lh-noi-tron::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .lh-mo .lh-noi-tron::after { animation: none; } .lien-he-noi.thu-gon .lh-ds { transition: none; } }
 /* Có thanh giá/đặt chỗ ở đáy (điện thoại, trang tàu và trang đặt chỗ): đẩy nút nổi lên trên thanh. */
 @media (max-width: 980px) {
   .thanh-lien-he:not([hidden]) ~ .lien-he-noi { bottom: 84px; }
@@ -747,5 +759,51 @@ html.dang-dich body { visibility: hidden; }
   /* Trang đặt chỗ và trang tàu luôn có thanh đáy trên điện thoại (không dùng :has để chạy cả trình duyệt cũ). */
   .trang-dat-cho .chan-trang, body[data-tau] .chan-trang { padding-bottom: 220px; }
   .lh-noi-tron { width: 50px; height: 50px; }
+  .lh-mo .lh-noi-tron { width: 54px; height: 54px; }
 }
 @media print { .lien-he-noi { display: none !important; } }
+
+/* ---------- Thông số tàu (mục Giới thiệu) ---------- */
+.thong-so-tau { margin: 16px 0 6px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.thong-so-tau div { background: var(--nen); border: 1px solid var(--vien); border-radius: var(--bo-goc); padding: 10px 12px; }
+.thong-so-tau dt { font-size: 12.5px; color: var(--chu-phu); font-weight: 600; }
+.thong-so-tau dd { margin: 2px 0 0; font-weight: 700; font-size: 14.5px; }
+
+/* ---------- Lịch còn chỗ / hết chỗ (js/lich-cho.js) ---------- */
+.lich-cho { margin-top: 6px; max-width: 520px; border: 1px solid var(--vien); border-radius: var(--bo-goc); padding: 12px; background: var(--trang); }
+.lich-dau { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.lich-ten-thang { font-size: 15px; }
+.lich-chuyen { width: 36px; height: 36px; border: 1px solid var(--vien); background: var(--trang); border-radius: var(--bo-goc); font-size: 20px; line-height: 1; color: var(--chu); cursor: pointer; }
+.lich-chuyen:disabled { opacity: .35; cursor: default; }
+.lich-luoi { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.lich-thu { text-align: center; font-size: 12px; font-weight: 700; color: var(--chu-phu); padding: 4px 0; }
+.lich-ngay { min-width: 0; overflow: hidden; min-height: 52px; border: 1px solid transparent; border-radius: var(--bo-goc); background: var(--nen); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 2px; cursor: pointer; color: var(--chu); font: inherit; }
+.lich-so { font-weight: 700; font-size: 15px; }
+.lich-ngay small { font-size: 10px; line-height: 1.15; font-weight: 600; text-align: center; }
+.lich-con small { color: #13854a; }
+.lich-it { background: #fff4e5; }
+.lich-it small { color: #b45c00; }
+.lich-het { background: #f1f3f5; color: #9aa4ad; cursor: not-allowed; }
+.lich-het .lich-so { text-decoration: line-through; }
+.lich-het small { color: #9aa4ad; }
+.lich-qua { background: none; color: #c3cad1; cursor: default; }
+.lich-ngay.hom-nay { border-color: var(--xanh); }
+.lich-ngay:not(:disabled):hover { border-color: var(--xanh); }
+.lich-ngay.chon { background: var(--xanh); border-color: var(--xanh); color: #fff; }
+.lich-ngay.chon small { color: #fff; }
+.lich-chu-thich { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 10px; font-size: 12.5px; color: var(--chu-phu); }
+.lich-chu-thich .cham { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: -4px; }
+.cham-con { background: #13854a; }
+.cham-it { background: #f08c00; }
+.cham-het { background: #c3cad1; }
+#ngay-da-chon { color: var(--xanh-dam); font-weight: 700; }
+/* Điện thoại: chữ trạng thái thành chấm màu (xanh còn chỗ, cam còn ít, xám hết chỗ); xem chú thích bên dưới lịch. */
+@media (max-width: 560px) {
+  .lich-cho { padding: 8px; }
+  .lich-luoi { gap: 3px; }
+  .lich-ngay { min-height: 44px; }
+  .lich-ngay small { font-size: 0; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+}
+
+/* Chỉ cho trình đọc màn hình (ẩn khỏi mắt nhìn). */
+.an-man-hinh { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
