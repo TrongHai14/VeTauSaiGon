@@ -119,7 +119,11 @@ function kyVe(khoa, ve) {
 function kiemTraKhoaTruocKhiKy(congKhai, banGhi) {
   if (!banGhi) return 'Chưa có khoá ký phiếu trên máy này. Ở mục "Khoá ký phiếu", bấm "Nạp khoá từ file" (hoặc "Tạo khoá" nếu là lần đầu).';
   if (!laKhoaCongKhai(congKhai)) return 'Web chưa cài khoá công khai. Dán dòng khoaCongKhai ở mục "Khoá ký phiếu" vào js/cau-hinh.js, tạo lại trang và push lên GitHub trước khi phát phiếu.';
-  if (!khoaKhop(congKhai, banGhi)) return 'Khoá trên máy này KHÔNG khớp khoá công khai của web, phiếu ký ra sẽ bị báo không hợp lệ. Nạp đúng file khoá sao lưu.';
+  // Kèm 4 ký tự đầu của 2 khoá để biết máy đang giữ khoá nào (không lộ gì: đây là phần công khai).
+  if (!khoaKhop(congKhai, banGhi)) {
+    return 'Khoá trên máy này KHÔNG khớp khoá công khai của web, phiếu ký ra sẽ bị báo không hợp lệ. Nạp đúng file khoá sao lưu. ' +
+      '(Khoá trên máy: ' + String(banGhi.x || '').slice(0, 4) + '…, khoá của web: ' + String(congKhai.x || '').slice(0, 4) + '…)';
+  }
   return null;
 }
 

@@ -189,3 +189,21 @@ test('trang 404, sitemap.xml, robots.txt, bieu tuong tab trinh duyet', () => {
     assert.ok(doc(f).includes('<link rel="icon" type="image/png" href="' + tt + 'anh/logo/logo-nguyen-nguyen-trong-suot.png">'), f);
   }
 });
+
+test('trang xac nhan: lay khoa cong khai moi nhat tu may chu (khong dung ban trinh duyet luu cu)', async () => {
+  const cu = CAU_HINH.khoaCongKhai;
+  try {
+    CAU_HINH.khoaCongKhai = { kty: 'EC', crv: 'P-256', x: 'CU', y: 'CU' };
+    const noiDung = "  khoaCongKhai: {\"kty\":\"EC\",\"crv\":\"P-256\",\"x\":\"MOIx\",\"y\":\"MOIy\"},\n";
+    let url = '';
+    const doi = await dc.capNhatKhoaCongKhaiMoiNhat((u, tc) => { url = u; assert.strictEqual(tc.cache, 'no-store'); return Promise.resolve({ text: () => Promise.resolve(noiDung) }); });
+    assert.strictEqual(doi, true);
+    assert.match(url, /^js\/cau-hinh\.js\?t=\d+$/);
+    assert.deepStrictEqual(CAU_HINH.khoaCongKhai, { kty: 'EC', crv: 'P-256', x: 'MOIx', y: 'MOIy' });
+    assert.strictEqual(await dc.capNhatKhoaCongKhaiMoiNhat(() => Promise.reject(new Error('mat mang'))), false);
+    assert.strictEqual(CAU_HINH.khoaCongKhai.x, 'MOIx', 'loi mang: giu khoa dang co');
+    assert.strictEqual(await dc.capNhatKhoaCongKhaiMoiNhat(() => Promise.resolve({ text: () => Promise.resolve('khoaCongKhai: null,') })), false);
+  } finally {
+    CAU_HINH.khoaCongKhai = cu;
+  }
+});

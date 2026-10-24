@@ -1343,6 +1343,25 @@ function taiChuoiVeMay(noiDung, tenFile) {
 }
 
 // Mục "Khoá ký phiếu": báo trạng thái, tạo khoá (lần đầu hoặc khi mất/lộ khoá), nạp khoá từ file sao lưu.
+// Trang xác nhận: lấy khoá công khai mới nhất từ máy chủ (không dùng bản trình duyệt còn lưu tới 10 phút),
+// để vừa đổi khoá xong là ký phiếu được ngay. Lỗi mạng thì giữ khoá đang có.
+function capNhatKhoaCongKhaiMoiNhat(fetchHam) {
+  if (typeof CAU_HINH === 'undefined' || typeof fetchHam !== 'function') return Promise.resolve(false);
+  return fetchHam('js/cau-hinh.js?t=' + Date.now(), { cache: 'no-store' })
+    .then(function (tl) { return tl.text(); })
+    .then(function (noiDung) {
+      var m = /khoaCongKhai:\s*(\{[^}]*\})/.exec(noiDung);
+      if (!m) return false;
+      var moi = JSON.parse(m[1]);
+      if (!moi || moi.kty !== 'EC' || typeof moi.x !== 'string' || typeof moi.y !== 'string') return false;
+      var cu = CAU_HINH.khoaCongKhai;
+      if (cu && cu.x === moi.x && cu.y === moi.y) return false;
+      CAU_HINH.khoaCongKhai = { kty: 'EC', crv: 'P-256', x: moi.x, y: moi.y };
+      return true;
+    })
+    .then(null, function () { return false; });
+}
+
 function ganQuanLyKhoa(goc) {
   var khung = goc.querySelector('#khung-khoa');
   if (!khung) return;
@@ -1425,7 +1444,7 @@ function khoiChayTrangXacNhan() {
     else goc.innerHTML = '<div class="the-form">' + thongBaoKhongDon + '</div>';
     if (oForm) oForm.hidden = true;
     if (goc.querySelector('#khung-khoa')) {
-      if (typeof docKhoaBiMat === 'function') ganQuanLyKhoa(goc);
+      if (typeof docKhoaBiMat === 'function') capNhatKhoaCongKhaiMoiNhat(typeof fetch === 'function' ? fetch.bind(window) : null).then(function () { ganQuanLyKhoa(goc); });
       else goc.querySelector('#khung-khoa').innerHTML = '<p class="khoa-loi">Chưa tải được phần chữ ký số (js/xac-thuc.js). Kiểm tra mạng rồi tải lại trang.</p>';
     }
     return;
@@ -1513,7 +1532,7 @@ function khoiChayTrangXacNhan() {
     });
   });
   if (typeof docKhoaBiMat === 'function') {
-    ganQuanLyKhoa(goc);
+    capNhatKhoaCongKhaiMoiNhat(typeof fetch === 'function' ? fetch.bind(window) : null).then(function () { ganQuanLyKhoa(goc); });
   } else {
     var oKhoa = goc.querySelector('#khung-khoa');
     if (oKhoa) oKhoa.innerHTML = '<p class="khoa-loi">Chưa tải được phần chữ ký số (js/xac-thuc.js). Kiểm tra mạng rồi tải lại trang.</p>';
@@ -1544,7 +1563,7 @@ if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
     taoMaDon, laMaDon, taoKhoiUyTin, layLogoDaiLy, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
-    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
+    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, capNhatKhoaCongKhaiMoiNhat, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };
 }
