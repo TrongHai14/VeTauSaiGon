@@ -174,3 +174,18 @@ test('code ve: tu tao khi Ms Nguyen xac nhan da nhan tien (o code de trong); dan
   assert.ok(kiem > 0 && tao > kiem);
   assert.ok(doc('xac-nhan.html').includes('để trống: web tự tạo code khi tạo phiếu'));
 });
+
+test('trang 404, sitemap.xml, robots.txt, bieu tuong tab trinh duyet', () => {
+  const p404 = doc('404.html');
+  assert.ok(p404.includes('<meta name="robots" content="noindex, nofollow">') && p404.includes('href="/index.html"') && p404.includes('href="/css/style.css?v='));
+  const sm = doc('sitemap.xml');
+  assert.ok(sm.includes('<loc>https://vetausaigon.vn/</loc>') && sm.includes('<loc>https://vetausaigon.vn/faq.html</loc>'));
+  for (const t of DANH_SACH_TAU) assert.ok(sm.includes('/tau/' + t.slug + '.html'), t.slug);
+  assert.ok(!sm.includes('xac-nhan') && !sm.includes('kiem-tra-ve'), 'khong dua trang noi bo vao sitemap');
+  const rb = doc('robots.txt');
+  assert.ok(rb.includes('Disallow: /xac-nhan.html') && rb.includes('Sitemap: https://vetausaigon.vn/sitemap.xml'));
+  for (const f of ['index.html', 'tau/indochina-queen.html', 'faq.html']) {
+    const tt = f.startsWith('tau/') ? '../' : '';
+    assert.ok(doc(f).includes('<link rel="icon" type="image/png" href="' + tt + 'anh/logo/logo-nguyen-nguyen-trong-suot.png">'), f);
+  }
+});

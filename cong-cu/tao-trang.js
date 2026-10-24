@@ -35,7 +35,9 @@ function dau(tt, { tieuDe, moTa, anh, url, anChiMuc }) {
 ${anh && fs.existsSync(path.join(GOC, anh)) ? '  <meta property="og:image" content="' + TEN_MIEN + '/' + anh + '">\n' : ''}  <meta property="og:url" content="${url}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="vi_VN">
-  <meta name="theme-color" content="#0194f3">${anChiMuc ? '\n  <meta name="robots" content="noindex, nofollow">' : ''}
+  <meta name="theme-color" content="#0194f3">
+  <link rel="icon" type="image/png" href="${tt}anh/logo/logo-nguyen-nguyen-trong-suot.png">
+  <link rel="apple-touch-icon" href="${tt}anh/logo/logo-nguyen-nguyen-trong-suot.png">${anChiMuc ? '\n  <meta name="robots" content="noindex, nofollow">' : ''}
   ${FONT}
   <link rel="stylesheet" href="${tt}css/style.css?v=${maPhienBan('css/style.css')}">
 </head>`;
@@ -429,4 +431,29 @@ ${script('../', SCRIPT_CHUNG)}
 </html>
 `);
 }
-console.log('Đã tạo lại', 6 + DANH_SACH_TAU.length, 'trang.');
+// ---------- 404.html (GitHub Pages hiện trang này khi gõ sai đường dẫn) ----------
+// Đường dẫn tuyệt đối (/...) vì trang 404 có thể hiện ở bất kỳ thư mục nào.
+ghi('404.html', `${dau('/', { tieuDe: 'Không tìm thấy trang | Vé Tàu Sài Gòn', moTa: 'Trang không tồn tại.', anh: '', url: TEN_MIEN + '/404.html', anChiMuc: true })}
+<body>
+${header('/')}
+  <main class="khung">
+    <div class="dau-trang-dat" style="padding:48px 0">
+      <h1>Không tìm thấy trang</h1>
+      <p>Đường dẫn có thể đã thay đổi. Mời quý khách về trang chủ để chọn du thuyền, hoặc liên hệ Ms Nguyên 0948170036.</p>
+      <p style="margin-top:16px"><a class="nut" href="/index.html">Về trang chủ</a> <a class="nut nut-vien" href="/dat-cho.html">Đặt chỗ</a></p>
+    </div>
+  </main>
+${footer('/')}
+${script('/', SCRIPT_CHUNG)}
+  <script>apDungCauHinhChung('/');</script>
+</body>
+</html>
+`);
+
+// ---------- sitemap.xml, robots.txt (giúp Google tìm trang) ----------
+const trangCongKhai = ['', 'dat-cho.html', 'chinh-sach.html', 'faq.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
+ghi('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+  trangCongKhai.map((p) => '  <url><loc>' + TEN_MIEN + '/' + p + '</loc></url>').join('\n') + '\n</urlset>\n');
+ghi('robots.txt', 'User-agent: *\nDisallow: /xac-nhan.html\nDisallow: /kiem-tra-ve.html\n\nSitemap: ' + TEN_MIEN + '/sitemap.xml\n');
+
+console.log('Đã tạo lại', 7 + DANH_SACH_TAU.length, 'trang.');
