@@ -561,6 +561,30 @@ function taoPhieuHtml(don, tau, congTy, lienHe, bangTreEm, taiKhoan, thongTin) {
 }
 
 // Nội dung vé được ký (js/xac-thuc.js) từ đơn đã xác nhận.
+// Code vé điện tử tự tạo khi Ms Nguyên xác nhận đã nhận tiền (không có code riêng của tàu).
+// Dạng <MÃ TÀU>-<ngày đi ddMM>-<4 ký tự>, ví dụ QUEEN-2410-7K3F. Bỏ các ký tự dễ nhầm (0/O, 1/I/L).
+var MA_TAU_CODE = {
+  'indochina-star': 'STAR', 'ben-nghe': 'BNGHE', 'indochina-queen': 'QUEEN',
+  'elite-of-saigon': 'ELITE', 'saigon-princess': 'SGPRN', 'ben-thanh-princess': 'BTPRN'
+};
+var KY_TU_CODE = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+function taoCodeVe(tau, ngayDi, ngauNhien) {
+  var duoi = '';
+  var so = [];
+  if (typeof ngauNhien !== 'function' && typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    var mang = new Uint32Array(4);
+    crypto.getRandomValues(mang);
+    for (var k = 0; k < 4; k++) so.push(mang[k] / 4294967296);
+  }
+  for (var i = 0; i < 4; i++) {
+    var r = typeof ngauNhien === 'function' ? ngauNhien() : (so.length ? so[i] : Math.random());
+    duoi += KY_TU_CODE.charAt(Math.floor(r * KY_TU_CODE.length) % KY_TU_CODE.length);
+  }
+  var maTau = MA_TAU_CODE[tau && tau.slug] || 'VE';
+  var ngay = /^\d{4}-(\d{2})-(\d{2})$/.exec(String(ngayDi || ''));
+  return maTau + '-' + (ngay ? ngay[2] + ngay[1] : '0000') + '-' + duoi;
+}
+
 function taoNoiDungVe(don, tau, bangTreEm, codeVe, ngayXacNhan) {
   var tt = tomTatDon(don, tau, bangTreEm);
   return {
@@ -1454,7 +1478,12 @@ function khoiChayTrangXacNhan() {
       oThongBao.className = 'thong-bao loi-gui';
       return;
     }
+    // Chưa có code của tàu thì web tự tạo code (chỉ sau khi đã tích "đã nhận đủ tiền" ở trên).
     var codeVe = form.elements.codeVe.value.trim();
+    if (!codeVe) {
+      codeVe = taoCodeVe(tau, don.ngay);
+      form.elements.codeVe.value = codeVe;
+    }
     var ngayXacNhan = new Date();
     oThongBao.textContent = 'Đang ký phiếu…';
     oThongBao.className = 'thong-bao';
@@ -1515,7 +1544,7 @@ if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
     taoMaDon, laMaDon, taoKhoiUyTin, layLogoDaiLy, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
-    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
+    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };
 }

@@ -159,3 +159,18 @@ test('dat cho: o ngay noi voi nhan va dong loi (aria); lich-cho-du-lieu.js nap t
   assert.ok(html.indexOf('js/lich-cho-du-lieu.js') > 0 && html.indexOf('js/lich-cho-du-lieu.js') < html.indexOf('js/lich-cho.js?'));
   assert.ok(!doc('js/lich-cho.js').includes("'2026-12-24': 'het',\n"), 'du lieu khong nam trong lich-cho.js');
 });
+
+test('code ve: tu tao khi Ms Nguyen xac nhan da nhan tien (o code de trong); dang MA-ddMM-XXXX, khong ky tu de nham', () => {
+  const ma = tau('indochina-queen');
+  for (let i = 0; i < 200; i++) assert.match(dc.taoCodeVe(ma, '2026-10-24'), /^QUEEN-2410-[2-9A-HJKMNP-Z]{4}$/);
+  const khac = new Set(Array.from({ length: 50 }, () => dc.taoCodeVe(ma, '2026-10-24')));
+  assert.ok(khac.size > 45, 'ngau nhien');
+  assert.strictEqual(dc.taoCodeVe(tau('ben-thanh-princess'), '2026-12-31', () => 0), 'BTPRN-3112-2222');
+  for (const t of DANH_SACH_TAU) assert.match(dc.taoCodeVe(t, '2026-01-05'), /^[A-Z]{4,5}-0501-/, t.slug);
+  // Chỉ tạo sau khi đã tích "đã nhận đủ tiền": đoạn tự tạo code nằm sau bước kiểm tra ô này.
+  const js = doc('js/dat-cho.js');
+  const kiem = js.indexOf("if (!form.elements.daNhanTien.checked) {");
+  const tao = js.indexOf('codeVe = taoCodeVe(tau, don.ngay);');
+  assert.ok(kiem > 0 && tao > kiem);
+  assert.ok(doc('xac-nhan.html').includes('để trống: web tự tạo code khi tạo phiếu'));
+});
