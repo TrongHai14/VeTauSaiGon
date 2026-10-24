@@ -197,7 +197,7 @@ Mỗi tàu có `thongSo` trong `js/du-lieu-tau.js` (sức chứa, số tầng, k
 
 Góc dưới bên phải có một nút tròn. Bấm vào sẽ mở ra 3 nút: Gọi, Messenger, Zalo. Link Messenger nằm ở `mangXaHoi.messenger` trong `js/cau-hinh.js`; nếu để trống thì nút Messenger không hiện.
 
-## Lịch chỗ online (Google Sheet, 50 chỗ đại lý mỗi tàu mỗi ngày)
+## Lịch chỗ online (Google Sheet: Ms Nguyên khoá ngày tàu báo hết chỗ)
 
 Có thể nối lịch với Google Sheet để chỗ tự trừ khi khách đặt và tự trả lại khi khách quá hạn chưa thanh toán. Hướng dẫn cài từng bước nằm ở [cong-cu/google-sheet/HUONG-DAN.md](cong-cu/google-sheet/HUONG-DAN.md); mã chạy trong Sheet là [cong-cu/google-sheet/lich-cho.gs](cong-cu/google-sheet/lich-cho.gs).
 

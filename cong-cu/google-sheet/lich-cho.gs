@@ -2,15 +2,19 @@
  * LỊCH CÒN CHỖ – chạy trong Google Sheet (Tiện ích mở rộng > Apps Script).
  * Hướng dẫn cài: cong-cu/google-sheet/HUONG-DAN.md
  *
- * Mỗi tàu mỗi ngày có SỐ CHỖ của đại lý (mặc định 50, sửa ở tab "Cài đặt", hoặc từng ngày ở tab "Số chỗ riêng").
- * Còn lại = số chỗ − khách của các đơn đang chiếm chỗ:
+ * Đại lý phụ thuộc chỗ của tàu: mặc định KHÔNG giới hạn số chỗ, web nhận đặt mọi ngày,
+ * trừ những ngày Ms Nguyên ghi ở tab "Ngày hết chỗ" (tàu báo hết) – web khoá ngay ngày đó.
+ * Khách trả trước; tàu hết chỗ thì Nguyên Nguyên hoàn 100% hoặc đổi ngày.
+ *
+ * Nếu sau này tàu cấp hạn mức riêng cho đại lý: ghi số (vd 50) ở "Số chỗ mỗi ngày" (tab Cài đặt)
+ * hoặc từng ngày ở tab "Số chỗ riêng". Khi đó còn lại = số chỗ − khách của các đơn đang chiếm chỗ:
  *   "Đã thanh toán", "Chờ xác nhận" (khách báo đã chuyển khoản, chờ Ms Nguyên kiểm tra),
  *   "Giữ chỗ" chưa quá hạn (mặc định 1 giờ để khách chuyển khoản).
  * "Giữ chỗ" quá hạn mà khách chưa bấm "Tôi đã chuyển khoản" thì tự trả chỗ (thành "Hết hạn").
  * Khách trên web chỉ thấy ngày "còn chỗ" hoặc "hết chỗ", không thấy con số.
  */
 
-var TAB = { caiDat: 'Cài đặt', soCho: 'Số chỗ riêng', don: 'Đơn giữ chỗ', tongHop: 'Tổng hợp' };
+var TAB = { caiDat: 'Cài đặt', hetCho: 'Ngày hết chỗ', soCho: 'Số chỗ riêng', don: 'Đơn giữ chỗ', tongHop: 'Tổng hợp' };
 var TT = { giu: 'Giữ chỗ', choXN: 'Chờ xác nhận', daTT: 'Đã thanh toán', huy: 'Hủy', hetHan: 'Hết hạn' };
 var DS_TAU = ['indochina-star', 'ben-nghe', 'indochina-queen', 'elite-of-saigon', 'saigon-princess', 'ben-thanh-princess'];
 var TEN_TAU = {
@@ -36,7 +40,7 @@ function caiDat() {
     cd.clear();
     cd.getRange(1, 1, 9, 3).setValues([
       ['Mục', 'Giá trị', 'Giải thích'],
-      [CD.soCho, 50, 'Số chỗ đại lý được giữ cho mỗi tàu mỗi ngày (ngày nào khác thì ghi ở tab "Số chỗ riêng").'],
+      [CD.soCho, '', 'ĐỂ TRỐNG = không giới hạn (đại lý phụ thuộc tàu; ngày hết chỗ ghi ở tab "Ngày hết chỗ"). Chỉ ghi số (vd 50) khi tàu cấp hạn mức riêng cho đại lý.'],
       [CD.gioGiu, 1, 'Khách có bấy nhiêu giờ để chuyển khoản và bấm "Tôi đã chuyển khoản". Quá hạn thì chỗ tự trả lại. Bấm rồi thì giữ tới khi Ms Nguyên xác nhận.'],
       [CD.tinhBe, 'Không', 'Ghi "Có" nếu bé miễn phí cũng chiếm chỗ ngồi.'],
       [CD.ma, taoMaBiMat(), 'Nhập mã này ở trang xác nhận đơn để web tự đổi đơn sang "Đã thanh toán". Không chia sẻ cho ai.'],
@@ -48,11 +52,19 @@ function caiDat() {
     cd.getRange('A1:C1').setFontWeight('bold');
     cd.setColumnWidth(1, 300); cd.setColumnWidth(2, 160); cd.setColumnWidth(3, 620);
   }
+  var hc = layTab(TAB.hetCho);
+  if (hc.getLastRow() < 1) {
+    hc.getRange(1, 1, 1, 3).setValues([['Tàu (mã)', 'Ngày đi', 'Ghi chú']]).setFontWeight('bold');
+    hc.getRange('B:B').setNumberFormat('@');
+    hc.setFrozenRows(1);
+    hc.getRange('E1').setValue('Tàu báo hết chỗ ngày nào thì thêm 1 dòng: chọn tàu, gõ ngày (2026-12-24 hoặc 24/12/2026). Web khoá ngày đó ngay. Mở lại thì xoá dòng.');
+    themChonTau(hc.getRange('A2:A'));
+  }
   var sc = layTab(TAB.soCho);
   if (sc.getLastRow() < 1) {
     sc.getRange(1, 1, 1, 4).setValues([['Tàu (mã)', 'Ngày đi', 'Số chỗ', 'Ghi chú']]).setFontWeight('bold');
     sc.getRange('B:B').setNumberFormat('@');
-    sc.getRange('E1').setValue('Ví dụ: indochina-queen | 2026-12-31 | 0  → đóng ngày đó. Số chỗ để trống thì dòng không có tác dụng.');
+    sc.getRange('E1').setValue('Chỉ dùng khi tàu cấp hạn mức riêng cho đại lý: tàu | ngày | số chỗ của ngày đó. Đóng ngày thì dùng tab "Ngày hết chỗ".');
     themChonTau(sc.getRange('A2:A'));
   }
   var don = layTab(TAB.don);
@@ -185,7 +197,7 @@ function giuCho(d) {
   else { tab.appendRow(dong); viTri = tab.getLastRow(); }
   tab.getRange(viTri, COT.ngay).setNumberFormat('@').setValue(ngay);
   tab.getRange(viTri, COT.sdt).setNumberFormat('@').setValue(sdt);
-  return { ok: true, giuDen: giuDen.toISOString(), gio: gio };
+  return { ok: true, giuDen: giuDen.toISOString(), gio: gio, coHanMuc: hanMuc(bang, tau, ngay) !== Infinity };
 }
 
 // Khách bấm "Tôi đã chuyển khoản": giữ chỗ tới khi Ms Nguyên kiểm tra (không tự hết hạn nữa).
@@ -230,6 +242,12 @@ function docBang() {
   var cd = layTab(TAB.caiDat).getDataRange().getValues();
   for (var i = 1; i < cd.length; i++) caiDat[String(cd[i][0]).trim()] = cd[i][1];
   var tinhBe = laCo(caiDat[CD.tinhBe]);
+  var hetCho = {};
+  var hc = layTab(TAB.hetCho).getDataRange().getValues();
+  for (var h = 1; h < hc.length; h++) {
+    var th = String(hc[h][0]).trim(), nh = chuanNgay(hc[h][1]);
+    if (th && nh) hetCho[th + '|' + nh] = true;
+  }
   var soChoRieng = {};
   var sc = layTab(TAB.soCho).getDataRange().getValues();
   for (var j = 1; j < sc.length; j++) {
@@ -254,7 +272,7 @@ function docBang() {
       sdt: chuanSdt(r[COT.sdt - 1])
     });
   }
-  return { caiDat: caiDat, soChoRieng: soChoRieng, don: don };
+  return { caiDat: caiDat, hetCho: hetCho, soChoRieng: soChoRieng, don: don };
 }
 
 function chiemCho(d, bayGio) {
@@ -263,9 +281,18 @@ function chiemCho(d, bayGio) {
   return true; // Đã thanh toán, Chờ xác nhận, hoặc trạng thái lạ (an toàn: coi là đang chiếm chỗ)
 }
 
-function conLai(bang, tau, ngay, boQuaMaDon) {
+// Hạn mức của 1 tàu 1 ngày: ngày ở tab "Ngày hết chỗ" → 0; tab "Số chỗ riêng"; "Số chỗ mỗi ngày"; để trống → không giới hạn (Infinity).
+function hanMuc(bang, tau, ngay) {
   var khoa = tau + '|' + ngay;
-  var tong = Object.prototype.hasOwnProperty.call(bang.soChoRieng, khoa) ? bang.soChoRieng[khoa] : (Number(bang.caiDat[CD.soCho]) || 0);
+  if (bang.hetCho[khoa]) return 0;
+  if (Object.prototype.hasOwnProperty.call(bang.soChoRieng, khoa)) return bang.soChoRieng[khoa];
+  var chung = bang.caiDat[CD.soCho];
+  return chung === '' || chung === null || chung === undefined || isNaN(Number(chung)) ? Infinity : Number(chung);
+}
+
+function conLai(bang, tau, ngay, boQuaMaDon) {
+  var tong = hanMuc(bang, tau, ngay);
+  if (tong === Infinity) return Infinity;
   var bayGio = Date.now();
   for (var i = 0; i < bang.don.length; i++) {
     var d = bang.don[i];
@@ -343,7 +370,11 @@ function capNhatTongHop() {
   var bayGio = new Date();
   for (var i = 0; i < 45; i++) {
     var ngay = Utilities.formatDate(new Date(bayGio.getTime() + i * 86400000), MUI_GIO, 'yyyy-MM-dd');
-    dong.push([ngay].concat(DS_TAU.map(function (t) { return conLai(bang, t, ngay, ''); })));
+    dong.push([ngay].concat(DS_TAU.map(function (t) {
+      if (bang.hetCho[t + '|' + ngay]) return 'HẾT';
+      var con = conLai(bang, t, ngay, '');
+      return con === Infinity ? 'Nhận đặt' : con;
+    })));
   }
   tab.getRange(1, 1, dong.length, dong[0].length).setValues(dong);
   tab.getRange(1, 1, 1, dong[0].length).setFontWeight('bold');

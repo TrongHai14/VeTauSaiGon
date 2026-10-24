@@ -401,6 +401,7 @@ var CHINH_SACH_CHUNG = [
     nhom: [
       { tieuDe: null, dong: [
         'Xác nhận: quý khách sẽ nhận được vé trong vòng 24 giờ kể từ khi đặt và thanh toán thành công.',
+        'Chỗ trên tàu do Ms Nguyên xác nhận với tàu sau khi quý khách thanh toán. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách.',
         'Vé chỉ có giá trị vào đúng ngày đăng ký.'
       ] },
       { tieuDe: 'Giá đã bao gồm', dong: ['Vé lên tàu.', 'Ăn buffet hoặc set menu theo vé đã đặt.', 'Thuế, phí vào cảng.'] },

@@ -168,6 +168,7 @@ const treEmTungTau = DANH_SACH_TAU.map((t) => {
 const CAU_HOI_FAQ = [
   ['Thanh toán thế nào? Có xuất hóa đơn VAT không?', 'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản ' + CONG_TY.ten + '.'],
   ['Bao lâu thì nhận được vé?', 'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.'],
+  ['Nếu tàu hết chỗ ngày tôi chọn thì sao?', 'Sau khi quý khách thanh toán, Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách. Ngày nào tàu đã báo hết chỗ sẽ bị khoá trên lịch đặt chỗ.'],
   ['Làm sao biết phiếu là thật?', 'Mỗi phiếu có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ.'],
   ['Trẻ em tính giá thế nào?', 'Mỗi tàu có chính sách trẻ em riêng (độ tuổi, chiều cao, số bé miễn phí đi kèm người lớn). Chính sách của từng tàu:'],
   ['Có đổi ngày hoặc hủy vé được không?', 'Không hoàn/hủy vé trong ngày sử dụng. Đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới.'],

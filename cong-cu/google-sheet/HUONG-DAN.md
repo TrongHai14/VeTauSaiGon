@@ -1,8 +1,13 @@
 # Lịch còn chỗ bằng Google Sheet
 
-Nguyên Nguyên được giữ **50 chỗ** cho mỗi tàu mỗi ngày. Khách đặt trên web thì chỗ tự trừ dần. Khách chỉ thấy ngày đó **còn chỗ** hay **hết chỗ**; ngày đã hết chỗ thì không bấm đặt được.
+Nguyên Nguyên là đại lý, nên còn chỗ hay không là do **tàu** quyết định. Web hoạt động như sau:
 
-**Đơn đi qua các trạng thái sau:**
+- **Mặc định mọi ngày đều nhận đặt chỗ.** Khi tàu báo hết chỗ ngày nào, Ms Nguyên mở tab **"Ngày hết chỗ"** và thêm 1 dòng gồm tàu và ngày. Web khoá ngày đó ngay, khách không bấm đặt được nữa.
+- **Khách trả trước.** Sau đó Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ, Nguyên Nguyên **hoàn 100%** hoặc đổi sang ngày khác. Câu này đã ghi sẵn ở bước thanh toán, trang Chính sách và trang FAQ.
+- Mọi đơn đặt trên web đều được ghi vào tab **"Đơn giữ chỗ"**, để Ms Nguyên theo dõi và đối chiếu tiền.
+- Nếu sau này tàu cấp **hạn mức riêng** cho đại lý (ví dụ 50 chỗ mỗi ngày): ghi con số đó vào ô **"Số chỗ mỗi ngày"** ở tab Cài đặt. Khi đó web sẽ tự trừ dần, và giữ chỗ 1 tiếng như mô tả bên dưới.
+
+**Các trạng thái của một đơn:**
 
 1. Khách bấm "Tiếp tục" sang bước thanh toán → đơn ở trạng thái **Giữ chỗ** trong **1 tiếng**.
 2. Khách chuyển khoản rồi bấm **"Tôi đã chuyển khoản"** → đơn chuyển sang **Chờ xác nhận**. Chỗ được giữ cho tới khi Ms Nguyên kiểm tra, không tự hết hạn nữa.
@@ -24,6 +29,8 @@ Phần cài đặt dưới đây chỉ làm **một lần**, mất khoảng 10 p
 6. Bấm **💾 Lưu** (Ctrl+S).
 
 ## Bước 2. Chạy cài đặt lần đầu
+
+> Đã chạy `caiDat` bằng bản mã cũ (ô "Số chỗ mỗi ngày" đang là 50)? Dán bản mã mới, chạy lại `caiDat` để có thêm tab "Ngày hết chỗ", rồi **xoá số 50** ở tab Cài đặt (để trống).
 
 1. Trên thanh công cụ, chọn hàm **caiDat** trong ô danh sách, rồi bấm **▶ Chạy**.
 2. Google sẽ hỏi quyền: bấm **Xem lại quyền** và chọn tài khoản Gmail của bạn.
@@ -52,8 +59,9 @@ Web vẫn chạy bình thường sau khi khoá.
 
 | Tab | Dùng để |
 |---|---|
-| **Cài đặt** | Số chỗ mỗi ngày (50). Số giờ giữ chỗ chờ chuyển khoản (1). Có tính bé miễn phí vào số chỗ không. **Mã quản lý**. Chặn đặt khi đã sát giờ tàu chạy. Tối đa khách mỗi đơn online (20). Số đơn chờ tối đa của mỗi SĐT (2). Số lượt giữ chỗ tối đa trong 10 phút (30). |
-| **Số chỗ riêng** | Ghi những ngày có số chỗ khác 50: tàu, ngày (gõ dạng 2026-12-24), số chỗ. Ghi **0** là đóng ngày đó. Để trống ô Số chỗ thì dòng đó không có tác dụng. |
+| **Ngày hết chỗ** | Tàu báo hết chỗ thì thêm 1 dòng: chọn tàu, gõ ngày (2026-12-24 hoặc 24/12/2026). Mở lại ngày đó thì xoá dòng. |
+| **Cài đặt** | Số chỗ mỗi ngày (**để trống** = không giới hạn; chỉ ghi số khi tàu cấp hạn mức). Số giờ giữ chỗ chờ chuyển khoản (1). Có tính bé miễn phí vào số chỗ không. **Mã quản lý**. Chặn đặt khi đã sát giờ tàu chạy. Tối đa khách mỗi đơn online (20). Số đơn chờ tối đa của mỗi SĐT (2). Số lượt giữ chỗ tối đa trong 10 phút (30). |
+| **Số chỗ riêng** | Chỉ dùng khi có hạn mức: tàu, ngày, số chỗ riêng của ngày đó. Muốn đóng ngày thì dùng tab "Ngày hết chỗ". |
 | **Đơn giữ chỗ** | Đơn khách đặt trên web sẽ tự hiện ở đây. |
 | **Tổng hợp** | Bấm menu **Vé Tàu → Xem chỗ còn lại 45 ngày tới** để xem mỗi tàu còn bao nhiêu chỗ. Số **âm** nghĩa là đang bán vượt số chỗ, cần kiểm tra với tàu. |
 

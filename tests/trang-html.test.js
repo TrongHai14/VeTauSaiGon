@@ -230,7 +230,8 @@ test('trang chu: anh tau tran man hinh voi nut Dat cho ngay; khong con muc so sa
   for (const f of TAT_CA_TRANG) assert.ok(!/so sánh|so-sanh/i.test(doc(f)), f + ' khong co chu so sanh');
   assert.ok(!html.includes('id="hoi-dap"'));
   const faq = doc('faq.html');
-  assert.strictEqual((faq.match(/<details/g) || []).length, 6);
+  assert.strictEqual((faq.match(/<details/g) || []).length, 7);
+  assert.ok(faq.includes('Nếu tàu hết chỗ ngày tôi chọn thì sao?'), 'FAQ hoan tien khi tau het cho');
   // Trẻ em: mỗi tàu một dòng, lấy từ GIA_TRE_EM.
   const { GIA_TRE_EM } = require('../js/du-lieu-tau.js');
   for (const t of DANH_SACH_TAU) {

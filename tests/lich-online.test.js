@@ -56,6 +56,7 @@ function taoSheetGia(macDinh) {
   ctx.tabs = tabs;
   if (!macDinh) {
     for (const r of tabs['Cài đặt'].o) {
+      if (r && r[0] === 'Số chỗ mỗi ngày') r[1] = 50;
       if (r && r[0] === 'Tối đa khách mỗi đơn online') r[1] = 200;
       if (r && r[0] === 'Tối đa đơn đang giữ mỗi SĐT') r[1] = 999;
       if (r && r[0] === 'Tối đa lượt giữ chỗ mỗi 10 phút (toàn web)') r[1] = 9999;
@@ -72,11 +73,11 @@ const vnHomNay = new Date(Date.now() + 7 * 3600e3);
 const MA = 'VT' + String(vnHomNay.getUTCFullYear() % 100).padStart(2, '0') + String(vnHomNay.getUTCMonth() + 1).padStart(2, '0') + String(vnHomNay.getUTCDate()).padStart(2, '0');
 const giu = (them) => Object.assign({ action: 'giu', maDon: MA + 'AAAA', tau: 'indochina-queen', ngay: NGAY, nguoiLon: 2, treEm: 0, beMienPhi: 0, hoTen: 'A', sdt: '0948170036' }, them);
 
-test('sheet: cai dat tao 4 tab, mac dinh 50 cho/ngay, giu 1 gio, toi da 20 khach/don, ma quan ly ngau nhien', () => {
+test('sheet: cai dat tao 5 tab, mac dinh KHONG gioi han cho (dai ly phu thuoc tau), giu 1 gio, toi da 20 khach/don', () => {
   const { tabs } = taoSheetGia(true);
-  assert.deepStrictEqual(Object.keys(tabs).sort(), ['Cài đặt', 'Số chỗ riêng', 'Tổng hợp', 'Đơn giữ chỗ'].sort());
+  assert.deepStrictEqual(Object.keys(tabs).sort(), ['Cài đặt', 'Ngày hết chỗ', 'Số chỗ riêng', 'Tổng hợp', 'Đơn giữ chỗ'].sort());
   const cd = Object.fromEntries(tabs['Cài đặt'].o.slice(1).map((r) => [r[0], r[1]]));
-  assert.strictEqual(cd['Số chỗ mỗi ngày'], 50);
+  assert.strictEqual(cd['Số chỗ mỗi ngày'], '');
   assert.strictEqual(cd['Số giờ giữ chỗ chờ chuyển khoản'], 1);
   assert.strictEqual(cd['Tối đa khách mỗi đơn online'], 20);
   // Không còn dòng ví dụ đóng thật ngày 31/12 ở tab Số chỗ riêng.
@@ -349,4 +350,31 @@ test('email: bao chuyen khoan loi / don da huy duoc ghi ro cho Ms Nguyen', () =>
   assert.strictEqual(e({}), undefined);
   const ma = doc('js/dat-cho.js');
   assert.ok(ma.includes("var baoChuyen = (don.giuCho === 'da-giu' || don.giuCho === 'loi')"), 'giu cho loi mang van gui daChuyen');
+});
+
+test('sheet mac dinh (dai ly): moi ngay nhan dat, chi khoa ngay ghi o tab Ngay het cho; giu cho khong bao han muc', () => {
+  const s = taoSheetGia(true);
+  for (let i = 0; i < 5; i++) assert.strictEqual(s.post(giu({ maDon: MA + 'KG0' + i, nguoiLon: 20, sdt: '091200050' + i })).ok, true, 'khong gioi han');
+  const kq = s.post(giu({ maDon: MA + 'KG10', nguoiLon: 2, sdt: '0912000600' }));
+  assert.strictEqual(kq.coHanMuc, false, 'khong co han muc: web khong hien "giu cho den"');
+  assert.deepStrictEqual(s.get({ action: 'lich', tau: 'indochina-queen', thang: '2099-03', khach: '2' }).het, []);
+  // Tàu báo hết ngày 15/3 (gõ dạng 15/3/2099) → web khoá đúng tàu, đúng ngày.
+  s.tabs['Ngày hết chỗ'].o.push(['indochina-queen', '15/3/2099', 'tàu báo hết']);
+  assert.deepStrictEqual(s.get({ action: 'lich', tau: 'indochina-queen', thang: '2099-03', khach: '1' }).het, ['2099-03-15']);
+  assert.deepStrictEqual(s.get({ action: 'lich', tau: 'indochina-star', thang: '2099-03', khach: '1' }).het, []);
+  assert.strictEqual(s.post(giu({ maDon: MA + 'KG11', ngay: '2099-03-15', nguoiLon: 1, sdt: '0912000601' })).loi, 'het');
+  // Có hạn mức (tàu cấp 50) thì báo coHanMuc.
+  s.tabs['Cài đặt'].o.find((r) => r && r[0] === 'Số chỗ mỗi ngày')[1] = 50;
+  assert.strictEqual(s.post(giu({ maDon: MA + 'KG12', ngay: '2099-03-20', nguoiLon: 2, sdt: '0912000602' })).coHanMuc, true);
+});
+
+test('web: buoc thanh toan cam ket hoan 100% hoac doi ngay neu tau het cho; chi hien "giu cho den" khi co han muc', () => {
+  global.CAU_HINH = require('../js/cau-hinh.js').CAU_HINH;
+  const dc = require('../js/dat-cho.js');
+  const { DANH_SACH_TAU, GIA_TRE_EM } = require('../js/du-lieu-tau.js');
+  const tau = DANH_SACH_TAU.find((t) => t.slug === 'indochina-queen');
+  const don = { slugTau: tau.slug, ngay: '2099-03-10', loai: 'buffet', buffetMa: '0:0', nguoiLon: 2, treEm50: 0, treEmMienPhi: 0, mon: {}, hoTen: 'A', soDienThoai: '0948170036', email: 'a@b.vn', maDon: MA + 'TT01', vat: false, taiKhoan: 'caNhan' };
+  const html = dc.taoKhoiThanhToan(don, tau, GIA_TRE_EM, CAU_HINH.thanhToan);
+  assert.ok(html.includes('<b>hoàn 100% số tiền</b> hoặc đổi sang ngày khác'));
+  assert.ok(doc('js/dat-cho.js').includes("don.giuDen = kq.coHanMuc ? (kq.giuDen || '') : '';"));
 });

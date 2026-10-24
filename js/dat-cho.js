@@ -845,7 +845,9 @@ function taoKhoiThanhToan(don, tau, bangTreEm, cauHinhThanhToan) {
   var noiDung = taoNoiDungChuyenKhoan(don);
   var anhQR = tk.anhQR ? tk.anhQR : taoLinkVietQR(tk, tt.tong, noiDung);
   var html = taoKhoiUyTin(layCongTy(), '') + '<p class="loi-nhan">Quý khách thanh toán vé trước để tàu giữ chỗ. Thanh toán xong, Ms Nguyên sẽ gửi <b>phiếu xác nhận</b> và ' +
-    '<b>code vé điện tử</b>; khi lên tàu quý khách đưa code cho nhân viên soát vé.</p>';
+    '<b>code vé điện tử</b>; khi lên tàu quý khách đưa code cho nhân viên soát vé.</p>' +
+    '<p class="loi-nhan cam-ket-hoan">Chỗ trên tàu do Ms Nguyên xác nhận với tàu sau khi quý khách thanh toán. ' +
+    'Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên <b>hoàn 100% số tiền</b> hoặc đổi sang ngày khác theo lựa chọn của quý khách.</p>';
   if (!don.vat) {
     html += '<div class="chon-tai-khoan" role="radiogroup">';
     var cacTk = ['caNhan', 'congTy'];
@@ -1169,7 +1171,8 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
         thongBao('', '');
         if (kq.ok) {
           don.giuCho = 'da-giu';
-          don.giuDen = kq.giuDen || '';
+          // Chỉ hiện "đã giữ chỗ đến …" khi đại lý có hạn mức thật (không thì chỗ do tàu xác nhận sau).
+          don.giuDen = kq.coHanMuc ? (kq.giuDen || '') : '';
           hienThanhToan();
         } else if (kq.loi === 'da-chuyen') {
           thongBao('Đơn này đã báo chuyển khoản nên không đổi được tàu hoặc ngày trên web. Vui lòng nhắn Zalo Ms Nguyên 0948170036 để đổi.', 'loi-gui');
