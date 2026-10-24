@@ -71,7 +71,7 @@ var CAU_HINH = {
 
   // Khoá công khai để kiểm tra chữ ký trên phiếu (chống làm giả). Lấy ở xac-nhan.html → "Tạo khoá ký phiếu",
   // dán đúng dòng web đưa ra vào đây rồi push lên GitHub. null = chưa cài (phiếu chưa ký được).
-  khoaCongKhai: null,
+  khoaCongKhai: {"kty":"EC","crv":"P-256","x":"Y28h2vJXQGDorkOGL8iCgAEV0sh7UNPnW1j9sx6GM2g","y":"Gxq_2r4GNjEMadg-VEBKAySkdFUuSNDr9fOklC9BT40"},
 
   // Ảnh từng tàu: ảnh đại diện, thư viện ảnh (tối đa bao nhiêu cũng được), ảnh khuyến mãi.
   anhTau: {
