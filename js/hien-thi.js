@@ -462,6 +462,35 @@ function taoLuoiAnhDau(tau, tienTo) {
   return html + '</div>';
 }
 
+// Ảnh lớn đầu trang tàu tự chuyển qua các ảnh của tàu (mờ dần, 5 giây/ảnh). Bấm vào ảnh thì mở đúng ảnh đang hiện.
+// Máy bật "giảm chuyển động": vẫn chuyển ảnh nhưng chậm hơn (8 giây) và không có hiệu ứng mờ. Tab ẩn thì tạm dừng.
+function chayAnhLonTau(khung, tau, tienTo) {
+  if (!khung || typeof window === 'undefined') return null;
+  var anh = layAnhTau(tau);
+  var nut = khung.querySelector('.luoi-anh [data-mo-anh="tau"][data-i="0"]');
+  var img = nut && nut.querySelector('img');
+  if (!img || anh.length < 2) return null;
+  var giamChuyenDong = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var hienTai = 0;
+  if (!giamChuyenDong) img.classList.add('anh-lon-chuyen');
+  return setInterval(function () {
+    if (document.hidden) return;
+    var ke = (hienTai + 1) % anh.length;
+    var tai = new Image();
+    tai.onload = function () {
+      if (!giamChuyenDong) img.style.opacity = '0';
+      setTimeout(function () {
+        img.src = tienTo + anh[ke].src;
+        img.alt = anh[ke].alt;
+        nut.setAttribute('data-i', String(ke));
+        img.style.opacity = '1';
+        hienTai = ke;
+      }, giamChuyenDong ? 0 : 450);
+    };
+    tai.src = tienTo + anh[ke].src;
+  }, giamChuyenDong ? 8000 : 5000);
+}
+
 function taoTheDatNhanh(tau, lienHe, tienTo) {
   var gio = tau.gioChay || {};
   return '<aside class="cot-phai"><div class="the-dat-nhanh">' +
@@ -917,6 +946,7 @@ function khoiChayTrangTau() {
     }
   }
   ganLightbox(khung, cacNhomAnh, '../');
+  chayAnhLonTau(khung, tau, '../');
   ganSuKienThucDon(khung);
   ganTheoDoiTab(khung);
 }

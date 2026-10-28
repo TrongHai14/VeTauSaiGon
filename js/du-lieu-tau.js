@@ -25,8 +25,8 @@ var DANH_SACH_TAU = [
     slug: 'indochina-star',
     ten: 'Indochina Star',
     moTaNgan: 'Buffet tối trên du thuyền Indochina Star qua sông Sài Gòn: đón khách 18h00, tàu chạy 19h45, cập bến 21h15, có nhạc và múa dân tộc.',
-    // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
-    gioiThieu: 'Indochina Star là du thuyền buffet tối trên sông Sài Gòn, đón khách tại Cảng Sài Gòn từ 18h00, khởi hành lúc 19h45 và cập bến lúc 21h15. Hành trình đi qua cầu Thủ Thiêm, ngắm Landmark 81 về đêm rồi tới cầu Sài Gòn. Quý khách dùng buffet ở tầng 1 hoặc tầng 2, còn tầng 3 là tầng thượng để ngắm cảnh. Trong bữa tối có nhạc và múa dân tộc ở các sảnh, nhạc Philippines sôi động trên boong.',
+    // Giới thiệu: chỉ còn các điểm nổi bật và phần tổng quan (thongSo); gioiThieu để trống thì không hiện đoạn chữ.
+    gioiThieu: '',
     // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
       { nhan: 'Sức chứa', giaTri: 'Tối đa 368 khách' },
@@ -61,8 +61,8 @@ var DANH_SACH_TAU = [
     slug: 'ben-nghe',
     ten: 'Bến Nghé',
     moTaNgan: 'Du thuyền Bến Nghé ăn tối buffet và set menu trên sông Sài Gòn: đón khách 17h15, khởi hành 20h00, cập bến 21h30, nhạc sống hằng đêm.',
-    // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
-    gioiThieu: 'Du thuyền Bến Nghé đón khách từ 17h15 tại Cảng Sài Gòn (đường Nguyễn Tất Thành, cạnh Bến Nhà Rồng) và khởi hành lúc 20h00. Từ 19h00 quý khách đã có thể dùng bữa, nghe nhạc trong lúc tàu chưa chạy. Tàu đi qua cảng Bến Nghé, cầu Tân Thuận, Đảo Kim Cương rồi trở về lúc 21h30. Tàu phục vụ buffet và set menu, có nhạc sống hằng đêm; cuối tuần có thêm belly dance hoặc múa cổ trang.',
+    // Giới thiệu: chỉ còn các điểm nổi bật và phần tổng quan (thongSo); gioiThieu để trống thì không hiện đoạn chữ.
+    gioiThieu: '',
     // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
       { nhan: 'Sức chứa', giaTri: 'Tối đa 1.000 khách' },
@@ -88,18 +88,22 @@ var DANH_SACH_TAU = [
         tieuDe: 'Buffet',
         ghiChu: 'Đã bao gồm VAT và vé lên tàu, chưa bao gồm nước uống.',
         dong: [{ ten: 'Buffet', tenPhu: null, gia: 733320 }]
+      },
+      {
+        // Theo ảnh thực đơn Bến Nghé (giá công bố / khách). Ảnh từng set: anhThucDon['ben-nghe']['Set menu'] trong js/cau-hinh.js.
+        tieuDe: 'Set menu',
+        ghiChu: 'Giá công bố / khách. Mỗi set có tặng tráng miệng, trà đá hoặc nước lọc, khăn lạnh.',
+        dong: [
+          { ten: 'Menu Bến Nghé 1', tenPhu: null, gia: 469000 },
+          { ten: 'Menu Bến Nghé 2', tenPhu: null, gia: 469000 },
+          { ten: 'Menu Bến Nghé 3', tenPhu: null, gia: 579000 },
+          { ten: 'Menu Bến Nghé 4', tenPhu: null, gia: 579000 },
+          { ten: 'Menu Bến Nghé 5', tenPhu: null, gia: 689000 },
+          { ten: 'Menu Bến Nghé 6', tenPhu: null, gia: 689000 },
+          { ten: 'Menu Bến Nghé 7', tenPhu: 'Chay', gia: 469000 },
+          { ten: 'Menu Bến Nghé 8', tenPhu: 'Chay', gia: 579000 }
+        ]
       }
-      // ===== SET MENU BẾN NGHÉ: bỏ dấu // ở các dòng dưới rồi điền tên, giá (số, không dấu chấm) =====
-      // Có set menu thì web tự mở tab "Set menu" cho Bến Nghé. Nhớ thêm ô ảnh từng món vào
-      // anhThucDon['ben-nghe']['Set menu'] trong js/cau-hinh.js (ví dụ món Set 1 dùng ảnh anh/ben-nghe/menu/set-1.jpg).
-      // ,{
-      //   tieuDe: 'Set menu',
-      //   ghiChu: 'Đã bao gồm VAT và vé lên tàu, chưa bao gồm nước uống.',
-      //   dong: [
-      //     { ten: 'Set 1', tenPhu: null, gia: 469000 },
-      //     { ten: 'Set 2', tenPhu: null, gia: 0 }
-      //   ]
-      // }
     ],
     khuyenMai: [],
     chinhSachTreEm: [
@@ -118,8 +122,8 @@ var DANH_SACH_TAU = [
     slug: 'indochina-queen',
     ten: 'Indochina Queen',
     moTaNgan: 'Indochina Queen – Tàu Nữ Hoàng Đông Dương: buffet và set menu trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h45, cập bến 21h15.',
-    // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
-    gioiThieu: 'Indochina Queen – Tàu Nữ Hoàng Đông Dương phục vụ tiệc buffet không giới hạn ở 3 tầng và sảnh VIP set menu ở tầng 3. Tàu đón khách tại Cảng Sài Gòn từ 18h00, khởi hành lúc 19h45, đi qua Bến Nhà Rồng, Bến Bạch Đằng, cầu Ba Son, cầu Tân Thuận rồi trở về lúc 21h15. Trong bữa tối có nhạc dân tộc, nhạc Philippines và các bài múa dân tộc tại từng sảnh.',
+    // Giới thiệu: chỉ còn các điểm nổi bật và phần tổng quan (thongSo); gioiThieu để trống thì không hiện đoạn chữ.
+    gioiThieu: '',
     // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
       { nhan: 'Sức chứa', giaTri: 'Tối đa 600 khách' },
@@ -175,8 +179,8 @@ var DANH_SACH_TAU = [
     slug: 'elite-of-saigon',
     ten: 'Elite of Saigon',
     moTaNgan: 'Elite of Saigon: buffet, set menu và set chill trên du thuyền sông Sài Gòn, có live band, DJ, hồ bơi và pháo hoa cuối tuần.',
-    // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
-    gioiThieu: 'Elite of Saigon có 3 tầng với 3 kiểu phục vụ: buffet ở tầng 1, set menu Âu, Á, Việt, Ấn, chay và trẻ em ở tầng 2, set chill trên sân thượng tầng 3. Tàu chạy từ 19h30 đến 22h00, đi qua Bến Bạch Đằng, cầu Ba Son, cầu Thủ Thiêm và Landmark 81 rồi quay lại Bến Nhà Rồng. Band nhạc biểu diễn live hằng đêm; từ thứ 5 đến chủ nhật có thêm dancer và DJ.',
+    // Giới thiệu: chỉ còn các điểm nổi bật và phần tổng quan (thongSo); gioiThieu để trống thì không hiện đoạn chữ.
+    gioiThieu: '',
     // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
       { nhan: 'Sức chứa', giaTri: 'Tối đa 500 khách' },
@@ -244,8 +248,8 @@ var DANH_SACH_TAU = [
     slug: 'saigon-princess',
     ten: 'Saigon Princess',
     moTaNgan: 'Saigon Princess: du thuyền ăn tối set menu 3, 4, 5 món trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h30, cập bến 21h30.',
-    // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
-    gioiThieu: 'Saigon Princess phục vụ bữa tối set menu 3, 4 và 5 món với nhiều lựa chọn: Việt Nam, Á Âu, Âu, hải sản, chay và thực đơn trẻ em. Tàu khởi hành lúc 19h30 từ Cảng Sài Gòn, đi qua Bến Bạch Đằng, Landmark 81, cảng Khánh Hội và trở về lúc 21h30. Band nhạc Philippines biểu diễn tại mỗi sảnh, kèm ảo thuật, violin tùy ngày. Tiệc sinh nhật và kỷ niệm được tặng gói trang trí cơ bản.',
+    // Giới thiệu: chỉ còn các điểm nổi bật và phần tổng quan (thongSo); gioiThieu để trống thì không hiện đoạn chữ.
+    gioiThieu: '',
     // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
       { nhan: 'Sức chứa', giaTri: 'Tối đa 250 khách mỗi chuyến' },
@@ -305,8 +309,8 @@ var DANH_SACH_TAU = [
     slug: 'ben-thanh-princess',
     ten: 'Bến Thành Princess',
     moTaNgan: 'Bến Thành Princess: du thuyền ăn tối set menu 3, 4, 5 món trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h30, cập bến 21h30.',
-    // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
-    gioiThieu: 'Bến Thành Princess phục vụ set menu 3, 4 và 5 món, đã gồm 1 ly trà hoặc cà phê sau món chính. Tàu chạy từ 19h30 đến 21h30, đi qua Bến Cảng Nhà Rồng, tòa nhà Vietcombank, cầu Ba Son, Vinhomes Central Park, cầu Thủ Thiêm và Landmark 81. Ban nhạc quốc tế biểu diễn hằng ngày, ban nhạc Việt Nam vào thứ 4 và thứ 7, cùng ảo thuật tại bàn mỗi tối.',
+    // Giới thiệu: chỉ còn các điểm nổi bật và phần tổng quan (thongSo); gioiThieu để trống thì không hiện đoạn chữ.
+    gioiThieu: '',
     // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
       { nhan: 'Sức chứa', giaTri: 'Tối đa 350 khách' },
@@ -372,7 +376,8 @@ var GIA_TRE_EM = {
     buffet: { mienPhi: '0–4 tuổi (dưới 1m)', nuaGia: '5–9 tuổi (1m – dưới 1,3m)', ghiChu: 'Từ 10 tuổi (trên 1,3m) tính như người lớn.' }
   },
   'ben-nghe': {
-    buffet: { mienPhi: 'Dưới 4 tuổi, không đặt suất ăn', nuaGia: '4–8 tuổi (hoặc dưới 4 tuổi có đặt suất ăn)', ghiChu: 'Từ 9 tuổi tính như người lớn.' }
+    buffet: { mienPhi: 'Dưới 4 tuổi, không đặt suất ăn', nuaGia: '4–8 tuổi (hoặc dưới 4 tuổi có đặt suất ăn)', ghiChu: 'Từ 9 tuổi tính như người lớn.' },
+    setMenu: { mienPhi: 'Dưới 4 tuổi, không đặt suất ăn', nuaGia: null, ghiChu: 'Trẻ 4–8 tuổi tính ½ suất, từ 9 tuổi tính 1 suất: vui lòng ghi số bé ở ô Ghi chú, Ms Nguyên sẽ báo giá.' }
   },
   'indochina-queen': {
     // Giống Indochina Star.

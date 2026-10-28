@@ -68,12 +68,12 @@ test('moi hang buffet cua moi tau: nguoi lon x gia, tre 50% lam tron neu tau co 
   assert.ok(dem >= 7);
 });
 
-test('tau khong co buffet (Princess x2) hoac khong co set menu (Star, Ben Nghe): khong tinh tien, khong cho dat', () => {
+test('tau khong co buffet (Princess x2) hoac khong co set menu (Star): khong tinh tien, khong cho dat', () => {
   for (const s of ['saigon-princess', 'ben-thanh-princess']) {
     assert.strictEqual(tong(don({ slugTau: s, loai: 'buffet', buffetMa: '0:0' })).tong, 0);
     assert.ok(dc.kiemTraBuoc1(don({ slugTau: s, loai: 'buffet' }), DANH_SACH_TAU, HOM_NAY).loi.loai, s);
   }
-  for (const s of ['indochina-star', 'ben-nghe']) {
+  for (const s of ['indochina-star']) {
     assert.strictEqual(tong(don({ slugTau: s, loai: 'setMenu', mon: { '0:0': 2 } })).tong, 0);
     assert.ok(dc.kiemTraBuoc1(don({ slugTau: s, loai: 'setMenu', mon: { '0:0': 2 } }), DANH_SACH_TAU, HOM_NAY).loi.loai, s);
   }

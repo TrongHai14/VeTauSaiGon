@@ -59,12 +59,13 @@ test('taoTrangTau: hai tab Buffet / Set menu, moi mon co Xem menu va nut Dat dun
   assert.ok(html.includes('href="../dat-cho.html?tau=indochina-queen&amp;loai=setMenu&amp;menu=1%3A0"'));
 });
 
-test('taoTrangTau: tau khong phuc vu mot loai thi bao ro, Ben Nghe set menu bao lien he', () => {
+test('taoTrangTau: tau khong phuc vu mot loai thi bao ro; Ben Nghe co 8 set menu', () => {
   assert.ok(ht.taoTrangTau(tau('indochina-star'), LIEN_HE, '../').includes('chỉ phục vụ <strong>buffet</strong>'));
   assert.ok(ht.taoTrangTau(tau('saigon-princess'), LIEN_HE, '../').includes('chỉ phục vụ <strong>set menu</strong>'));
   const benNghe = ht.taoTrangTau(tau('ben-nghe'), LIEN_HE, '../');
   assert.ok(benNghe.includes('Set menu từ 469.000đ'));
-  assert.ok(benNghe.includes('Nhắn Zalo hỏi set menu'));
+  for (let i = 1; i <= 8; i++) assert.ok(benNghe.includes('Menu Bến Nghé ' + i), 'set ' + i);
+  assert.ok(!benNghe.includes('Nhắn Zalo hỏi set menu'));
 });
 
 test('taoTrangTau: Elite co hop phu thu va Mid-week Chill, Ben Nghe 733.320 VND', () => {
@@ -100,10 +101,11 @@ test('taoNutLienHe', () => {
 
 test('gioi thieu tung tau: du 6 tau co doan gioi thieu va 3 diem noi bat, hien o dau trang tau', () => {
   for (const t of DANH_SACH_TAU) {
-    assert.ok(t.gioiThieu && t.gioiThieu.length > 80 && t.gioiThieu.length < 700, t.slug + ' gioi thieu');
+    // Đoạn giới thiệu dài đã bỏ (19/10): chỉ còn 3 điểm nổi bật và phần tổng quan.
+    assert.strictEqual(t.gioiThieu, '', t.slug + ' khong con doan gioi thieu dai');
     assert.ok(Array.isArray(t.noiBat) && t.noiBat.length === 3, t.slug + ' noi bat');
     const html = ht.taoTrangTau(t, LIEN_HE, '../');
-    assert.ok(html.includes('id="gioi-thieu"') && html.includes(ht.escapeHtml(t.gioiThieu)), t.slug);
+    assert.ok(html.includes('id="gioi-thieu"') && !html.includes('class="gioi-thieu-tau"') && html.includes('<dl class="thong-so-tau">'), t.slug);
     assert.ok(html.indexOf('id="gioi-thieu"') < html.indexOf('id="thuc-don"'), t.slug + ' gioi thieu truoc thuc don');
     assert.ok(html.includes('<a href="#gioi-thieu">Giới thiệu</a>'), t.slug + ' co tab');
   }

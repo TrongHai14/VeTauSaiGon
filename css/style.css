@@ -814,3 +814,6 @@ html.dang-dich body { visibility: hidden; }
 .lich-cho.dang-tai::after { content: ''; position: absolute; top: 14px; right: 56px; width: 14px; height: 14px; border: 2px solid var(--vien); border-top-color: var(--xanh); border-radius: 50%; animation: lich-quay .8s linear infinite; }
 @keyframes lich-quay { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .lich-cho.dang-tai::after { animation: none; } }
+
+/* Ảnh lớn trang tàu tự chuyển (js/hien-thi.js chayAnhLonTau). */
+.anh-lon-chuyen { transition: opacity .45s ease; }

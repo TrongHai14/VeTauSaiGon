@@ -56,7 +56,8 @@ test('kiemTraBuoc1: thieu tau / ngay qua khu / loai khong co / chua chon mon', (
   assert.deepStrictEqual(loi(donBuffet({ buffetMa: '' })), ['mon']);
   assert.deepStrictEqual(loi(donBuffet({ nguoiLon: 0 })), ['mon']);
   assert.deepStrictEqual(loi(donBuffet({ slugTau: 'saigon-princess' })), ['loai'], 'Princess khong co buffet');
-  assert.deepStrictEqual(loi(donBuffet({ slugTau: 'ben-nghe', loai: 'setMenu' })), ['loai'], 'Ben Nghe chua co danh sach set menu');
+  assert.deepStrictEqual(loi(donBuffet({ slugTau: 'ben-nghe', loai: 'setMenu' })), ['mon'], 'Ben Nghe co set menu: chua chon suat nao');
+  assert.deepStrictEqual(loi(donBuffet({ slugTau: 'indochina-star', loai: 'setMenu' })), ['loai'], 'Star chua co set menu');
   assert.deepStrictEqual(loi(donBuffet({ loai: 'setMenu', mon: {} })), ['mon']);
   assert.ok(dc.kiemTraBuoc1(donBuffet({ loai: 'setMenu', mon: { '1:0': 1 } }), DANH_SACH_TAU, homNay).hopLe);
 });

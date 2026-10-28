@@ -201,20 +201,30 @@ var CAU_HINH = {
   anhThucDon: {
     'indochina-star': {   // Indochina Star
       'Buffet': {
-        'Tầng 1': ['anh/indochina-star/menu/buffet-tang-1.jpg'],
-        'Tầng 2': ['anh/indochina-star/menu/buffet-tang-2.jpg'],
+        'Tầng 1': ['anh/indochina-star/menu/buffet-1.jpg', 'anh/indochina-star/menu/buffet-2.jpg', 'anh/indochina-star/menu/buffet-3.jpg'],
+        'Tầng 2': ['anh/indochina-star/menu/buffet-1.jpg', 'anh/indochina-star/menu/buffet-2.jpg', 'anh/indochina-star/menu/buffet-3.jpg'],
       },
     },
     'ben-nghe': {   // Bến Nghé
       'Buffet': {
-        'Buffet': ['anh/ben-nghe/menu/buffet.jpg'],
+        'Buffet': ['anh/ben-nghe/menu/buffet-1.jpg', 'anh/ben-nghe/menu/buffet-2.jpg'],
+      },
+      'Set menu': {
+        'Menu Bến Nghé 1': ['anh/ben-nghe/menu/set-1.jpg'],
+        'Menu Bến Nghé 2': ['anh/ben-nghe/menu/set-2.jpg'],
+        'Menu Bến Nghé 3': ['anh/ben-nghe/menu/set-3.jpg'],
+        'Menu Bến Nghé 4': ['anh/ben-nghe/menu/set-4.jpg'],
+        'Menu Bến Nghé 5': ['anh/ben-nghe/menu/set-5.jpg'],
+        'Menu Bến Nghé 6': ['anh/ben-nghe/menu/set-6.jpg'],
+        'Menu Bến Nghé 7': ['anh/ben-nghe/menu/set-7-chay.jpg'],
+        'Menu Bến Nghé 8': ['anh/ben-nghe/menu/set-8-chay.jpg'],
       },
     },
     'indochina-queen': {   // Indochina Queen
       'Buffet': {
-        'Tầng 1': ['anh/indochina-queen/menu/buffet-tang-1.jpg'],
-        'Tầng 2': ['anh/indochina-queen/menu/buffet-tang-2.jpg'],
-        'Tầng 3': ['anh/indochina-queen/menu/buffet-tang-3.jpg'],
+        'Tầng 1': ['anh/indochina-queen/menu/buffet-1.jpg', 'anh/indochina-queen/menu/buffet-2.jpg'],
+        'Tầng 2': ['anh/indochina-queen/menu/buffet-1.jpg', 'anh/indochina-queen/menu/buffet-2.jpg'],
+        'Tầng 3': ['anh/indochina-queen/menu/buffet-1.jpg', 'anh/indochina-queen/menu/buffet-2.jpg'],
       },
       'Set menu': {
         'INDO7': ['anh/indochina-queen/menu/set-indo7.jpg'],
@@ -232,15 +242,16 @@ var CAU_HINH = {
     },
     'elite-of-saigon': {   // Elite of Saigon
       'Buffet – Tầng 1': {
-        'Buffet': ['anh/elite-of-saigon/menu/buffet.jpg'],
+        'Buffet': ['anh/elite-of-saigon/menu/buffet-1.jpg', 'anh/elite-of-saigon/menu/buffet-2.jpg'],
       },
       'Set menu – Tầng 2': {
-        'Menu Âu': ['anh/elite-of-saigon/menu/set-menu-au.jpg'],
-        'Menu Á': ['anh/elite-of-saigon/menu/set-menu-a.jpg'],
-        'Menu Việt': ['anh/elite-of-saigon/menu/set-menu-viet.jpg'],
-        'Menu Ấn': ['anh/elite-of-saigon/menu/set-menu-an.jpg'],
-        'Menu Chay': ['anh/elite-of-saigon/menu/set-menu-chay.jpg'],
-        'Menu Trẻ em': ['anh/elite-of-saigon/menu/set-menu-tre-em.jpg'],
+        // Mỗi loại có nhiều thực đơn (Menu 1, 2, 3…): khách bấm xem lần lượt.
+        'Menu Âu': ['anh/elite-of-saigon/menu/set-au-1.jpg', 'anh/elite-of-saigon/menu/set-au-2.jpg', 'anh/elite-of-saigon/menu/set-au-3.jpg', 'anh/elite-of-saigon/menu/set-au-4.jpg'],
+        'Menu Á': ['anh/elite-of-saigon/menu/set-a-2.jpg', 'anh/elite-of-saigon/menu/set-a-3.jpg', 'anh/elite-of-saigon/menu/set-a-4.jpg'],
+        'Menu Việt': ['anh/elite-of-saigon/menu/set-viet-1.jpg', 'anh/elite-of-saigon/menu/set-viet-2.jpg'],
+        'Menu Ấn': ['anh/elite-of-saigon/menu/set-an.jpg'],
+        'Menu Chay': ['anh/elite-of-saigon/menu/set-chay-viet.jpg', 'anh/elite-of-saigon/menu/set-chay-an.jpg'],
+        'Menu Trẻ em': ['anh/elite-of-saigon/menu/set-tre-em.jpg'],
       },
     },
     'saigon-princess': {   // Saigon Princess
