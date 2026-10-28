@@ -45,7 +45,9 @@ var CAU_HINH = {
     'anh/bia/bia-01.jpg',
     'anh/bia/bia-02.jpg',
     'anh/bia/bia-03.jpg',
-    'anh/bia/bia-04.jpg'
+    'anh/bia/bia-04.jpg',
+    'anh/bia/bia-05.jpg',
+    'anh/bia/bia-06.jpg'
   ],
   // Video bìa (không bắt buộc): .mp4 10–20 giây, < 5MB. Có video thì video thay ảnh bìa.
   videoBia: '',
@@ -85,7 +87,10 @@ var CAU_HINH = {
         'anh/indochina-star/tau-05.jpg',
         'anh/indochina-star/tau-06.jpg',
         'anh/indochina-star/tau-07.jpg',
-        'anh/indochina-star/tau-08.jpg'
+        'anh/indochina-star/tau-08.jpg',
+        'anh/indochina-star/tau-09.jpg',
+        'anh/indochina-star/tau-10.jpg',
+        'anh/indochina-star/tau-11.jpg'
       ],
       khuyenMai: {}
     },
@@ -99,7 +104,15 @@ var CAU_HINH = {
         'anh/ben-nghe/tau-05.jpg',
         'anh/ben-nghe/tau-06.jpg',
         'anh/ben-nghe/tau-07.jpg',
-        'anh/ben-nghe/tau-08.jpg'
+        'anh/ben-nghe/tau-08.jpg',
+        'anh/ben-nghe/tau-09.jpg',
+        'anh/ben-nghe/tau-10.jpg',
+        'anh/ben-nghe/tau-11.jpg',
+        'anh/ben-nghe/tau-12.jpg',
+        'anh/ben-nghe/tau-13.jpg',
+        'anh/ben-nghe/tau-14.jpg',
+        'anh/ben-nghe/tau-15.jpg',
+        'anh/ben-nghe/tau-16.jpg'
       ],
       khuyenMai: {}
     },
@@ -113,7 +126,8 @@ var CAU_HINH = {
         'anh/indochina-queen/tau-05.jpg',
         'anh/indochina-queen/tau-06.jpg',
         'anh/indochina-queen/tau-07.jpg',
-        'anh/indochina-queen/tau-08.jpg'
+        'anh/indochina-queen/tau-08.jpg',
+        'anh/indochina-queen/tau-09.jpg'
       ],
       khuyenMai: {}
     },
@@ -127,7 +141,24 @@ var CAU_HINH = {
         'anh/elite-of-saigon/tau-05.jpg',
         'anh/elite-of-saigon/tau-06.jpg',
         'anh/elite-of-saigon/tau-07.jpg',
-        'anh/elite-of-saigon/tau-08.jpg'
+        'anh/elite-of-saigon/tau-08.jpg',
+        'anh/elite-of-saigon/tau-09.jpg',
+        'anh/elite-of-saigon/tau-10.jpg',
+        'anh/elite-of-saigon/tau-11.jpg',
+        'anh/elite-of-saigon/tau-12.jpg',
+        'anh/elite-of-saigon/tau-13.jpg',
+        'anh/elite-of-saigon/tau-14.jpg',
+        'anh/elite-of-saigon/tau-15.jpg',
+        'anh/elite-of-saigon/tau-16.jpg',
+        'anh/elite-of-saigon/tau-17.jpg',
+        'anh/elite-of-saigon/tau-18.jpg',
+        'anh/elite-of-saigon/tau-19.jpg',
+        'anh/elite-of-saigon/tau-20.jpg',
+        'anh/elite-of-saigon/tau-21.jpg',
+        'anh/elite-of-saigon/tau-22.jpg',
+        'anh/elite-of-saigon/tau-23.jpg',
+        'anh/elite-of-saigon/tau-24.jpg',
+        'anh/elite-of-saigon/tau-25.jpg'
       ],
       khuyenMai: {
         'Mid-week Chill': 'anh/elite-of-saigon/khuyen-mai-mid-week-chill.jpg'
@@ -143,7 +174,8 @@ var CAU_HINH = {
         'anh/saigon-princess/tau-05.jpg',
         'anh/saigon-princess/tau-06.jpg',
         'anh/saigon-princess/tau-07.jpg',
-        'anh/saigon-princess/tau-08.jpg'
+        'anh/saigon-princess/tau-08.jpg',
+        'anh/saigon-princess/tau-09.jpg'
       ],
       khuyenMai: {
         'Gói trang trí cơ bản': 'anh/saigon-princess/khuyen-mai-goi-trang-tri-co-ban.jpg'
@@ -157,9 +189,7 @@ var CAU_HINH = {
         'anh/ben-thanh-princess/tau-03.jpg',
         'anh/ben-thanh-princess/tau-04.jpg',
         'anh/ben-thanh-princess/tau-05.jpg',
-        'anh/ben-thanh-princess/tau-06.jpg',
-        'anh/ben-thanh-princess/tau-07.jpg',
-        'anh/ben-thanh-princess/tau-08.jpg'
+        'anh/ben-thanh-princess/tau-06.jpg'
       ],
       khuyenMai: {}
     },

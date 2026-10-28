@@ -5,3 +5,7 @@ tai-lieu/*.docx
 .bangiao/
 tai-lieu/hình ảnh idochinaqueen/
 khoa-bi-mat*.json
+
+# Ảnh gốc chưa nén (web dùng bản đã nén trong anh/)
+Anh bia/
+Anh tung tau/

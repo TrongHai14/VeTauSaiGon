@@ -27,11 +27,13 @@ var DANH_SACH_TAU = [
     moTaNgan: 'Buffet tối trên du thuyền Indochina Star qua sông Sài Gòn: đón khách 18h00, tàu chạy 19h45, cập bến 21h15, có nhạc và múa dân tộc.',
     // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
     gioiThieu: 'Indochina Star là du thuyền buffet tối trên sông Sài Gòn, đón khách tại Cảng Sài Gòn từ 18h00, khởi hành lúc 19h45 và cập bến lúc 21h15. Hành trình đi qua cầu Thủ Thiêm, ngắm Landmark 81 về đêm rồi tới cầu Sài Gòn. Quý khách dùng buffet ở tầng 1 hoặc tầng 2, còn tầng 3 là tầng thượng để ngắm cảnh. Trong bữa tối có nhạc và múa dân tộc ở các sảnh, nhạc Philippines sôi động trên boong.',
-    // Thông số tham khảo (hiện ở mục Giới thiệu và thẻ tàu). Nguồn: trang chính thức của tàu; Bến Nghé theo đại lý vé.
+    // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
-      { nhan: 'Sức chứa', giaTri: 'Khoảng 350 khách' },
-      { nhan: 'Số tầng', giaTri: '3 tầng (2 tầng buffet, tầng thượng ngắm cảnh)' },
-      { nhan: 'Sảnh buffet', giaTri: 'Tầng 1 khoảng 100 khách, tầng 2 khoảng 150 khách (tầng thượng để ngắm cảnh)' }
+      { nhan: 'Sức chứa', giaTri: 'Tối đa 368 khách' },
+      { nhan: 'Kích thước', giaTri: 'Dài 48,9 m, rộng 12,2 m, vỏ thép' },
+      { nhan: 'Số tầng', giaTri: '3 tầng: tầng trệt, tầng giữa, sân thượng' },
+      { nhan: 'Điểm nổi bật', giaTri: 'Sân thượng nhìn 360° ra sông Sài Gòn' },
+      { nhan: 'Phù hợp', giaTri: 'Ăn tối, tiếp khách, sự kiện' }
     ],
     noiBat: ['Buffet ở tầng 1 và tầng 2, tầng thượng ngắm cảnh', 'Nhạc, múa dân tộc và nhạc Philippines trên boong', 'Ngắm cầu Thủ Thiêm, Landmark 81 về đêm'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h45', capBen: '21h15', ghiChu: null },
@@ -61,11 +63,14 @@ var DANH_SACH_TAU = [
     moTaNgan: 'Du thuyền Bến Nghé ăn tối buffet và set menu trên sông Sài Gòn: đón khách 17h15, khởi hành 20h00, cập bến 21h30, nhạc sống hằng đêm.',
     // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
     gioiThieu: 'Du thuyền Bến Nghé đón khách từ 17h15 tại Cảng Sài Gòn (đường Nguyễn Tất Thành, cạnh Bến Nhà Rồng) và khởi hành lúc 20h00. Từ 19h00 quý khách đã có thể dùng bữa, nghe nhạc trong lúc tàu chưa chạy. Tàu đi qua cảng Bến Nghé, cầu Tân Thuận, Đảo Kim Cương rồi trở về lúc 21h30. Tàu phục vụ buffet và set menu, có nhạc sống hằng đêm; cuối tuần có thêm belly dance hoặc múa cổ trang.',
-    // Thông số tham khảo (hiện ở mục Giới thiệu và thẻ tàu). Nguồn: trang chính thức của tàu; Bến Nghé theo đại lý vé.
+    // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
-      { nhan: 'Sức chứa', giaTri: 'Khoảng 800–900 khách' },
-      { nhan: 'Số tầng', giaTri: '3 tầng' },
-      { nhan: 'Phù hợp', giaTri: 'Đoàn đông, tiệc công ty, gia đình' }
+      { nhan: 'Sức chứa', giaTri: 'Tối đa 1.000 khách' },
+      { nhan: 'Kích thước', giaTri: 'Dài 67,3 m, rộng 16,3 m' },
+      { nhan: 'Số tầng', giaTri: '4 tầng' },
+      { nhan: 'Đại sảnh', giaTri: '2 sảnh ở tầng 2 và tầng 3, mỗi sảnh khoảng 400 khách, có sân khấu, âm thanh, màn hình LED' },
+      { nhan: 'Phòng VIP', giaTri: '12 phòng ở tầng 1, 10–24 khách/phòng' },
+      { nhan: 'Phù hợp', giaTri: 'Gala dinner, tiệc cưới, Year End Party, hội nghị' }
     ],
     noiBat: ['Lên tàu sớm, dùng bữa từ 19h00', 'Nhạc sống hằng đêm từ 19h đến 21h15', 'Cuối tuần có belly dance hoặc múa cổ trang'],
     moTaGia: 'Set menu từ 469.000đ · Buffet 733.320đ',
@@ -115,13 +120,13 @@ var DANH_SACH_TAU = [
     moTaNgan: 'Indochina Queen – Tàu Nữ Hoàng Đông Dương: buffet và set menu trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h45, cập bến 21h15.',
     // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
     gioiThieu: 'Indochina Queen – Tàu Nữ Hoàng Đông Dương phục vụ tiệc buffet không giới hạn ở 3 tầng và sảnh VIP set menu ở tầng 3. Tàu đón khách tại Cảng Sài Gòn từ 18h00, khởi hành lúc 19h45, đi qua Bến Nhà Rồng, Bến Bạch Đằng, cầu Ba Son, cầu Tân Thuận rồi trở về lúc 21h15. Trong bữa tối có nhạc dân tộc, nhạc Philippines và các bài múa dân tộc tại từng sảnh.',
-    // Thông số tham khảo (hiện ở mục Giới thiệu và thẻ tàu). Nguồn: trang chính thức của tàu; Bến Nghé theo đại lý vé.
+    // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
-      { nhan: 'Sức chứa', giaTri: 'Khoảng 600 khách' },
-      { nhan: 'Số tầng', giaTri: '3 tầng, kết cấu thép và gỗ' },
-      { nhan: 'Sảnh buffet', giaTri: 'Mỗi tầng khoảng 200 khách' },
-      { nhan: 'Sảnh VIP set menu', giaTri: 'Khoảng 70 khách' },
-      { nhan: 'Hoạt động từ', giaTri: 'Năm 2017' }
+      { nhan: 'Sức chứa', giaTri: 'Tối đa 600 khách' },
+      { nhan: 'Kích thước', giaTri: 'Dài 74 m, rộng 13,7 m, vỏ thép' },
+      { nhan: 'Số tầng', giaTri: '3 tầng' },
+      { nhan: 'Bố trí', giaTri: 'Tầng trệt 120 khách, tầng giữa 220 khách, tầng 3 ngoài trời 190 khách và phòng VIP 70 khách' },
+      { nhan: 'Phù hợp', giaTri: 'Sinh nhật, gala dinner, hội nghị, tiệc công ty' }
     ],
     noiBat: ['Buffet không giới hạn ở 3 tầng', 'Sảnh VIP tầng 3 với 11 set menu', 'Nhạc dân tộc, nhạc Philippines và múa dân tộc'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h45', capBen: '21h15', ghiChu: null },
@@ -172,13 +177,13 @@ var DANH_SACH_TAU = [
     moTaNgan: 'Elite of Saigon: buffet, set menu và set chill trên du thuyền sông Sài Gòn, có live band, DJ, hồ bơi và pháo hoa cuối tuần.',
     // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
     gioiThieu: 'Elite of Saigon có 3 tầng với 3 kiểu phục vụ: buffet ở tầng 1, set menu Âu, Á, Việt, Ấn, chay và trẻ em ở tầng 2, set chill trên sân thượng tầng 3. Tàu chạy từ 19h30 đến 22h00, đi qua Bến Bạch Đằng, cầu Ba Son, cầu Thủ Thiêm và Landmark 81 rồi quay lại Bến Nhà Rồng. Band nhạc biểu diễn live hằng đêm; từ thứ 5 đến chủ nhật có thêm dancer và DJ.',
-    // Thông số tham khảo (hiện ở mục Giới thiệu và thẻ tàu). Nguồn: trang chính thức của tàu; Bến Nghé theo đại lý vé.
+    // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
-      { nhan: 'Sức chứa', giaTri: '500 khách' },
+      { nhan: 'Sức chứa', giaTri: 'Tối đa 500 khách' },
       { nhan: 'Kích thước', giaTri: 'Dài 75 m, rộng 13,9 m, cao 11,5 m' },
-      { nhan: 'Số tầng', giaTri: '3 tầng và sân thượng (Sun Deck)' },
-      { nhan: 'Vỏ tàu', giaTri: 'Thép, 2 lớp' },
-      { nhan: 'Hạ thủy', giaTri: 'Tháng 8/2025' }
+      { nhan: 'Số tầng', giaTri: '3 tầng' },
+      { nhan: 'Vận hành', giaTri: '2 động cơ Hyundai, chạy êm và ổn định' },
+      { nhan: 'Phù hợp', giaTri: 'Ăn tối, gala dinner, tiệc công ty, hội nghị' }
     ],
     noiBat: ['Buffet, set menu và set chill theo từng tầng', 'Live band hằng đêm, DJ và dancer từ thứ 5 đến chủ nhật', 'Mid-week Chill thứ 3 và thứ 5: tặng 2 bia + nachos'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '22h00', ghiChu: null },
@@ -241,12 +246,14 @@ var DANH_SACH_TAU = [
     moTaNgan: 'Saigon Princess: du thuyền ăn tối set menu 3, 4, 5 món trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h30, cập bến 21h30.',
     // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
     gioiThieu: 'Saigon Princess phục vụ bữa tối set menu 3, 4 và 5 món với nhiều lựa chọn: Việt Nam, Á Âu, Âu, hải sản, chay và thực đơn trẻ em. Tàu khởi hành lúc 19h30 từ Cảng Sài Gòn, đi qua Bến Bạch Đằng, Landmark 81, cảng Khánh Hội và trở về lúc 21h30. Band nhạc Philippines biểu diễn tại mỗi sảnh, kèm ảo thuật, violin tùy ngày. Tiệc sinh nhật và kỷ niệm được tặng gói trang trí cơ bản.',
-    // Thông số tham khảo (hiện ở mục Giới thiệu và thẻ tàu). Nguồn: trang chính thức của tàu; Bến Nghé theo đại lý vé.
+    // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
-      { nhan: 'Sức chứa', giaTri: 'Khoảng 260 khách ăn tối' },
-      { nhan: 'Hội nghị', giaTri: 'Khoảng 300 khách' },
-      { nhan: 'Số tầng', giaTri: '3 tầng phục vụ khách (2 tầng sảnh ăn tối, sân thượng Sun Deck 360°)' },
-      { nhan: 'Phù hợp', giaTri: 'Tiệc sinh nhật, kỷ niệm, khách công ty' }
+      { nhan: 'Sức chứa', giaTri: 'Tối đa 250 khách mỗi chuyến' },
+      { nhan: 'Số tầng', giaTri: '3 tầng' },
+      { nhan: 'Tầng trệt', giaTri: 'Sảnh Thủ Thiêm, 100 khách' },
+      { nhan: 'Tầng giữa', giaTri: 'Sảnh Bến Thành 78 khách, sảnh Nhà Bè 38 khách' },
+      { nhan: 'Sân thượng', giaTri: 'Sundeck ngoài trời, ngắm hoàng hôn và thành phố về đêm' },
+      { nhan: 'Phù hợp', giaTri: 'Gala dinner, hội nghị, tiếp khách VIP, tiệc gia đình' }
     ],
     noiBat: ['20 set menu 3, 4, 5 món', 'Band nhạc Philippines, ảo thuật, violin', 'Tặng trang trí tiệc sinh nhật, kỷ niệm'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '21h30', ghiChu: null },
@@ -300,12 +307,14 @@ var DANH_SACH_TAU = [
     moTaNgan: 'Bến Thành Princess: du thuyền ăn tối set menu 3, 4, 5 món trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h30, cập bến 21h30.',
     // Giới thiệu ngắn hiện ở đầu trang tàu (sửa thoải mái) và các điểm nổi bật.
     gioiThieu: 'Bến Thành Princess phục vụ set menu 3, 4 và 5 món, đã gồm 1 ly trà hoặc cà phê sau món chính. Tàu chạy từ 19h30 đến 21h30, đi qua Bến Cảng Nhà Rồng, tòa nhà Vietcombank, cầu Ba Son, Vinhomes Central Park, cầu Thủ Thiêm và Landmark 81. Ban nhạc quốc tế biểu diễn hằng ngày, ban nhạc Việt Nam vào thứ 4 và thứ 7, cùng ảo thuật tại bàn mỗi tối.',
-    // Thông số tham khảo (hiện ở mục Giới thiệu và thẻ tàu). Nguồn: trang chính thức của tàu; Bến Nghé theo đại lý vé.
+    // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
     thongSo: [
       { nhan: 'Sức chứa', giaTri: 'Tối đa 350 khách' },
       { nhan: 'Số tầng', giaTri: '3 tầng' },
-      { nhan: 'Sân thượng', giaTri: 'Sundeck rộng 700 m²' },
-      { nhan: 'Phòng VIP', giaTri: '18 phòng riêng' }
+      { nhan: 'Phòng VIP', giaTri: '18 phòng riêng: 14 phòng 12 khách, 4 phòng 10 khách' },
+      { nhan: 'Sảnh tiệc chính', giaTri: 'Khoảng 70 khách' },
+      { nhan: 'Panorama Lounge', giaTri: 'Nhóm khoảng 60 khách' },
+      { nhan: 'Phù hợp', giaTri: 'Tiếp đối tác, ký kết, sum họp gia đình' }
     ],
     noiBat: ['20 set menu, có trà hoặc cà phê sau món chính', 'Live band quốc tế và Việt Nam', 'Ảo thuật tại bàn hằng ngày'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '21h30', ghiChu: null },

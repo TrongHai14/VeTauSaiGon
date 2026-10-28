@@ -391,7 +391,7 @@ function taoMucGioiThieu(tau) {
     for (var k = 0; k < tau.thongSo.length; k++) {
       html += '<div><dt>' + escapeHtml(tau.thongSo[k].nhan) + '</dt><dd>' + escapeHtml(tau.thongSo[k].giaTri) + '</dd></div>';
     }
-    html += '</dl><p class="ghi-chu">Thông số tham khảo, có thể thay đổi theo thực tế.</p>';
+    html += '</dl>';
   }
   return taoMuc('gioi-thieu', 'tau', 'Giới thiệu tàu ' + escapeHtml(tau.ten), html);
 }
