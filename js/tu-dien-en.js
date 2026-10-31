@@ -201,7 +201,7 @@ var TU_DIEN_EN = {
   'Tất cả': 'All',
 
   // ===== Trang chủ =====
-  'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn': 'Vé Tàu Sài Gòn – Saigon River Dinner Cruises',
+  'Vé du thuyền sông Sài Gòn – Ăn tối trên tàu | Vé Tàu Sài Gòn': 'Saigon River Dinner Cruise Tickets | Vé Tàu Sài Gòn',
   '★ Đại lý chính thức · 6 du thuyền': '★ Official agent · 6 cruises',
   'Du thuyền ăn tối trên sông Sài Gòn': 'Dinner cruises on the Saigon River',
   'Buffet, set menu và nhạc sống trên 6 du thuyền. Chọn tàu, chọn thực đơn và đặt chỗ trong vài phút.': 'Buffet, set menus and live music on 6 cruises. Pick a cruise, choose your menu and book in minutes.',
@@ -644,7 +644,7 @@ var LOAI_TRE_EN = {
 
 // MAU_DICH_EN: câu có phần thay đổi (số, ngày, tên tàu…). [biểu thức, bản dịch hoặc hàm]
 var MAU_DICH_EN = [
-  [new RegExp('^' + CAC_TAU_EN + ' – Du thuyền ăn tối sông Sài Gòn \\| Vé Tàu Sài Gòn$'), '$1 – Saigon River Dinner Cruise | Vé Tàu Sài Gòn'],
+  [new RegExp('^Vé du thuyền ' + CAC_TAU_EN + ' – (Buffet, set menu|Buffet|Set menu) tối sông Sài Gòn \\| Vé Tàu Sài Gòn$'), function (_, tau, loai) { return tau + ' Cruise Tickets – ' + loai + ' on the Saigon River | Vé Tàu Sài Gòn'; }],
   [new RegExp('^Du thuyền ' + CAC_TAU_EN + ' – ảnh (\\d+)$'), '$1 cruise – photo $2'],
   [new RegExp('^Du thuyền ' + CAC_TAU_EN + '$'), '$1 cruise'],
   [new RegExp('^Giới thiệu tàu ' + CAC_TAU_EN + '$'), 'About $1'],

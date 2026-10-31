@@ -34,14 +34,15 @@ for (const t of DANH_SACH_TAU) {
   test('tau/' + t.slug + '.html: data-tau, meta, og:image, khung, script', () => {
     const html = doc('tau/' + t.slug + '.html');
     assert.ok(html.includes('<body data-tau="' + t.slug + '">'));
-    const tieuDe = t.ten + ' – Du thuyền ăn tối sông Sài Gòn | Vé Tàu Sài Gòn';
+    const tieuDe = 'Vé du thuyền ' + t.ten + ' – ' + ({ 'indochina-star': 'Buffet', 'saigon-princess': 'Set menu', 'ben-thanh-princess': 'Set menu' }[t.slug] || 'Buffet, set menu') + ' tối sông Sài Gòn | Vé Tàu Sài Gòn';
     assert.strictEqual(title(html), tieuDe);
-    assert.strictEqual(unesc(meta(html, 'name', 'description')), t.moTaNgan);
+    assert.ok(meta(html, 'name', 'description').startsWith(t.moTaNgan) && meta(html, 'name', 'description').length <= 160, t.slug);
     assert.strictEqual(unesc(meta(html, 'property', 'og:title')), tieuDe);
     kiemTraOgImage(html, CAU_HINH.anhTau[t.slug].daiDien);
     assert.strictEqual(meta(html, 'property', 'og:url'), TEN_MIEN + '/tau/' + t.slug + '.html');
     for (const k of KHUNG) assert.ok(html.includes(k), k);
-    assert.ok(html.includes('id="noi-dung-tau"') && html.includes('<h1>' + t.ten + '</h1>') && html.includes('<noscript>'));
+    // Nội dung tàu có sẵn trong HTML (cho Google), không cần noscript nữa.
+    assert.ok(html.includes('id="noi-dung-tau"') && /<h1[^>]*>[^<]*/.test(html) && html.includes('id="thuc-don"'));
     assert.match(html, /href="\.\.\/css\/style\.css\?v=[0-9a-f]{8}"/);
     const v = viTriScript(html, '../', ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js']);
     assert.ok(dungThuTu(v));
@@ -51,7 +52,7 @@ for (const t of DANH_SACH_TAU) {
 
 test('index.html: meta, khung, o tim kiem, script', () => {
   const html = doc('index.html');
-  assert.strictEqual(title(html), 'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn');
+  assert.strictEqual(title(html), 'Vé du thuyền sông Sài Gòn – Ăn tối trên tàu | Vé Tàu Sài Gòn');
   const mt = meta(html, 'name', 'description');
   assert.ok(mt && mt.length <= 160);
   kiemTraOgImage(html, CAU_HINH.anhBia[0]);

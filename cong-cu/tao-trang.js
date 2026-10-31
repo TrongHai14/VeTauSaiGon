@@ -3,9 +3,10 @@
 const fs = require('fs');
 const path = require('path');
 const GOC = path.join(__dirname, '..');
-const { DANH_SACH_TAU, CONG_TY, CHINH_SACH_CHUNG, LINK_BAN_DO, GIA_TRE_EM } = require(path.join(GOC, 'js/du-lieu-tau.js'));
+const { DANH_SACH_TAU, CONG_TY, CHINH_SACH_CHUNG, LINK_BAN_DO, GIA_TRE_EM, LIEN_HE } = require(path.join(GOC, 'js/du-lieu-tau.js'));
 const { CAU_HINH } = require(path.join(GOC, 'js/cau-hinh.js'));
-const { escapeHtml: e, taoKhoiChinhSach } = require(path.join(GOC, 'js/hien-thi.js'));
+global.CAU_HINH = CAU_HINH;
+const { escapeHtml: e, taoKhoiChinhSach, taoTrangTau, taoTheTau, giaThapNhat, layNhanTau, dinhDangGia } = require(path.join(GOC, 'js/hien-thi.js'));
 
 const FONT = '<link rel="preconnect" href="https://fonts.googleapis.com">\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
   '  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">';
@@ -22,7 +23,12 @@ const SCRIPT_CHUNG = ['tu-dien-en.js', 'ngon-ngu.js', 'cau-hinh.js', 'du-lieu-ta
 const maPhienBan = (rel) => require('crypto').createHash('sha1').update(fs.readFileSync(path.join(GOC, rel))).digest('hex').slice(0, 8);
 const script = (tt, ds) => ds.map((s) => `  <script src="${tt}js/${s}?v=${maPhienBan('js/' + s)}"></script>`).join('\n');
 
-function dau(tt, { tieuDe, moTa, anh, url, anChiMuc }) {
+// Dữ liệu có cấu trúc cho Google (JSON-LD). Chỉ ghi thông tin có thật, không ghi điểm đánh giá.
+function jsonLd(duLieu) {
+  return '\n  <script type="application/ld+json">' + JSON.stringify(duLieu).replace(/</g, '\\u003c') + '</script>';
+}
+
+function dau(tt, { tieuDe, moTa, anh, url, anChiMuc, duLieu }) {
   return `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -35,12 +41,12 @@ function dau(tt, { tieuDe, moTa, anh, url, anChiMuc }) {
 ${anh && fs.existsSync(path.join(GOC, anh)) ? '  <meta property="og:image" content="' + TEN_MIEN + '/' + anh + '">\n' : ''}  <meta property="og:url" content="${url}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="vi_VN">
-  <meta name="theme-color" content="#0194f3">
+${anChiMuc ? '' : '  <link rel="canonical" href="' + url + '">\n'}  <meta name="theme-color" content="#0194f3">
   <link rel="icon" type="image/png" href="${tt}anh/logo/logo-nguyen-nguyen-trong-suot.png">
   <link rel="apple-touch-icon" href="${tt}anh/logo/logo-nguyen-nguyen-trong-suot.png">${anChiMuc ? '\n  <meta name="robots" content="noindex, nofollow">' : ''}
   ${FONT}
   <script>try{if(localStorage.getItem('veTauSaiGon.giaoDien')==='toi')document.documentElement.setAttribute('data-giao-dien','toi')}catch(e){}</script>
-  <link rel="stylesheet" href="${tt}css/style.css?v=${maPhienBan('css/style.css')}">
+  <link rel="stylesheet" href="${tt}css/style.css?v=${maPhienBan('css/style.css')}">${(duLieu || []).map(jsonLd).join('')}
 </head>`;
 }
 
@@ -186,7 +192,15 @@ const CAU_HOI_FAQ = [
 ];
 
 // ---------- index.html ----------
-ghi('index.html', `${dau('', { tieuDe: 'Vé Tàu Sài Gòn – Du thuyền ăn tối sông Sài Gòn', moTa: MO_TA_CHU, anh: anhChiaSe(null), url: TEN_MIEN + '/' })}
+const mxh = CAU_HINH.mangXaHoi || {};
+const DL_DOANH_NGHIEP = {
+  '@context': 'https://schema.org', '@type': 'TravelAgency', name: 'Vé Tàu Sài Gòn', legalName: CONG_TY.ten, taxID: CONG_TY.mst,
+  url: TEN_MIEN + '/', telephone: '+84948170036', logo: TEN_MIEN + '/anh/logo/logo-nguyen-nguyen-trong-suot.png', image: TEN_MIEN + '/' + anhChiaSe(null),
+  description: MO_TA_CHU, areaServed: 'Thành phố Hồ Chí Minh', address: { '@type': 'PostalAddress', addressLocality: 'Hồ Chí Minh', addressCountry: 'VN' },
+  sameAs: [mxh.facebook, mxh.tiktok].filter(Boolean)
+};
+const DL_WEBSITE = { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Vé Tàu Sài Gòn', url: TEN_MIEN + '/', inLanguage: 'vi' };
+ghi('index.html', `${dau('', { tieuDe: 'Vé du thuyền sông Sài Gòn – Ăn tối trên tàu | Vé Tàu Sài Gòn', moTa: MO_TA_CHU, anh: anhChiaSe(null), url: TEN_MIEN + '/', duLieu: [DL_WEBSITE, DL_DOANH_NGHIEP] })}
 <body>
 ${header('')}
   <section class="hero hero-toan-man">
@@ -219,7 +233,7 @@ ${header('')}
         </div>
       </div>
       <div id="danh-sach-tau" class="danh-sach-tau">
-        <noscript>Vui lòng bật JavaScript để xem danh sách tàu hoặc gọi 0948170036.</noscript>
+${DANH_SACH_TAU.map((t) => taoTheTau(t, '')).join('\n')}
       </div>
     </section>
   </main>
@@ -386,7 +400,10 @@ ${script('', SCRIPT_CHUNG)}
 `);
 
 // ---------- faq.html (câu hỏi thường gặp) ----------
-ghi('faq.html', `${dau('', { tieuDe: 'Câu hỏi thường gặp (FAQ) | Vé Tàu Sài Gòn', moTa: 'Câu hỏi thường gặp khi đặt vé du thuyền sông Sài Gòn: thanh toán, nhận vé, chính sách trẻ em từng tàu, đổi ngày, điểm đón.', anh: anhChiaSe(null), url: TEN_MIEN + '/faq.html' })}
+ghi('faq.html', `${dau('', { tieuDe: 'Câu hỏi thường gặp (FAQ) | Vé Tàu Sài Gòn', moTa: 'Câu hỏi thường gặp khi đặt vé du thuyền sông Sài Gòn: thanh toán, nhận vé, chính sách trẻ em từng tàu, đổi ngày, điểm đón.', anh: anhChiaSe(null), url: TEN_MIEN + '/faq.html', duLieu: [{
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: CAU_HOI_FAQ.map(([h, d]) => ({ '@type': 'Question', name: h, acceptedAnswer: { '@type': 'Answer', text: d } }))
+}] })}
 <body>
 ${header('')}
   <main class="khung">
@@ -476,14 +493,28 @@ ${script('', SCRIPT_CHUNG.concat(['xac-thuc.js']))}
 
 // ---------- tau/*.html ----------
 for (const t of DANH_SACH_TAU) {
-  const tieuDe = t.ten + ' – Du thuyền ăn tối sông Sài Gòn | Vé Tàu Sài Gòn';
-  ghi(path.join('tau', t.slug + '.html'), `${dau('../', { tieuDe, moTa: t.moTaNgan, anh: anhChiaSe(t.slug), url: TEN_MIEN + '/tau/' + t.slug + '.html' })}
+  const nhanTau = layNhanTau(t).join(', ').toLowerCase().replace('buffet', 'Buffet').replace(/^set menu/, 'Set menu');
+  const tieuDe = 'Vé du thuyền ' + t.ten + ' – ' + nhanTau + ' tối sông Sài Gòn | Vé Tàu Sài Gòn';
+  const giaTu = giaThapNhat(t);
+  const urlTau = TEN_MIEN + '/tau/' + t.slug + '.html';
+  const moTaTau = t.moTaNgan + (giaTu ? ' Giá từ ' + dinhDangGia(giaTu) + '.' : '');
+  const dlTau = [{
+    '@context': 'https://schema.org', '@type': 'Product', name: 'Vé du thuyền ' + t.ten, description: t.moTaNgan, url: urlTau,
+    image: TEN_MIEN + '/' + anhChiaSe(t.slug),
+    offers: { '@type': 'AggregateOffer', priceCurrency: 'VND', lowPrice: giaTu, availability: 'https://schema.org/InStock', url: TEN_MIEN + '/dat-cho.html?tau=' + t.slug }
+  }, {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: TEN_MIEN + '/' },
+      { '@type': 'ListItem', position: 2, name: t.ten, item: urlTau }
+    ]
+  }];
+  ghi(path.join('tau', t.slug + '.html'), `${dau('../', { tieuDe, moTa: moTaTau, anh: anhChiaSe(t.slug), url: urlTau, duLieu: dlTau })}
 <body data-tau="${t.slug}">
 ${header('../')}
   <main class="khung">
     <div id="noi-dung-tau">
-      <h1>${e(t.ten)}</h1>
-      <noscript>Vui lòng bật JavaScript để xem chi tiết hoặc gọi 0948170036.</noscript>
+${taoTrangTau(t, LIEN_HE, '../')}
     </div>
   </main>
 ${footer('../')}
