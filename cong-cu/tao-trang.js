@@ -252,6 +252,10 @@ ghi('dat-cho.html', `${dau('', { tieuDe: 'Đặt chỗ du thuyền | Vé Tàu S�
 <body class="trang-dat-cho">
 ${header('')}
   <main class="khung" id="dat-cho">
+    <div id="don-cu" class="thong-bao da-gui" role="status" hidden>
+      <p id="don-cu-xong" hidden><b>Giao dịch thành công.</b> Mã đơn của quý khách: <b class="ma-don-cu"></b>. Ms Nguyên đã nhận được thanh toán và sẽ gửi code vé điện tử cho quý khách qua Zalo.</p>
+      <p id="don-cu-huy" hidden><b>Đơn đã được hủy.</b> Mã đơn của quý khách: <b class="ma-don-cu"></b>. Vui lòng nhắn Zalo hoặc gọi Ms Nguyên 0948170036 nếu cần hỗ trợ.</p>
+    </div>
     <div class="dau-trang-dat">
       <h1>Đặt chỗ du thuyền</h1>
       <ol class="cac-buoc-dat">
@@ -308,12 +312,24 @@ ${o('dat-cho-cong-ty-dia-chi', 'congTyDiaChi', 'Địa chỉ công ty', '<input 
         </section>
         <section data-buoc="4" hidden>
           <div class="the-form hop-cho">
+            <div id="cho-xac-nhan">
             <div class="vong-cho" aria-hidden="true"></div>
             <h2>Đang chờ xác nhận thanh toán</h2>
             <p>Mã đơn của quý khách: <b id="ma-don-cho"></b></p>
             <p id="email-ok">Thông tin đơn đã được gửi tới Ms Nguyên. Sau khi kiểm tra tiền đã vào tài khoản, trong vòng <b>24 giờ</b> Ms Nguyên sẽ gửi <b>phiếu xác nhận “Đã thanh toán”</b> và <b>vé điện tử (file PDF)</b> qua Zalo của quý khách. Khi lên tàu, quý khách xuất trình vé qua điện thoại cho nhân viên.</p>
             <p id="email-loi" hidden>Chưa gửi được thông tin qua email. Vui lòng bấm “Gửi qua Zalo” bên dưới hoặc gọi 0948170036 để Ms Nguyên xác nhận.</p>
-            <p>Để được xác nhận nhanh hơn, quý khách gửi mã đơn kèm ảnh chụp biên lai chuyển khoản qua Zalo:</p>
+            </div>
+            <div id="da-thanh-toan" role="status" hidden>
+              <div class="dau-thanh-cong" aria-hidden="true">✓</div>
+              <h2>Giao dịch thành công</h2>
+              <p>Mã đơn của quý khách: <b id="ma-don-xong"></b></p>
+              <p>Ms Nguyên đã nhận được thanh toán và sẽ gửi code vé điện tử cho quý khách qua Zalo.</p>
+            </div>
+            <div id="don-da-huy" role="status" hidden>
+              <h2>Đơn đã được hủy</h2>
+              <p>Vui lòng nhắn Zalo hoặc gọi Ms Nguyên 0948170036 nếu cần hỗ trợ.</p>
+            </div>
+            <p id="nhac-zalo">Để được xác nhận nhanh hơn, quý khách gửi mã đơn kèm ảnh chụp biên lai chuyển khoản qua Zalo:</p>
             <button type="button" class="nut nut-zalo" data-hanh-dong="zalo">Gửi qua Zalo cho Ms Nguyên</button>
             <div id="khung-sao-chep" class="khung-sao-chep"></div>
           </div>

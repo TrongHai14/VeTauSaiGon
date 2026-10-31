@@ -60,7 +60,7 @@ Web vẫn chạy bình thường sau khi khoá.
 | Tab | Dùng để |
 |---|---|
 | **Ngày hết chỗ** | Tàu báo hết chỗ thì thêm 1 dòng: chọn tàu, gõ ngày (2026-12-24 hoặc 24/12/2026). Mở lại ngày đó thì xoá dòng. |
-| **Cài đặt** | Số chỗ mỗi ngày (**để trống** = không giới hạn; chỉ ghi số khi tàu cấp hạn mức). Số giờ giữ chỗ chờ chuyển khoản (1). Có tính bé miễn phí vào số chỗ không. **Mã quản lý**. Chặn đặt khi đã sát giờ tàu chạy. Tối đa khách mỗi đơn online (20). Số đơn chờ tối đa của mỗi SĐT (2). Số lượt giữ chỗ tối đa trong 10 phút (30). |
+| **Cài đặt** | Số chỗ mỗi ngày (**để trống** = không giới hạn; chỉ ghi số khi tàu cấp hạn mức). Số giờ giữ chỗ chờ chuyển khoản (1). Có tính bé miễn phí vào số chỗ không. **Mã quản lý**. Chặn đặt khi đã sát giờ tàu chạy. Tối đa khách mỗi đơn online (20) và số đơn chờ tối đa của mỗi SĐT (2), hai mục này chỉ áp dụng khi có hạn mức. Số lượt giữ chỗ tối đa trong 10 phút (30). |
 | **Số chỗ riêng** | Chỉ dùng khi có hạn mức: tàu, ngày, số chỗ riêng của ngày đó. Muốn đóng ngày thì dùng tab "Ngày hết chỗ". |
 | **Đơn giữ chỗ** | Đơn khách đặt trên web sẽ tự hiện ở đây. |
 | **Tổng hợp** | Bấm menu **Vé Tàu → Xem chỗ còn lại 45 ngày tới** để xem mỗi tàu còn bao nhiêu chỗ. Số **âm** nghĩa là đang bán vượt số chỗ, cần kiểm tra với tàu. |
@@ -69,6 +69,7 @@ Web vẫn chạy bình thường sau khi khoá.
 
 - Ở trang xác nhận đơn (link trong email), nhập **Mã quản lý** một lần, máy sẽ tự nhớ. Tạo phiếu xong, web tự đổi đơn sang **Đã thanh toán**.
 - Không nhập mã thì tự đổi trạng thái trong cột **Trạng thái** của Sheet.
+- Khi đơn thành **Đã thanh toán**, trang của khách tự báo "Giao dịch thành công" trong khoảng 30 giây (khách đang mở trang, hoặc mở lại trang đặt chỗ trên cùng máy trong 7 ngày). Vẫn gửi vé cho khách qua Zalo như thường.
 - Nếu web báo đơn đã quá hạn và ngày đó đang **vượt chỗ**, kiểm tra lại với tàu trước khi gửi phiếu cho khách.
 
 **Đơn khách đặt qua điện thoại hoặc Zalo không tự vào Sheet.** Thêm một dòng bằng tay:

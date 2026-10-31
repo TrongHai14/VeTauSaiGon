@@ -22,6 +22,8 @@
     'elite-of-saigon': 'Elite of Saigon', 'saigon-princess': 'Saigon Princess', 'ben-thanh-princess': 'Bến Thành Princess'
   };
   var MUI_GIO = 'Asia/Ho_Chi_Minh';
+  // Trần tuyệt đối mỗi đơn online, kể cả khi không có hạn mức (chống gửi số khách ảo).
+  var TRAN_KHACH_MOI_DON = 200;
   // Cột của tab "Đơn giữ chỗ" (bắt đầu từ 1).
   var COT = { maDon: 1, tau: 2, ngay: 3, nguoiLon: 4, treEm: 5, beMienPhi: 6, soCho: 7, trangThai: 8, giuDen: 9, taoLuc: 10, hoTen: 11, sdt: 12, ghiChu: 13 };
   var TIEU_DE_DON = ['Mã đơn', 'Tàu (mã)', 'Ngày đi', 'Người lớn', 'Trẻ em (tính vé)', 'Bé miễn phí', 'Số chỗ', 'Trạng thái', 'Giữ đến', 'Tạo lúc', 'Họ tên', 'SĐT', 'Ghi chú'];
@@ -45,8 +47,8 @@
         [CD.tinhBe, 'Không', 'Ghi "Có" nếu bé miễn phí cũng chiếm chỗ ngồi.'],
         [CD.ma, taoMaBiMat(), 'Nhập mã này ở trang xác nhận đơn để web tự đổi đơn sang "Đã thanh toán". Không chia sẻ cho ai.'],
         [CD.chanGio, 0, 'Ví dụ 3: còn dưới 3 giờ trước 18h ngày đi thì không nhận giữ chỗ online. 0 = không chặn.'],
-        [CD.toiDaKhach, 20, 'Đoàn đông hơn số này thì web nhắn khách liên hệ Zalo (chống giữ chỗ ảo).'],
-        [CD.toiDaDonSdt, 2, 'Một số điện thoại được giữ tối đa bấy nhiêu đơn chưa thanh toán cùng lúc.'],
+        [CD.toiDaKhach, 20, 'Chỉ áp dụng khi có hạn mức số chỗ. Đoàn đông hơn số này thì web nhắn khách liên hệ Zalo (chống giữ chỗ ảo).'],
+        [CD.toiDaDonSdt, 2, 'Chỉ áp dụng khi có hạn mức số chỗ. Một số điện thoại được giữ tối đa bấy nhiêu đơn chưa thanh toán cùng lúc.'],
         [CD.toiDaLan, 30, 'Chống spam: quá số lượt này trong 10 phút thì tạm ngừng giữ chỗ tự động (khách vẫn đặt được, Ms Nguyên kiểm tra tay).']
       ]);
       cd.getRange('A1:C1').setFontWeight('bold');
@@ -99,10 +101,12 @@
   /* ---------- Web gọi vào ---------- */
   // GET ?action=lich&tau=<mã tàu>&thang=YYYY-MM&khach=<người lớn + trẻ tính vé>&be=<bé miễn phí>
   // → { ok: true, het: ['2026-10-25', ...] }  (ngày không đủ chỗ cho số khách đó)
+  // GET ?action=trangThai&maDon=<mã đơn> → { ok: true, trangThai: 'da-tt' | 'huy' | 'cho' } (không trả thông tin khách)
   function doGet(e) {
     var p = (e && e.parameter) || {};
     try {
       if (p.action === 'lich') return traJson(lichThang(p.tau, p.thang, p.khach, p.be));
+      if (p.action === 'trangThai') return traJson(trangThaiDon(p.maDon));
       return traJson({ ok: false, loi: 'action' });
     } catch (loi) {
       return traJson({ ok: false, loi: 'may-chu' });
@@ -112,7 +116,8 @@
   // POST (body JSON dạng text):
   //   { action: 'giu', maDon, tau, ngay, nguoiLon, treEm, beMienPhi, hoTen, sdt }   khách sang bước thanh toán
   //   { action: 'daChuyen', maDon, sdt }                                          khách bấm "Tôi đã chuyển khoản"
-  //   { action: 'xacNhan', maDon, ma }                                            Ms Nguyên đã kiểm tra tiền (ma = Mã quản lý)
+  //   { action: 'xacNhan', maDon, ma, tau?, ngay?, nguoiLon?, treEm?, beMienPhi?, hoTen?, sdt? }  Ms Nguyên đã kiểm tra tiền (ma = Mã quản lý);
+  //     đơn chưa có dòng (lúc giữ chỗ bị lỗi mạng) thì thêm dòng mới từ các thông tin kèm theo
   function doPost(e) {
     var duLieu;
     try { duLieu = JSON.parse((e && e.postData && e.postData.contents) || '{}'); } catch (loi) { return traJson({ ok: false, loi: 'du-lieu' }); }
@@ -132,6 +137,23 @@
     }
   }
   
+  // Web của khách hỏi đơn đã được xác nhận chưa. Đổi tay cột Trạng thái trong Sheet cũng có tác dụng.
+  function trangThaiDon(maDonVao) {
+    var maDon = String(maDonVao || '').trim().toUpperCase();
+    if (!/^VT\d{6}[A-Z0-9]{4}$/.test(maDon)) return { ok: false, loi: 'du-lieu' };
+    // Chỉ đọc tới cột Trạng thái: không lấy họ tên, SĐT, và nhanh hơn vì web hỏi thường xuyên.
+    var tab = layTab(TAB.don);
+    var soDong = tab.getLastRow() - 1;
+    if (soDong < 1) return { ok: true, trangThai: 'cho' };
+    var dd = tab.getRange(2, 1, soDong, COT.trangThai).getValues();
+    for (var i = 0; i < dd.length; i++) {
+      if (String(dd[i][COT.maDon - 1]).trim().toUpperCase() !== maDon) continue;
+      var tt = chuanTrangThai(dd[i][COT.trangThai - 1]);
+      return { ok: true, trangThai: tt === TT.daTT ? 'da-tt' : tt === TT.huy ? 'huy' : 'cho' };
+    }
+    return { ok: true, trangThai: 'cho' };
+  }
+
   function lichThang(tau, thang, khach, be) {
     if (DS_TAU.indexOf(tau) === -1 || !/^\d{4}-\d{2}$/.test(String(thang || ''))) return { ok: false, loi: 'tham-so' };
     var bang = docBang();
@@ -167,7 +189,10 @@
     var cd = bang.caiDat;
     if ((Number(cd[CD.chanGio]) || 0) > 0 && gioDenNgayDi(ngay) < Number(cd[CD.chanGio])) return { ok: false, loi: 'sat-gio' };
     var soCho = nguoiLon + treEm + (laCo(cd[CD.tinhBe]) ? beMienPhi : 0);
-    if (soCho > (Number(cd[CD.toiDaKhach]) || 20)) return { ok: false, loi: 'doan-dong' };
+    // Không có hạn mức thì đơn không chiếm chỗ của ai: không chặn đoàn đông hay nhiều đơn (vẫn có giới hạn lượt bên dưới).
+    if (soCho > TRAN_KHACH_MOI_DON) return { ok: false, loi: 'doan-dong' };
+    var coHanMuc = hanMuc(bang, tau, ngay) !== Infinity;
+    if (coHanMuc && soCho > (Number(cd[CD.toiDaKhach]) || 20)) return { ok: false, loi: 'doan-dong' };
     var viTri = timDongDon(bang, maDon);
     var cu = viTri > 0 ? bang.don[viTri - 2] : null;
     if (cu && (cu.trangThai === TT.daTT || cu.trangThai === TT.choXN)) {
@@ -181,7 +206,7 @@
       var x = bang.don[i];
       if (x.sdt === sdt && x.maDon !== maDon && ((x.trangThai === TT.giu && x.giuDen > bayGio) || x.trangThai === TT.choXN)) dangGiu++;
     }
-    if (dangGiu >= (Number(cd[CD.toiDaDonSdt]) || 2)) return { ok: false, loi: 'nhieu-don' };
+    if (coHanMuc && dangGiu >= (Number(cd[CD.toiDaDonSdt]) || 2)) return { ok: false, loi: 'nhieu-don' };
     if (!demLuot(Number(cd[CD.toiDaLan]) || 30)) return { ok: false, loi: 'ban' };
     var tab = layTab(TAB.don);
     // Cùng mã đơn (khách quay lại sửa đơn): không tính chỗ của chính đơn đó khi kiểm tra.
@@ -223,7 +248,7 @@
     if (!ma || String(d.ma || '') !== ma) return { ok: false, loi: 'ma' };
     var maDon = String(d.maDon || '').trim().toUpperCase();
     var viTri = timDongDon(bang, maDon);
-    if (viTri < 0) return { ok: false, loi: 'khong-co-don' };
+    if (viTri < 0) return themDonDaThanhToan(bang, maDon, d);
     var don = bang.don[viTri - 2];
     var kq = { ok: true };
     if (don.trangThai === TT.huy) kq.daHuy = true;
@@ -236,6 +261,21 @@
     return kq;
   }
   
+  // Chỉ gọi sau khi đã kiểm tra Mã quản lý.
+  function themDonDaThanhToan(bang, maDon, d) {
+    var tau = String(d.tau || ''), ngay = String(d.ngay || '');
+    if (!/^VT\d{6}[A-Z0-9]{4}$/.test(maDon) || DS_TAU.indexOf(tau) === -1 || !laNgay(ngay)) return { ok: false, loi: 'khong-co-don' };
+    var nguoiLon = soNguyen(d.nguoiLon), treEm = soNguyen(d.treEm), beMienPhi = soNguyen(d.beMienPhi);
+    var soCho = nguoiLon + treEm + (laCo(bang.caiDat[CD.tinhBe]) ? beMienPhi : 0);
+    var vuot = soCho - conLai(bang, tau, ngay, maDon);
+    var tab = layTab(TAB.don);
+    tab.appendRow([maDon, tau, ngay, nguoiLon, treEm, beMienPhi, soCho, TT.daTT, '', new Date(), chuSach(d.hoTen, 100), chuanSdt(d.sdt), '']);
+    var viTri = tab.getLastRow();
+    tab.getRange(viTri, COT.ngay).setNumberFormat('@').setValue(ngay);
+    tab.getRange(viTri, COT.sdt).setNumberFormat('@').setValue(chuanSdt(d.sdt));
+    return vuot > 0 ? { ok: true, moiTao: true, vuot: vuot } : { ok: true, moiTao: true };
+  }
+
   /* ---------- Tính chỗ ---------- */
   function docBang() {
     var caiDat = {};
@@ -429,7 +469,7 @@
     if (/hủy|huỷ|huy/.test(s)) return TT.huy;
     if (/hết hạn|het han/.test(s)) return TT.hetHan;
     if (/chưa|chua/.test(s)) return TT.choXN;
-    if (/thanh toán|thanh toan/.test(s)) return TT.daTT;
+    if (/đã thanh toán|da thanh toan/.test(s)) return TT.daTT;
     if (/chờ|cho xac|xác nhận/.test(s)) return TT.choXN;
     if (/giữ|giu/.test(s)) return TT.giu;
     return 'khac';

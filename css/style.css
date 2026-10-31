@@ -852,3 +852,8 @@ html[data-giao-dien="toi"] .thong-bao.da-gui { background: #123a26; color: #8fe3
 html[data-giao-dien="toi"] .thong-bao.loi-gui, html[data-giao-dien="toi"] .qr-loi { background: #3f1a1c; color: #ff9d9f; }
 /* Màn rất hẹp: thu gọn menu để nút sáng/tối không bị che. */
 @media (max-width: 360px) { .menu-chinh { gap: 0; } .menu-chinh a { padding: 6px 7px; font-size: 13.5px; } }
+.dau-thanh-cong { width: 52px; height: 52px; margin: 4px auto 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #1a9c5b; color: #fff; font-size: 30px; font-weight: 700; }
+#don-cu { margin-bottom: 16px; }
+#don-cu p { margin: 0; }
+#don-cu p + p { margin-top: 8px; }
+#da-thanh-toan h2, #don-da-huy h2 { text-align: center; }

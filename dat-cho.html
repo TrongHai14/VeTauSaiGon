@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
   <script>try{if(localStorage.getItem('veTauSaiGon.giaoDien')==='toi')document.documentElement.setAttribute('data-giao-dien','toi')}catch(e){}</script>
-  <link rel="stylesheet" href="css/style.css?v=006feeb0">
+  <link rel="stylesheet" href="css/style.css?v=ef01207a">
 </head>
 <body class="trang-dat-cho">
   <header class="dau-trang">
@@ -38,6 +38,10 @@
     </div>
   </header>
   <main class="khung" id="dat-cho">
+    <div id="don-cu" class="thong-bao da-gui" role="status" hidden>
+      <p id="don-cu-xong" hidden><b>Giao dịch thành công.</b> Mã đơn của quý khách: <b class="ma-don-cu"></b>. Ms Nguyên đã nhận được thanh toán và sẽ gửi code vé điện tử cho quý khách qua Zalo.</p>
+      <p id="don-cu-huy" hidden><b>Đơn đã được hủy.</b> Mã đơn của quý khách: <b class="ma-don-cu"></b>. Vui lòng nhắn Zalo hoặc gọi Ms Nguyên 0948170036 nếu cần hỗ trợ.</p>
+    </div>
     <div class="dau-trang-dat">
       <h1>Đặt chỗ du thuyền</h1>
       <ol class="cac-buoc-dat">
@@ -94,12 +98,24 @@
         </section>
         <section data-buoc="4" hidden>
           <div class="the-form hop-cho">
+            <div id="cho-xac-nhan">
             <div class="vong-cho" aria-hidden="true"></div>
             <h2>Đang chờ xác nhận thanh toán</h2>
             <p>Mã đơn của quý khách: <b id="ma-don-cho"></b></p>
             <p id="email-ok">Thông tin đơn đã được gửi tới Ms Nguyên. Sau khi kiểm tra tiền đã vào tài khoản, trong vòng <b>24 giờ</b> Ms Nguyên sẽ gửi <b>phiếu xác nhận “Đã thanh toán”</b> và <b>vé điện tử (file PDF)</b> qua Zalo của quý khách. Khi lên tàu, quý khách xuất trình vé qua điện thoại cho nhân viên.</p>
             <p id="email-loi" hidden>Chưa gửi được thông tin qua email. Vui lòng bấm “Gửi qua Zalo” bên dưới hoặc gọi 0948170036 để Ms Nguyên xác nhận.</p>
-            <p>Để được xác nhận nhanh hơn, quý khách gửi mã đơn kèm ảnh chụp biên lai chuyển khoản qua Zalo:</p>
+            </div>
+            <div id="da-thanh-toan" role="status" hidden>
+              <div class="dau-thanh-cong" aria-hidden="true">✓</div>
+              <h2>Giao dịch thành công</h2>
+              <p>Mã đơn của quý khách: <b id="ma-don-xong"></b></p>
+              <p>Ms Nguyên đã nhận được thanh toán và sẽ gửi code vé điện tử cho quý khách qua Zalo.</p>
+            </div>
+            <div id="don-da-huy" role="status" hidden>
+              <h2>Đơn đã được hủy</h2>
+              <p>Vui lòng nhắn Zalo hoặc gọi Ms Nguyên 0948170036 nếu cần hỗ trợ.</p>
+            </div>
+            <p id="nhac-zalo">Để được xác nhận nhanh hơn, quý khách gửi mã đơn kèm ảnh chụp biên lai chuyển khoản qua Zalo:</p>
             <button type="button" class="nut nut-zalo" data-hanh-dong="zalo">Gửi qua Zalo cho Ms Nguyên</button>
             <div id="khung-sao-chep" class="khung-sao-chep"></div>
           </div>
@@ -172,14 +188,14 @@
       <a class="lh-noi lh-noi-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener" aria-label="Nhắn Zalo 0948170036"><span class="lh-noi-chu">Nhắn Zalo</span><span class="lh-noi-tron"><b>Zalo</b></span></a>
     </div>
   </div>
-  <script src="js/tu-dien-en.js?v=383e33fa"></script>
+  <script src="js/tu-dien-en.js?v=1d2ea9cd"></script>
   <script src="js/ngon-ngu.js?v=ea2784a1"></script>
   <script src="js/cau-hinh.js?v=da0d7524"></script>
   <script src="js/du-lieu-tau.js?v=434e2b76"></script>
   <script src="js/lich-cho-du-lieu.js?v=6e23d947"></script>
-  <script src="js/lich-cho.js?v=c26739c7"></script>
+  <script src="js/lich-cho.js?v=6a12f6b6"></script>
   <script src="js/hien-thi.js?v=0492f429"></script>
-  <script src="js/dat-cho.js?v=32df338c"></script>
+  <script src="js/dat-cho.js?v=ccc50ce0"></script>
   <script>khoiChayTrangDatCho();</script>
 </body>
 </html>

@@ -72,6 +72,56 @@ function giuChoOnline(thongTin) {
   });
 }
 
+// Hỏi đơn đã được xác nhận chưa. Trả Promise<'da-tt' | 'huy' | 'cho' | ''>; '' là chưa cài hoặc lỗi mạng.
+function trangThaiDonOnline(maDon) {
+  var url = urlLichOnline();
+  if (!url || typeof fetch !== 'function') return Promise.resolve('');
+  var hua = fetch(url + '?action=trangThai&maDon=' + encodeURIComponent(maDon)).then(function (tl) { return tl.json(); });
+  return coHanCho(hua, THOI_GIAN_CHO_ONLINE, null).then(function (kq) {
+    return kq && kq.ok === true && typeof kq.trangThai === 'string' ? kq.trangThai : '';
+  });
+}
+
+// Hỏi định kỳ tới khi đơn "da-tt". Báo xong(tt) mỗi khi có kết quả mới: 'huy' vẫn hỏi tiếp vì Ms Nguyên có thể
+// xác nhận lại đơn hủy nhầm. Tab ẩn thì tạm ngừng, quay lại tab thì hỏi ngay. Sau 3 ngày thôi hẹn giờ
+// nhưng quay lại tab vẫn hỏi (Ms Nguyên có 24 giờ để xác nhận). Trả về hàm dừng theo dõi.
+var CHU_KY_HOI_TRANG_THAI = 30000;
+var THOI_GIAN_HEN_GIO_TOI_DA = 72 * 3600 * 1000;
+function theoDoiThanhToan(maDon, xong, hoi) {
+  var hoiTrangThai = hoi || trangThaiDonOnline;
+  var daDung = false, dangHoi = false, hen = null, daBao = '';
+  var batDau = Date.now();
+  function dung() {
+    daDung = true;
+    if (hen) clearTimeout(hen);
+    if (typeof document !== 'undefined' && document.removeEventListener) document.removeEventListener('visibilitychange', khiDoiTab);
+  }
+  function henLai() {
+    if (hen) clearTimeout(hen);
+    hen = null;
+    if (Date.now() - batDau < THOI_GIAN_HEN_GIO_TOI_DA) hen = setTimeout(kiemTra, CHU_KY_HOI_TRANG_THAI);
+  }
+  function kiemTra() {
+    if (daDung || dangHoi) return;
+    if (typeof document !== 'undefined' && document.hidden) { henLai(); return; }
+    dangHoi = true;
+    hoiTrangThai(maDon).then(function (tt) {
+      dangHoi = false;
+      if (daDung) return;
+      if (tt === 'da-tt') { dung(); xong(tt); return; }
+      if (tt === 'huy' && daBao !== tt) { daBao = tt; xong(tt); }
+      henLai();
+    }, function () {
+      dangHoi = false;
+      if (!daDung) henLai();
+    });
+  }
+  function khiDoiTab() { if (!document.hidden) kiemTra(); }
+  if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('visibilitychange', khiDoiTab);
+  kiemTra();
+  return dung;
+}
+
 // Bảng ngày của một tàu, đã chuẩn hoá ('HET' → 'het', bỏ khoảng trắng). Ghi sai định dạng thì báo ở Console.
 var daCanhBaoLich = {};
 function layBangLich(slug, lich) {
@@ -227,6 +277,7 @@ if (typeof module !== 'undefined') {
   module.exports = {
     LICH_CHO: LICH_CHO, trangThaiNgay: trangThaiNgay, taoLichThang: taoLichThang, ganLichCho: ganLichCho,
     TEN_TRANG_THAI_CHO: TEN_TRANG_THAI_CHO, ngayHomNayVN: ngayHomNayVN, layBangLich: layBangLich,
-    LICH_ONLINE: LICH_ONLINE, KHACH_DANG_XEM: KHACH_DANG_XEM, taiLichOnline: taiLichOnline, giuChoOnline: giuChoOnline, urlLichOnline: urlLichOnline, coHanCho: coHanCho
+    LICH_ONLINE: LICH_ONLINE, KHACH_DANG_XEM: KHACH_DANG_XEM, taiLichOnline: taiLichOnline, giuChoOnline: giuChoOnline, urlLichOnline: urlLichOnline, coHanCho: coHanCho,
+    trangThaiDonOnline: trangThaiDonOnline, theoDoiThanhToan: theoDoiThanhToan, CHU_KY_HOI_TRANG_THAI: CHU_KY_HOI_TRANG_THAI
   };
 }
