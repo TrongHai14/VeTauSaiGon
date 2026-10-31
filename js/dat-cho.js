@@ -266,7 +266,6 @@ function kiemTraBuoc2(don) {
   var hoTen = typeof don.hoTen === 'string' ? don.hoTen.trim() : '';
   if (hoTen.length < 1 || hoTen.length > 100) loi.hoTen = 'Vui lòng nhập họ tên.';
   if (chuanHoaSoDienThoai(don.soDienThoai) === null) loi.soDienThoai = 'Số điện thoại không hợp lệ.';
-  if (!laEmail(don.email || '')) loi.email = 'Vui lòng nhập email để nhận vé điện tử (PDF).';
   if (!don.dongY) loi.dongY = 'Vui lòng đồng ý điều kiện vé và chính sách.';
   if (don.vat) {
     var ct = don.congTy || {};
@@ -385,7 +384,6 @@ function taoDuLieuEmail(don, tau, bangTreEm, taiKhoan, linkXacNhan) {
     'Mã đơn': don.maDon,
     'Họ tên': don.hoTen.trim(),
     'Số điện thoại': chuanHoaSoDienThoai(don.soDienThoai),
-    'Email khách': don.email || '',
     'Ngày lên tàu': dinhDangNgay(don.ngay),
     'Tàu': tau.ten,
     'Loại': TEN_LOAI_DICH_VU[don.loai],
@@ -1042,7 +1040,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     // Chỉ tắt lỗi khi ô đã điền đúng (gõ dở số điện thoại, email, MST thì lỗi vẫn hiện).
     var gt = String(e.target.value || '');
     var dung = ten === 'soDienThoai' ? chuanHoaSoDienThoai(gt) !== null
-      : (ten === 'email' || ten === 'congTyEmail') ? laEmail(gt)
+      : ten === 'congTyEmail' ? laEmail(gt)
       : ten === 'congTyMst' ? laMaSoThue(gt)
       : !!gt.trim();
     if (dung) xoaLoiTruong(ten);
@@ -1084,7 +1082,6 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   function docThongTin() {
     don.hoTen = el.hoTen.value;
     don.soDienThoai = el.soDienThoai.value;
-    don.email = el.email.value.trim();
     don.ghiChu = el.ghiChu.value;
     don.vat = el.vat.checked;
     don.dongY = el.dongY.checked;
@@ -1190,7 +1187,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
       denBuoc(2);
     } else if (hanhDong === 'buoc-3') {
       docThongTin();
-      if (!baoLoi(kiemTraBuoc2(don), ['hoTen', 'soDienThoai', 'email', 'congTyTen', 'congTyMst', 'congTyDiaChi', 'congTyEmail', 'dongY'])) return;
+      if (!baoLoi(kiemTraBuoc2(don), ['hoTen', 'soDienThoai', 'congTyTen', 'congTyMst', 'congTyDiaChi', 'congTyEmail', 'dongY'])) return;
       if (!don.maDon) {
         don.maDon = taoMaDon(new Date(), Math.random);
         don.ngayDat = ngayHomNayDiaPhuong(new Date());

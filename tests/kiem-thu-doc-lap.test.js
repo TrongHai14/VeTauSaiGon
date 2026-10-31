@@ -154,8 +154,8 @@ test('kiemTraBuoc2: tung truong', () => {
   assert.deepStrictEqual(loi({ hoTen: 'a'.repeat(101) }), ['hoTen']);
   assert.deepStrictEqual(loi({ hoTen: null }), ['hoTen']);
   assert.deepStrictEqual(loi({ soDienThoai: '12345' }), ['soDienThoai']);
-  for (const e of ['', 'abc', 'a@b', 'a b@c.vn', '@c.vn', 'a@.vn', null, undefined]) assert.deepStrictEqual(loi({ email: e }), ['email'], String(e));
-  assert.deepStrictEqual(loi({ hoTen: '', email: '', dongY: false }).sort(), ['dongY', 'email', 'hoTen']);
+  for (const e of ['', 'abc', 'a@b', null, undefined]) assert.deepStrictEqual(loi({ email: e }), [], String(e));
+  assert.deepStrictEqual(loi({ hoTen: '', email: '', dongY: false }).sort(), ['dongY', 'hoTen']);
 });
 
 test('VAT: MST, email cong ty, ten, dia chi', () => {

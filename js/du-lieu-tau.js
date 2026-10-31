@@ -437,7 +437,7 @@ var CHINH_SACH_CHUNG = [
   {
     id: 'huong-dan-ve', tieuDe: 'Hướng dẫn sử dụng vé',
     nhom: [{ tieuDe: null, dong: [
-      'Sau khi đặt thành công, quý khách sẽ nhận được vé điện tử bằng file PDF qua email dùng để lên tàu.',
+      'Sau khi đặt thành công, quý khách sẽ nhận được vé điện tử bằng file PDF qua Zalo dùng để lên tàu.',
       'Xuất trình vé qua điện thoại cho nhân viên để lên tàu.',
       'Địa điểm tổ chức: 05 Nguyễn Tất Thành, phường Xóm Chiếu (bên cạnh Bến Nhà Rồng). Có bãi giữ xe.'
     ] }]

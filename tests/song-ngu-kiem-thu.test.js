@@ -396,7 +396,7 @@ function taoXoaLoi() {
       return m ? oLoi[m[1]] || null : null;
     }
   };
-  for (const ten of ['ngay', 'mon', 'dongY', 'hoTen', 'soDienThoai', 'email', 'slugTau']) {
+  for (const ten of ['ngay', 'mon', 'dongY', 'hoTen', 'soDienThoai', 'congTyEmail', 'slugTau']) {
     const cha = { classList: { daXoa: false, remove(c) { if (c === 'co-loi') this.daXoa = true; } } };
     oLoi[ten] = { textContent: 'Có lỗi ' + ten, parentNode: cha };
   }
@@ -434,13 +434,13 @@ test('xoaLoiKhiSua: go vao o nao thi loi o do tat; o trong thi giu loi', () => {
   const { ctx, oLoi } = taoXoaLoi();
   ctx.xoaLoiKhiSua(sk('hoTen', 'An'));
   assert.ok(daTat(oLoi.hoTen));
-  assert.ok(!daTat(oLoi.soDienThoai) && !daTat(oLoi.email) && !daTat(oLoi.ngay));
-  ctx.xoaLoiKhiSua(sk('email', '   '));
-  assert.ok(!daTat(oLoi.email), 'chi co khoang trang thi chua tat');
-  ctx.xoaLoiKhiSua(sk('email', 'a@b'));
-  assert.ok(!daTat(oLoi.email), 'email go do chua tat');
-  ctx.xoaLoiKhiSua(sk('email', 'a@b.vn'));
-  assert.ok(daTat(oLoi.email));
+  assert.ok(!daTat(oLoi.soDienThoai) && !daTat(oLoi.congTyEmail) && !daTat(oLoi.ngay));
+  ctx.xoaLoiKhiSua(sk('congTyEmail', '   '));
+  assert.ok(!daTat(oLoi.congTyEmail), 'chi co khoang trang thi chua tat');
+  ctx.xoaLoiKhiSua(sk('congTyEmail', 'a@b'));
+  assert.ok(!daTat(oLoi.congTyEmail), 'email go do chua tat');
+  ctx.xoaLoiKhiSua(sk('congTyEmail', 'a@b.vn'));
+  assert.ok(daTat(oLoi.congTyEmail));
   ctx.xoaLoiKhiSua(sk('soDienThoai', '0948'));
   assert.ok(!daTat(oLoi.soDienThoai), 'so dien thoai go do chua tat');
   ctx.xoaLoiKhiSua(sk('soDienThoai', '0948170036'));

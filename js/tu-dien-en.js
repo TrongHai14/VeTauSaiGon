@@ -241,8 +241,8 @@ var TU_DIEN_EN = {
   'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản Công ty TNHH Nguyên Nguyên Global.':
     'Pay by bank transfer using the QR code shown at the payment step (amount and reference are pre-filled). For a VAT invoice, tick "I need a VAT invoice" and pay into the account of Nguyen Nguyen Global Co., Ltd.',
   'Bao lâu thì nhận được vé?': 'When will I receive my ticket?',
-  'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.':
-    'Within 24 hours of a successful payment, Ms Nguyên sends the confirmation slip and e-ticket (PDF) by email and Zalo. Show the ticket on your phone when boarding.',
+  'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua Zalo. Khi lên tàu, xuất trình vé qua điện thoại.':
+    'Within 24 hours of a successful payment, Ms Nguyên sends the confirmation slip and e-ticket (PDF) by Zalo. Show the ticket on your phone when boarding.',
   'Làm sao biết phiếu là thật?': 'How do I know the slip is genuine?',
   'Phiếu đặt trên web có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu Ms Nguyên lập riêng cho khách đặt qua Zalo hoặc điện thoại không có mã QR; cần kiểm tra, vui lòng liên hệ Ms Nguyên 0948170036.':
     'Every slip carries a digital signature and a QR code. Scanning it (staff or you) shows "VALID TICKET" with the name, date and number of guests. An altered slip shows as invalid.',
@@ -463,7 +463,7 @@ var TU_DIEN_EN = {
   'Đổi ngày sử dụng': 'Changing the date',
   'Hỗ trợ linh hoạt đổi sang ngày khác nếu quý khách thông báo trước 2–3 ngày (tùy thuộc vào số lượng vé và tình trạng chỗ).': 'You can move to another date if you let us know 2–3 days in advance (subject to the number of tickets and availability).',
   'Yêu cầu đổi ngày chỉ hoàn tất khi nhân viên tư vấn xác nhận và gửi lại mã vé điện tử mới cho quý khách.': 'A date change is complete only once our staff confirm it and send you a new e-ticket code.',
-  'Sau khi đặt thành công, quý khách sẽ nhận được vé điện tử bằng file PDF qua email dùng để lên tàu.': 'After booking, you will receive an e-ticket (PDF) by email to use for boarding.',
+  'Sau khi đặt thành công, quý khách sẽ nhận được vé điện tử bằng file PDF qua Zalo dùng để lên tàu.': 'After booking, you will receive an e-ticket (PDF) by Zalo to use for boarding.',
   'Xuất trình vé qua điện thoại cho nhân viên để lên tàu.': 'Show the ticket on your phone to the staff when boarding.',
   'Địa điểm tổ chức: 05 Nguyễn Tất Thành, phường Xóm Chiếu (bên cạnh Bến Nhà Rồng). Có bãi giữ xe.': 'Venue: 05 Nguyen Tat Thanh, Xom Chieu Ward (next to Nha Rong Wharf). Parking available.',
   'Nếu quý khách đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.': 'Guests who arrive after departure time may be refused boarding.',
@@ -496,7 +496,6 @@ var TU_DIEN_EN = {
   'Nguyễn Văn A': 'Nguyen Van A',
   'Số điện thoại (Zalo)': 'Phone number (Zalo)',
   'Email': 'Email',
-  '(nhận vé điện tử PDF)': '(to receive your PDF e-ticket)',
   'Ghi chú': 'Notes',
   '(không bắt buộc)': '(optional)',
   'Sinh nhật, kỷ niệm, số bé dùng set menu…': 'Birthday, anniversary, number of children having set menus…',
@@ -548,7 +547,7 @@ var TU_DIEN_EN = {
   'Ms Nguyên sẽ gửi': 'Ms Nguyên will send the',
   'phiếu xác nhận “Đã thanh toán”': '“Paid” confirmation slip',
   'vé điện tử (file PDF)': 'e-ticket (PDF file)',
-  'qua email và Zalo của quý khách. Khi lên tàu, quý khách xuất trình vé qua điện thoại cho nhân viên.': 'to your email and Zalo. When boarding, show the ticket on your phone to the staff.',
+  'qua Zalo của quý khách. Khi lên tàu, quý khách xuất trình vé qua điện thoại cho nhân viên.': 'to your Zalo. When boarding, show the ticket on your phone to the staff.',
   'Chưa gửi được thông tin qua email. Vui lòng bấm “Gửi qua Zalo” bên dưới hoặc gọi 0948170036 để Ms Nguyên xác nhận.': 'We could not send your details by email. Please tap “Send via Zalo” below or call 0948170036 so Ms Nguyên can confirm.',
   'Để được xác nhận nhanh hơn, quý khách gửi mã đơn kèm ảnh chụp biên lai chuyển khoản qua Zalo:': 'For faster confirmation, send your booking code and a screenshot of the transfer receipt via Zalo:',
   'Gửi qua Zalo cho Ms Nguyên': 'Send to Ms Nguyên via Zalo',
@@ -568,7 +567,6 @@ var TU_DIEN_EN = {
   'Vui lòng chọn ít nhất 1 suất set menu.': 'Please choose at least 1 set menu.',
   'Vui lòng nhập họ tên.': 'Please enter your name.',
   'Số điện thoại không hợp lệ.': 'Invalid phone number.',
-  'Vui lòng nhập email để nhận vé điện tử (PDF).': 'Please enter an email to receive your e-ticket (PDF).',
   'Vui lòng đồng ý điều kiện vé và chính sách đổi trả.': 'Please accept the ticket conditions and change policy.',
   'Vui lòng nhập tên công ty.': 'Please enter the company name.',
   'Mã số thuế gồm 10 số (hoặc 10 số-3 số).': 'The tax ID has 10 digits (or 10 digits-3 digits).',

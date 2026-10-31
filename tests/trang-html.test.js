@@ -144,7 +144,7 @@ test('chinh-sach.html: du 5 muc theo update.docx, footer moi trang co link chinh
 test('dat-cho.html: email nhan ve va o dong y dieu kien ve', () => {
   const html = doc('dat-cho.html');
   assert.ok(html.includes('name="dongY"') && html.includes('data-loi="dongY"') && html.includes('href="chinh-sach.html"'));
-  assert.ok(html.includes('nhận vé điện tử PDF') && html.includes('24 giờ'));
+  assert.ok(!html.includes('nhận vé điện tử PDF') && !html.includes('id="dat-cho-email"') && html.includes('qua Zalo của quý khách') && html.includes('24 giờ'));
 });
 
 test('logo Nguyen Nguyen Travel nen trong suot: canh chu Ve Tau Sai Gon o header va o footer; khong con logo goc phai', () => {

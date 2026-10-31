@@ -64,7 +64,7 @@ test('kiemTraBuoc1: thieu tau / ngay qua khu / loai khong co / chua chon mon', (
 
 test('kiemTraBuoc2: lien he bat buoc, VAT bat buoc du thong tin cong ty', () => {
   assert.ok(dc.kiemTraBuoc2(donBuffet()).hopLe);
-  assert.deepStrictEqual(Object.keys(dc.kiemTraBuoc2(donBuffet({ hoTen: ' ', soDienThoai: '123', email: 'sai' })).loi), ['hoTen', 'soDienThoai', 'email']);
+  assert.deepStrictEqual(Object.keys(dc.kiemTraBuoc2(donBuffet({ hoTen: ' ', soDienThoai: '123', email: 'sai' })).loi), ['hoTen', 'soDienThoai']);
   assert.deepStrictEqual(Object.keys(dc.kiemTraBuoc2(donBuffet({ vat: true })).loi), ['congTyTen', 'congTyMst', 'congTyDiaChi', 'congTyEmail']);
   const coVat = donBuffet({ vat: true, congTy: { ten: 'ABC', mst: '0312345678', diaChi: '1 Lê Lợi', email: 'kt@abc.vn' } });
   assert.ok(dc.kiemTraBuoc2(coVat).hopLe);
@@ -166,8 +166,8 @@ test('docThamSoUrl va ngayHomNayDiaPhuong', () => {
   assert.strictEqual(dc.ngayHomNayDiaPhuong(new Date(2026, 0, 5, 23, 59)), '2026-01-05');
 });
 
-test('kiemTraBuoc2: email nhan ve va dong y dieu kien ve la bat buoc', () => {
-  assert.deepStrictEqual(Object.keys(dc.kiemTraBuoc2(donBuffet({ email: '' })).loi), ['email']);
+test('kiemTraBuoc2: khong can email khach (ve gui qua Zalo), dong y dieu kien ve la bat buoc', () => {
+  assert.deepStrictEqual(Object.keys(dc.kiemTraBuoc2(donBuffet({ email: '' })).loi), []);
   assert.deepStrictEqual(Object.keys(dc.kiemTraBuoc2(donBuffet({ dongY: false })).loi), ['dongY']);
 });
 
