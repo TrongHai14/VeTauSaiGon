@@ -22,6 +22,63 @@ var CHINH_SACH_TRE_EM_INDOCHINA = [
 
 var DANH_SACH_TAU = [
   {
+    slug: 'indochina-queen',
+    ten: 'Indochina Queen',
+    moTaNgan: 'Indochina Queen – Tàu Nữ Hoàng Đông Dương: buffet và set menu trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h45, cập bến 21h15.',
+    // Giới thiệu: chỉ còn các điểm nổi bật và phần tổng quan (thongSo); gioiThieu để trống thì không hiện đoạn chữ.
+    gioiThieu: '',
+    // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
+    thongSo: [
+      { nhan: 'Sức chứa', giaTri: 'Tối đa 600 khách' },
+      { nhan: 'Kích thước', giaTri: 'Dài 74 m, rộng 13,7 m, vỏ thép' },
+      { nhan: 'Số tầng', giaTri: '3 tầng' },
+      { nhan: 'Bố trí', giaTri: 'Tầng trệt 120 khách, tầng giữa 220 khách, tầng 3 ngoài trời 190 khách và phòng VIP 70 khách' },
+      { nhan: 'Phù hợp', giaTri: 'Sinh nhật, gala dinner, hội nghị, tiệc công ty' }
+    ],
+    noiBat: ['Buffet không giới hạn ở 3 tầng', 'Sảnh VIP tầng 3 với 11 set menu', 'Nhạc dân tộc, nhạc Philippines và múa dân tộc'],
+    gioChay: { donKhach: '18h00', khoiHanh: '19h45', capBen: '21h15', ghiChu: null },
+    diaChi: DIA_CHI_MAC_DINH,
+    loTrinh: [
+      'Cảng Sài Gòn', 'Bến Nhà Rồng', 'Bến Bạch Đằng', 'Cầu Ba Son',
+      'Cầu Tân Thuận (Quận 7)', 'Quay lại Cảng Sài Gòn (nơi đón khách) để trả khách'
+    ],
+    bangGia: [
+      {
+        tieuDe: 'Buffet',
+        ghiChu: 'Tiệc buffet không giới hạn, giá đã bao gồm VAT.',
+        dong: [
+          { ten: 'Tầng 1', tenPhu: null, gia: 561600 },
+          { ten: 'Tầng 2', tenPhu: null, gia: 615600 },
+          { ten: 'Tầng 3', tenPhu: null, gia: 669600 }
+        ]
+      },
+      {
+        tieuDe: 'Set menu',
+        ghiChu: 'Set menu chỉ phục vụ ở tầng 3 (sảnh VIP).',
+        dong: [
+          { ten: 'INDO7', tenPhu: null, gia: 723600 },
+          { ten: 'INDO8', tenPhu: null, gia: 723600 },
+          { ten: 'INDO9', tenPhu: null, gia: 831600 },
+          { ten: 'INDO10', tenPhu: null, gia: 831600 },
+          { ten: 'INDO11', tenPhu: null, gia: 939600 },
+          { ten: 'INDO12', tenPhu: null, gia: 939600 },
+          { ten: 'INDO13', tenPhu: null, gia: 1047600 },
+          { ten: 'INDO14', tenPhu: null, gia: 1047600 },
+          { ten: 'INDO15', tenPhu: null, gia: 1209600 },
+          { ten: 'INDO16', tenPhu: null, gia: 1425600 },
+          { ten: 'INDO17', tenPhu: null, gia: 1641600 }
+        ]
+      }
+    ],
+    khuyenMai: [],
+    chinhSachTreEm: CHINH_SACH_TRE_EM_INDOCHINA,
+    giaiTri: [
+      'Sảnh tầng 1 và sảnh VIP: nhạc dân tộc và 02 bài múa dân tộc (biểu diễn từ 30-45 phút).',
+      'Sảnh tầng 2 và tầng 3: nhạc Philippines và 02 bài múa dân tộc (biểu diễn từ 30-45 phút).',
+      'Ban nhạc có thể thay đổi tùy theo tình hình thực tế.'
+    ]
+  },
+  {
     slug: 'indochina-star',
     ten: 'Indochina Star',
     moTaNgan: 'Buffet tối trên du thuyền Indochina Star qua sông Sài Gòn: đón khách 18h00, tàu chạy 19h45, cập bến 21h15, có nhạc và múa dân tộc.',
@@ -116,63 +173,6 @@ var DANH_SACH_TAU = [
       'Chương trình nhạc sống hằng đêm từ 19h đến 21h15.',
       'Cuối tuần (thứ sáu đến chủ nhật) có thêm belly dance hoặc múa cổ trang.',
       'Riêng tầng thượng cuối tuần đang thử nghiệm DJ.'
-    ]
-  },
-  {
-    slug: 'indochina-queen',
-    ten: 'Indochina Queen',
-    moTaNgan: 'Indochina Queen – Tàu Nữ Hoàng Đông Dương: buffet và set menu trên sông Sài Gòn, đón khách 18h00, tàu chạy 19h45, cập bến 21h15.',
-    // Giới thiệu: chỉ còn các điểm nổi bật và phần tổng quan (thongSo); gioiThieu để trống thì không hiện đoạn chữ.
-    gioiThieu: '',
-    // Tổng quan tàu (mục Giới thiệu và thẻ tàu), theo file "Tổng quan từng tàu.docx".
-    thongSo: [
-      { nhan: 'Sức chứa', giaTri: 'Tối đa 600 khách' },
-      { nhan: 'Kích thước', giaTri: 'Dài 74 m, rộng 13,7 m, vỏ thép' },
-      { nhan: 'Số tầng', giaTri: '3 tầng' },
-      { nhan: 'Bố trí', giaTri: 'Tầng trệt 120 khách, tầng giữa 220 khách, tầng 3 ngoài trời 190 khách và phòng VIP 70 khách' },
-      { nhan: 'Phù hợp', giaTri: 'Sinh nhật, gala dinner, hội nghị, tiệc công ty' }
-    ],
-    noiBat: ['Buffet không giới hạn ở 3 tầng', 'Sảnh VIP tầng 3 với 11 set menu', 'Nhạc dân tộc, nhạc Philippines và múa dân tộc'],
-    gioChay: { donKhach: '18h00', khoiHanh: '19h45', capBen: '21h15', ghiChu: null },
-    diaChi: DIA_CHI_MAC_DINH,
-    loTrinh: [
-      'Cảng Sài Gòn', 'Bến Nhà Rồng', 'Bến Bạch Đằng', 'Cầu Ba Son',
-      'Cầu Tân Thuận (Quận 7)', 'Quay lại Cảng Sài Gòn (nơi đón khách) để trả khách'
-    ],
-    bangGia: [
-      {
-        tieuDe: 'Buffet',
-        ghiChu: 'Tiệc buffet không giới hạn, giá đã bao gồm VAT.',
-        dong: [
-          { ten: 'Tầng 1', tenPhu: null, gia: 561600 },
-          { ten: 'Tầng 2', tenPhu: null, gia: 615600 },
-          { ten: 'Tầng 3', tenPhu: null, gia: 669600 }
-        ]
-      },
-      {
-        tieuDe: 'Set menu',
-        ghiChu: 'Set menu chỉ phục vụ ở tầng 3 (sảnh VIP).',
-        dong: [
-          { ten: 'INDO7', tenPhu: null, gia: 723600 },
-          { ten: 'INDO8', tenPhu: null, gia: 723600 },
-          { ten: 'INDO9', tenPhu: null, gia: 831600 },
-          { ten: 'INDO10', tenPhu: null, gia: 831600 },
-          { ten: 'INDO11', tenPhu: null, gia: 939600 },
-          { ten: 'INDO12', tenPhu: null, gia: 939600 },
-          { ten: 'INDO13', tenPhu: null, gia: 1047600 },
-          { ten: 'INDO14', tenPhu: null, gia: 1047600 },
-          { ten: 'INDO15', tenPhu: null, gia: 1209600 },
-          { ten: 'INDO16', tenPhu: null, gia: 1425600 },
-          { ten: 'INDO17', tenPhu: null, gia: 1641600 }
-        ]
-      }
-    ],
-    khuyenMai: [],
-    chinhSachTreEm: CHINH_SACH_TRE_EM_INDOCHINA,
-    giaiTri: [
-      'Sảnh tầng 1 và sảnh VIP: nhạc dân tộc và 02 bài múa dân tộc (biểu diễn từ 30-45 phút).',
-      'Sảnh tầng 2 và tầng 3: nhạc Philippines và 02 bài múa dân tộc (biểu diễn từ 30-45 phút).',
-      'Ban nhạc có thể thay đổi tùy theo tình hình thực tế.'
     ]
   },
   {

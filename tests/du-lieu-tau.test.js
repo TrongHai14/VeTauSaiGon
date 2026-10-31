@@ -5,7 +5,7 @@ const path = require('node:path');
 const { THONG_TIN_WEB, LIEN_HE, DIA_CHI_MAC_DINH, DANH_SACH_TAU } = require('../js/du-lieu-tau.js');
 
 const GOC = path.join(__dirname, '..');
-const SLUGS = ['indochina-star', 'ben-nghe', 'indochina-queen', 'elite-of-saigon', 'saigon-princess', 'ben-thanh-princess'];
+const SLUGS = ['indochina-queen', 'indochina-star', 'ben-nghe', 'elite-of-saigon', 'saigon-princess', 'ben-thanh-princess'];
 const tau = (s) => DANH_SACH_TAU.find((t) => t.slug === s);
 const bang = (t, tieuDe) => t.bangGia.find((b) => b.tieuDe === tieuDe);
 
