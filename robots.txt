@@ -3,5 +3,6 @@ Disallow: /xac-nhan.html
 Disallow: /kiem-tra-ve.html
 Disallow: /tao-phieu.html
 Disallow: /phieu-chuyen-khoan.html
+Disallow: /don-cua-toi.html
 
 Sitemap: https://vetausaigon.vn/sitemap.xml

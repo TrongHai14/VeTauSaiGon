@@ -859,3 +859,21 @@ html[data-giao-dien="toi"] .thong-bao.loi-gui, html[data-giao-dien="toi"] .qr-lo
 #da-thanh-toan h2, #don-da-huy h2 { text-align: center; }
 .phieu-gon .phieu-noi { padding-bottom: 30px; }
 .phieu-gon h2 { margin-top: 0; margin-bottom: 16px; }
+.so-don { display: inline-grid; place-items: center; min-width: 18px; height: 18px; margin-left: 5px; padding: 0 5px; border-radius: 50%; background: #f26a21; color: #fff; font-size: 11.5px; font-weight: 700; line-height: 1; }
+.danh-sach-don { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-bottom: 28px; }
+.the-don-dau { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 12px; align-items: flex-start; }
+.the-don-dau h2 { margin-bottom: 4px; }
+.the-don-dau p { margin: 0; }
+.nhan-tt { flex: none; padding: 4px 10px; border-radius: var(--bo-goc); font-size: 13px; font-weight: 700; }
+.tt-chua { background: #fff1e6; color: #b5500f; }
+.tt-cho { background: #e6f1fc; color: #1f5fa8; }
+.tt-xong { background: #dff5e8; color: #14774a; }
+.tt-huy { background: #fde8e8; color: #b42323; }
+html[data-giao-dien="toi"] .tt-chua { background: #43290f; color: #ffc08a; }
+html[data-giao-dien="toi"] .tt-cho { background: #15304d; color: #9dcbf7; }
+html[data-giao-dien="toi"] .tt-xong { background: #123a26; color: #8fe3b6; }
+html[data-giao-dien="toi"] .tt-huy { background: #3f1a1c; color: #ff9d9f; }
+.the-don-mo { margin: 12px 0; }
+.the-don-tt { margin: 14px 0; }
+.the-don-bao:empty { display: none; }
+@media (max-width: 560px) { .the-don .nhom-nut-gui { grid-template-columns: minmax(0, 1fr); } }

@@ -61,6 +61,7 @@ function header(tt) {
       <nav class="menu-chinh">
         <a href="${tt}index.html#danh-sach">Du thuyền</a>
         <a href="${tt}dat-cho.html">Đặt chỗ</a>
+        <a href="${tt}don-cua-toi.html">Đơn của tôi<span class="so-don" data-so-don hidden></span></a>
         <a href="${tt}faq.html">FAQ</a>
         <a href="#lien-he">Liên hệ</a>
         <button type="button" class="nut-giao-dien" id="nut-giao-dien" aria-pressed="false" aria-label="Đổi giao diện sáng hoặc tối" title="Đổi giao diện sáng hoặc tối"><svg class="icon-toi" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 14.5A9 9 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z"/></svg><svg class="icon-sang" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg></button>
@@ -322,6 +323,7 @@ ${o('dat-cho-ghi-chu', 'ghiChu', 'Ghi chú <small>(không bắt buộc)</small>'
               <h2>Đơn đã được hủy</h2>
               <p>Vui lòng nhắn Zalo hoặc gọi Ms Nguyên 0948170036 nếu cần hỗ trợ.</p>
             </div>
+            <p>Đơn đã được lưu ở <a href="don-cua-toi.html"><b>Đơn của tôi</b></a>. Tải lại trang hoặc đóng trang cũng không mất.</p>
             <p id="nhac-zalo">Để được xác nhận nhanh hơn, quý khách gửi mã đơn kèm ảnh chụp biên lai chuyển khoản qua Zalo:</p>
             <button type="button" class="nut nut-zalo" data-hanh-dong="zalo">Gửi qua Zalo cho Ms Nguyên</button>
             <div id="khung-sao-chep" class="khung-sao-chep"></div>
@@ -536,6 +538,29 @@ ${script('', SCRIPT_CHUNG.concat(['dat-cho.js', 'tao-phieu.js']))}
 </html>
 `);
 
+// ---------- don-cua-toi.html (khách xem lại đơn và trạng thái; lưu trên máy khách) ----------
+ghi('don-cua-toi.html', `${dau('', { tieuDe: 'Đơn của tôi | Vé Tàu Sài Gòn', moTa: 'Xem lại đơn đặt vé du thuyền và trạng thái xác nhận thanh toán.', anh: '', url: TEN_MIEN + '/don-cua-toi.html', anChiMuc: true })}
+<body class="trang-dat-cho">
+${header('')}
+  <main class="khung" id="don-cua-toi">
+    <div class="dau-trang-dat">
+      <h1>Đơn của tôi</h1>
+      <p>Đơn được lưu trên máy và trình duyệt này, tải lại trang không mất. Đây không phải vé; vé điện tử do Ms Nguyên gửi qua Zalo.</p>
+      <p id="don-tu-cap-nhat" hidden>Trạng thái tự cập nhật khoảng 30 giây một lần.</p>
+    </div>
+    <div id="danh-sach-don" class="danh-sach-don"></div>
+    <div id="don-trong" class="the-form hop-cho" hidden>
+      <p>Chưa có đơn nào trên máy này.</p>
+      <a class="nut" href="dat-cho.html">Đặt chỗ ngay</a>
+    </div>
+  </main>
+${footer('')}
+${script('', SCRIPT_CHUNG.concat(['dat-cho.js', 'don-cua-toi.js']))}
+  <script>khoiChayTrangDonCuaToi();</script>
+</body>
+</html>
+`);
+
 // ---------- kiem-tra-ve.html (nhân viên quét QR trên phiếu) ----------
 ghi('kiem-tra-ve.html', `${dau('', { tieuDe: 'Kiểm tra vé | Vé Tàu Sài Gòn', moTa: 'Kiểm tra phiếu xác nhận du thuyền có chữ ký số.', anh: '', url: TEN_MIEN + '/kiem-tra-ve.html', anChiMuc: true })}
 <body class="trang-kiem-tra-ve">
@@ -608,6 +633,6 @@ ${script('/', SCRIPT_CHUNG)}
 const trangCongKhai = ['', 'dat-cho.html', 'chinh-sach.html', 'faq.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
 ghi('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
   trangCongKhai.map((p) => '  <url><loc>' + TEN_MIEN + '/' + p + '</loc></url>').join('\n') + '\n</urlset>\n');
-ghi('robots.txt', 'User-agent: *\nDisallow: /xac-nhan.html\nDisallow: /kiem-tra-ve.html\nDisallow: /tao-phieu.html\nDisallow: /phieu-chuyen-khoan.html\n\nSitemap: ' + TEN_MIEN + '/sitemap.xml\n');
+ghi('robots.txt', 'User-agent: *\nDisallow: /xac-nhan.html\nDisallow: /kiem-tra-ve.html\nDisallow: /tao-phieu.html\nDisallow: /phieu-chuyen-khoan.html\nDisallow: /don-cua-toi.html\n\nSitemap: ' + TEN_MIEN + '/sitemap.xml\n');
 
-console.log('Đã tạo lại', 9 + DANH_SACH_TAU.length, 'trang.');
+console.log('Đã tạo lại', 10 + DANH_SACH_TAU.length, 'trang.');

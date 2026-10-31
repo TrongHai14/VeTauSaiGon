@@ -566,3 +566,62 @@ test('sheet: tran 200 khach moi don; them don bao vuot; chu go tay Khong thanh t
   dong[7] = 'đã thanh toán';
   assert.deepStrictEqual(hoiTT(s, MA + 'TT08'), { ok: true, trangThai: 'da-tt' });
 });
+
+// ---------- Đơn của tôi ----------
+const donCuaToi = (them) => Object.assign({ slugTau: 'indochina-queen', ngay: '2099-03-10', loai: 'buffet', buffetMa: '0:0', nguoiLon: 2, treEm50: 0, treEmMienPhi: 0, mon: {}, hoTen: '<b>A</b>', soDienThoai: '0948170036', email: '', maDon: 'VT261031AAAA', vat: false, taiKhoan: 'caNhan', congTy: {}, dongY: true }, them);
+const khoGia = () => { const luu = {}; return { luu, getItem: (k) => (k in luu ? luu[k] : null), setItem: (k, v) => { luu[k] = v; }, removeItem: (k) => { delete luu[k]; } }; };
+
+test('don cua toi: luu qua tai lai trang, cap nhat khong trung, moi nhat len dau, khong ha trang thai da thanh toan', () => {
+  const dc = require('../js/dat-cho.js');
+  const kho = khoGia();
+  assert.deepStrictEqual(dc.layDonCuaToi(kho), []);
+  dc.luuDonCuaToi(donCuaToi(), 'chua-chuyen', kho);
+  dc.luuDonCuaToi(donCuaToi({ maDon: 'VT261031BBBB' }), 'chua-chuyen', kho);
+  dc.luuDonCuaToi(donCuaToi({ nguoiLon: 3 }), 'cho', kho);
+  const ds = dc.layDonCuaToi(kho);
+  assert.deepStrictEqual(ds.map((b) => [b.don.maDon, b.trangThai]), [['VT261031AAAA', 'cho'], ['VT261031BBBB', 'chua-chuyen']]);
+  assert.strictEqual(ds[0].don.nguoiLon, 3);
+  assert.strictEqual(ds[0].don.dongY, undefined);
+  dc.doiTrangThaiDonCuaToi('VT261031AAAA', 'huy', kho);
+  assert.strictEqual(dc.layDonCuaToi(kho)[0].trangThai, 'huy');
+  dc.doiTrangThaiDonCuaToi('VT261031AAAA', 'da-tt', kho);
+  dc.luuDonCuaToi(donCuaToi(), 'cho', kho);
+  assert.strictEqual(dc.layDonCuaToi(kho)[0].trangThai, 'da-tt');
+  dc.xoaDonCuaToi('VT261031AAAA', kho);
+  assert.deepStrictEqual(dc.layDonCuaToi(kho).map((b) => b.don.maDon), ['VT261031BBBB'], 'chi xoa dung ma');
+});
+
+test('don cua toi: qua ngay di 7 ngay thi bo, toi da 20 don, kho hong khong lam hong trang', () => {
+  const dc = require('../js/dat-cho.js');
+  const kho = khoGia();
+  dc.luuDonCuaToi(donCuaToi({ ngay: '2099-03-10' }), 'cho', kho);
+  assert.strictEqual(dc.layDonCuaToi(kho, '2099-03-17').length, 1, 'con trong 7 ngay');
+  assert.strictEqual(dc.layDonCuaToi(kho, '2099-03-18').length, 0, 'qua 7 ngay');
+  for (let i = 0; i < 25; i++) dc.luuDonCuaToi(donCuaToi({ maDon: 'VT261031M' + String(i).padStart(3, '0') }), 'cho', kho);
+  assert.strictEqual(dc.layDonCuaToi(kho).length, 20);
+  assert.strictEqual(dc.layDonCuaToi(kho)[0].don.maDon, 'VT261031M024');
+  kho.luu['veTauSaiGon.donCuaToi'] = '{hong';
+  assert.deepStrictEqual(dc.layDonCuaToi(kho), []);
+  kho.luu['veTauSaiGon.donCuaToi'] = JSON.stringify([{ don: { maDon: 'x' }, trangThai: 'cho' }, null]);
+  assert.deepStrictEqual(dc.layDonCuaToi(kho), [], 'du lieu sai bi bo');
+  assert.deepStrictEqual(dc.layDonCuaToi(null), []);
+  assert.doesNotThrow(() => { dc.luuDonCuaToi(donCuaToi(), 'cho', null); dc.xoaDonCuaToi('VT261031AAAA', null); });
+});
+
+test('don cua toi: the don dung theo trang thai, ten khach khong chen HTML, chi don chua chuyen moi co chuyen khoan', () => {
+  const dc = require('../js/dat-cho.js');
+  const { DANH_SACH_TAU, GIA_TRE_EM, LIEN_HE } = require('../js/du-lieu-tau.js');
+  const { CAU_HINH } = require('../js/cau-hinh.js');
+  const tau = DANH_SACH_TAU.find((t) => t.slug === 'indochina-queen');
+  const the = (tt, mo) => dc.taoTheDonCuaToi({ don: donCuaToi(), trangThai: tt }, tau, GIA_TRE_EM, CAU_HINH.thanhToan, LIEN_HE, mo);
+  assert.ok(the('chua-chuyen', false).includes('data-viec="mo-tt"') && !the('chua-chuyen', false).includes('25960437'));
+  assert.ok(the('chua-chuyen', true).includes('data-viec="da-chuyen"') && the('chua-chuyen', true).includes('25960437'));
+  for (const [tt, chu] of [['cho', 'Đang chờ xác nhận'], ['da-tt', 'Giao dịch thành công'], ['huy', 'Đơn đã được hủy']]) {
+    const h = the(tt, true);
+    assert.ok(h.includes(chu) && h.includes('VT261031AAAA') && !h.includes('25960437') && !h.includes('data-viec="da-chuyen"'), tt);
+  }
+  assert.ok(!the('cho', false).includes('<b>A</b>'));
+  const html = doc('don-cua-toi.html');
+  assert.ok(html.includes('noindex') && !html.includes('rel="canonical"') && doc('robots.txt').includes('Disallow: /don-cua-toi.html') && !doc('sitemap.xml').includes('don-cua-toi'));
+  for (const f of ['index.html', 'dat-cho.html', 'faq.html']) assert.ok(doc(f).includes('href="don-cua-toi.html"'), f);
+});

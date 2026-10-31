@@ -727,9 +727,24 @@ function ganNutGiaoDien() {
   });
 }
 
+// Số đơn trong "Đơn của tôi" trên menu (đọc trực tiếp vì trang nào cũng có menu).
+function capNhatSoDonCuaToi() {
+  var cacSo = document.querySelectorAll('[data-so-don]');
+  var so = 0;
+  try {
+    var ds = JSON.parse(localStorage.getItem('veTauSaiGon.donCuaToi'));
+    so = Array.isArray(ds) ? ds.length : 0;
+  } catch (loi) { so = 0; }
+  for (var i = 0; i < cacSo.length; i++) {
+    cacSo[i].textContent = so > 0 ? String(so) : '';
+    cacSo[i].hidden = so === 0;
+  }
+}
+
 function apDungCauHinhChung(tienTo) {
   if (typeof document === 'undefined' || !document.querySelectorAll) return;
   ganNutGiaoDien();
+  capNhatSoDonCuaToi();
   ganLienHeNoi();
   var ch = layCauHinh();
   var logo = ch.logo || {};
