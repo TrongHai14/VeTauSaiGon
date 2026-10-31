@@ -9,6 +9,7 @@ function khoiChayTrangDonCuaToi() {
   var dangMo = {};
   var dangTheoDoi = {};
   var dangGui = {};
+  var baoLoiGui = {};
   var coOnline = !!hamLichCho.urlLichOnline();
   oTuCapNhat.hidden = !coOnline;
 
@@ -21,6 +22,20 @@ function khoiChayTrangDonCuaToi() {
       html += taoTheDonCuaToi(ds[i], tauCua(ds[i]), GIA_TRE_EM, CAU_HINH.thanhToan, LIEN_HE, !!dangMo[ds[i].don.maDon]);
     }
     khung.innerHTML = html;
+    // Vẽ lại không làm mất trạng thái đang gửi và thông báo lỗi của từng đơn.
+    ds.forEach(function (b) {
+      var the = khung.querySelector('[data-ma-don="' + b.don.maDon + '"]');
+      if (!the) return;
+      var nut = the.querySelector('[data-viec="da-chuyen"]');
+      var oBao = the.querySelector('.the-don-bao');
+      if (dangGui[b.don.maDon]) {
+        if (nut) nut.disabled = true;
+        oBao.textContent = 'Đang gửi thông tin cho Ms Nguyên…';
+      } else if (baoLoiGui[b.don.maDon]) {
+        oBao.textContent = baoLoiGui[b.don.maDon];
+        oBao.className = 'thong-bao the-don-bao loi-gui';
+      }
+    });
     oTrong.hidden = ds.length > 0;
     capNhatSoDonCuaToi();
     theoDoi(ds);
@@ -29,9 +44,14 @@ function khoiChayTrangDonCuaToi() {
   // Đơn chưa có kết quả thì hỏi định kỳ, kể cả đơn khách chưa bấm "Tôi đã chuyển khoản" mà Ms Nguyên đã xác nhận qua Zalo.
   function theoDoi(ds) {
     if (!coOnline) return;
+    // Đơn đã bị xoá (kể cả ở tab khác) thì thôi hỏi.
+    Object.keys(dangTheoDoi).forEach(function (ma) {
+      if (!ds.some(function (b) { return b.don.maDon === ma; })) { dangTheoDoi[ma](); delete dangTheoDoi[ma]; }
+    });
+    var homNay = hamLichCho.ngayHomNayVN();
     ds.forEach(function (b) {
       var ma = b.don.maDon;
-      if (dangTheoDoi[ma] || b.trangThai === 'da-tt') return;
+      if (dangTheoDoi[ma] || b.trangThai === 'da-tt' || b.don.ngay < homNay) return;
       dangTheoDoi[ma] = hamLichCho.theoDoiThanhToan(ma, function (tt) {
         if (tt === 'da-tt') quenDonChoXacNhan(ma, kho);
         doiTrangThaiDonCuaToi(ma, tt, kho);
@@ -65,22 +85,21 @@ function khoiChayTrangDonCuaToi() {
       ve();
     } else if (viec === 'da-chuyen') {
       if (dangGui[ma]) return;
-      var banGhi = layDonCuaToi(kho).filter(function (b) { return b.don.maDon === ma; })[0];
-      if (!banGhi || !tauCua(banGhi)) return;
+      var banGhi = layMotDonCuaToi(ma, kho);
+      // Đọc lại: tab khác có thể đã báo, hoặc trang mở lâu đã qua giờ tàu chạy.
+      if (!banGhi || !tauCua(banGhi) || donDaKhoa(banGhi) || lyDoKhoaThanhToan(banGhi.don, tauCua(banGhi), GIA_TRE_EM, Date.now())) { ve(); return; }
       dangGui[ma] = true;
-      nut.disabled = true;
-      var oBao = the.querySelector('.the-don-bao');
-      oBao.textContent = 'Đang gửi thông tin cho Ms Nguyên…';
+      delete baoLoiGui[ma];
+      ve();
       guiBaoDaChuyen(banGhi.don, tauCua(banGhi), GIA_TRE_EM, CAU_HINH.thanhToan).then(function (ok) {
         delete dangGui[ma];
         if (!ok) {
-          nut.disabled = false;
-          oBao.textContent = 'Chưa gửi được thông tin qua email. Vui lòng bấm lại hoặc nhắn Zalo Ms Nguyên kèm mã đơn.';
-          oBao.className = 'thong-bao the-don-bao loi-gui';
+          baoLoiGui[ma] = 'Chưa gửi được thông tin qua email. Vui lòng bấm lại hoặc nhắn Zalo Ms Nguyên kèm mã đơn.';
+          ve();
           return;
         }
         delete dangMo[ma];
-        luuDonCuaToi(banGhi.don, 'cho', kho);
+        luuDonCuaToi(banGhi.don, trangThaiSauKhiBao(banGhi.don), kho);
         nhoDonChoXacNhan(ma, kho);
         ve();
       });

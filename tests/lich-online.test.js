@@ -578,15 +578,17 @@ test('don cua toi: luu qua tai lai trang, cap nhat khong trung, moi nhat len dau
   dc.luuDonCuaToi(donCuaToi(), 'chua-chuyen', kho);
   dc.luuDonCuaToi(donCuaToi({ maDon: 'VT261031BBBB' }), 'chua-chuyen', kho);
   dc.luuDonCuaToi(donCuaToi({ nguoiLon: 3 }), 'cho', kho);
+  dc.luuDonCuaToi(donCuaToi({ nguoiLon: 9 }), 'chua-chuyen', kho);
   const ds = dc.layDonCuaToi(kho);
   assert.deepStrictEqual(ds.map((b) => [b.don.maDon, b.trangThai]), [['VT261031AAAA', 'cho'], ['VT261031BBBB', 'chua-chuyen']]);
-  assert.strictEqual(ds[0].don.nguoiLon, 3);
+  assert.strictEqual(ds[0].don.nguoiLon, 3, 'don da bao chuyen khong bi sua hay ha trang thai');
   assert.strictEqual(ds[0].don.dongY, undefined);
   dc.doiTrangThaiDonCuaToi('VT261031AAAA', 'huy', kho);
   assert.strictEqual(dc.layDonCuaToi(kho)[0].trangThai, 'huy');
   dc.doiTrangThaiDonCuaToi('VT261031AAAA', 'da-tt', kho);
-  dc.luuDonCuaToi(donCuaToi(), 'cho', kho);
+  dc.luuDonCuaToi(donCuaToi({ nguoiLon: 9 }), 'chua-chuyen', kho);
   assert.strictEqual(dc.layDonCuaToi(kho)[0].trangThai, 'da-tt');
+  assert.strictEqual(dc.layDonCuaToi(kho)[0].don.nguoiLon, 3);
   dc.xoaDonCuaToi('VT261031AAAA', kho);
   assert.deepStrictEqual(dc.layDonCuaToi(kho).map((b) => b.don.maDon), ['VT261031BBBB'], 'chi xoa dung ma');
 });
@@ -597,6 +599,7 @@ test('don cua toi: qua ngay di 7 ngay thi bo, toi da 20 don, kho hong khong lam 
   dc.luuDonCuaToi(donCuaToi({ ngay: '2099-03-10' }), 'cho', kho);
   assert.strictEqual(dc.layDonCuaToi(kho, '2099-03-17').length, 1, 'con trong 7 ngay');
   assert.strictEqual(dc.layDonCuaToi(kho, '2099-03-18').length, 0, 'qua 7 ngay');
+  assert.strictEqual(JSON.parse(kho.luu['veTauSaiGon.donCuaToi']).length, 0, 'don het han bi xoa han khoi may');
   for (let i = 0; i < 25; i++) dc.luuDonCuaToi(donCuaToi({ maDon: 'VT261031M' + String(i).padStart(3, '0') }), 'cho', kho);
   assert.strictEqual(dc.layDonCuaToi(kho).length, 20);
   assert.strictEqual(dc.layDonCuaToi(kho)[0].don.maDon, 'VT261031M024');
@@ -624,4 +627,51 @@ test('don cua toi: the don dung theo trang thai, ten khach khong chen HTML, chi 
   const html = doc('don-cua-toi.html');
   assert.ok(html.includes('noindex') && !html.includes('rel="canonical"') && doc('robots.txt').includes('Disallow: /don-cua-toi.html') && !doc('sitemap.xml').includes('don-cua-toi'));
   for (const f of ['index.html', 'dat-cho.html', 'faq.html']) assert.ok(doc(f).includes('href="don-cua-toi.html"'), f);
+});
+
+test('don cua toi: khong moi chuyen khoan khi qua gio tau chay, gia doi, het han giu cho; hien dung tong luc dat', () => {
+  const dc = require('../js/dat-cho.js');
+  const { DANH_SACH_TAU, GIA_TRE_EM, LIEN_HE } = require('../js/du-lieu-tau.js');
+  const { CAU_HINH } = require('../js/cau-hinh.js');
+  const tau = DANH_SACH_TAU.find((t) => t.slug === 'indochina-queen');
+  const moc = (s) => new Date(s).getTime();
+  const don = donCuaToi();
+  dc.chupGiaDon(don, tau, GIA_TRE_EM);
+  assert.strictEqual(dc.lyDoKhoaThanhToan(don, tau, GIA_TRE_EM, moc('2099-03-10T19:44:00+07:00')), '', 'truoc gio chay 19h45');
+  assert.match(dc.lyDoKhoaThanhToan(don, tau, GIA_TRE_EM, moc('2099-03-10T19:45:00+07:00')), /Đã qua giờ tàu chạy/);
+  const the = (d, tt) => dc.taoTheDonCuaToi({ don: d, trangThai: tt }, tau, GIA_TRE_EM, CAU_HINH.thanhToan, LIEN_HE, true, moc('2099-03-15T10:00:00+07:00'));
+  assert.ok(!the(don, 'chua-chuyen').includes('25960437') && !the(don, 'chua-chuyen').includes('data-viec="da-chuyen"'), 'qua ngay di');
+  const doiGia = Object.assign({}, don, { tongLucDat: 1000000 });
+  assert.ok(dc.giaDonDaDoi(doiGia, tau, GIA_TRE_EM));
+  assert.match(dc.lyDoKhoaThanhToan(doiGia, tau, GIA_TRE_EM, moc('2099-01-01T00:00:00+07:00')), /Giá hoặc thực đơn/);
+  const daTra = dc.taoTheDonCuaToi({ don: doiGia, trangThai: 'cho' }, tau, GIA_TRE_EM, CAU_HINH.thanhToan, LIEN_HE, false);
+  assert.ok(daTra.includes('1.000.000') && daTra.includes('Tổng lúc đặt'), 'don da tra hien gia luc dat');
+  const mon = Object.assign({}, don, { buffetMa: '99:99' });
+  assert.ok(dc.giaDonDaDoi(mon, tau, GIA_TRE_EM), 'mon khong con');
+  assert.ok(dc.lyDoKhoaThanhToan(Object.assign({}, don, { giuDen: '2098-12-31T00:00:00Z' }), tau, GIA_TRE_EM, moc('2099-01-01T00:00:00Z')).includes('hết hạn giữ chỗ'));
+  assert.strictEqual(dc.giaDonDaDoi(donCuaToi(), tau, GIA_TRE_EM), false, 'don khong co gia da chup');
+  assert.strictEqual(dc.trangThaiSauKhiBao({ daChuyen: 'da-huy' }), 'huy');
+  assert.strictEqual(dc.trangThaiSauKhiBao({ daChuyen: 'ok' }), 'cho');
+});
+
+test('don cua toi: bao chuyen khoan giu gia da chup, loi thi tra false, so tren menu chi dem don con han', async () => {
+  const dc = require('../js/dat-cho.js');
+  const { DANH_SACH_TAU, GIA_TRE_EM } = require('../js/du-lieu-tau.js');
+  const { CAU_HINH } = require('../js/cau-hinh.js');
+  const tau = DANH_SACH_TAU.find((t) => t.slug === 'indochina-queen');
+  const fetchGoc = global.fetch, locGoc = global.location, winGoc = global.window;
+  global.location = { href: 'https://vetausaigon.vn/don-cua-toi.html' };
+  global.window = global;
+  try {
+    const don = donCuaToi({ tongLucDat: 1000000 });
+    global.fetch = () => Promise.resolve({ ok: true, json: () => ({ success: 'true' }) });
+    assert.strictEqual(await dc.guiBaoDaChuyen(don, tau, GIA_TRE_EM, CAU_HINH.thanhToan), true);
+    assert.strictEqual(don.tongLucDat, 1000000, 'khong ghi de gia da chup');
+    global.fetch = () => Promise.reject(new Error('mang'));
+    assert.strictEqual(await dc.guiBaoDaChuyen(don, tau, GIA_TRE_EM, CAU_HINH.thanhToan), false);
+    assert.strictEqual(await dc.guiBaoDaChuyen(Object.assign({}, don, { hoTen: 5 }), tau, GIA_TRE_EM, CAU_HINH.thanhToan), false, 'du lieu hong khong ket nut');
+  } finally { global.fetch = fetchGoc; global.location = locGoc; if (winGoc === undefined) delete global.window; else global.window = winGoc; }
+  const { locDonCuaToiConHan } = require('../js/hien-thi.js');
+  const ds = [{ don: { maDon: 'A', ngay: '2099-03-10' } }, { don: { maDon: 'B', ngay: '2099-01-01' } }, null, { don: { ngay: 'sai', maDon: 'C' } }];
+  assert.deepStrictEqual(locDonCuaToiConHan(ds, '2099-03-17').map((b) => b.don.maDon), ['A']);
 });

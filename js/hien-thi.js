@@ -727,13 +727,26 @@ function ganNutGiaoDien() {
   });
 }
 
-// Số đơn trong "Đơn của tôi" trên menu (đọc trực tiếp vì trang nào cũng có menu).
+// Đơn còn hạn (tới hết 7 ngày sau ngày đi), giống bộ lọc ở trang đặt chỗ.
+function locDonCuaToiConHan(ds, homNay) {
+  return ds.filter(function (b) {
+    var ngay = b && b.don && b.don.ngay;
+    return typeof ngay === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ngay) && !!b.don.maDon &&
+      new Date(ngay + 'T00:00:00Z').getTime() + 7 * 864e5 >= new Date(homNay + 'T00:00:00Z').getTime();
+  });
+}
+// Số đơn trong "Đơn của tôi" trên menu (đọc trực tiếp vì trang nào cũng có menu). Dọn luôn đơn hết hạn trên máy.
 function capNhatSoDonCuaToi() {
   var cacSo = document.querySelectorAll('[data-so-don]');
   var so = 0;
   try {
     var ds = JSON.parse(localStorage.getItem('veTauSaiGon.donCuaToi'));
-    so = Array.isArray(ds) ? ds.length : 0;
+    if (Array.isArray(ds)) {
+      var d = new Date(Date.now() + 7 * 3600e3);
+      var con = locDonCuaToiConHan(ds, d.toISOString().slice(0, 10));
+      so = con.length;
+      if (con.length !== ds.length) localStorage.setItem('veTauSaiGon.donCuaToi', JSON.stringify(con));
+    }
   } catch (loi) { so = 0; }
   for (var i = 0; i < cacSo.length; i++) {
     cacSo[i].textContent = so > 0 ? String(so) : '';
@@ -988,7 +1001,7 @@ function khoiChayTrangTau() {
 
 if (typeof module !== 'undefined') {
   module.exports = {
-    escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung, layAnhTau, layAnhDaiDien, layAnhKhuyenMai, taoAnhCho, taoAnh, layNhomCon, taoChipNhomCon, cacNgayNhanh,
+    locDonCuaToiConHan, escapeHtml, dinhDangGia, icon, timTau, giaThapNhat, layNhomThucDon, layThucDonTheoLoai, layLoaiBang, layAnhMon, layNhanTau, taoLinkDatCho, apDungCauHinhChung, layAnhTau, layAnhDaiDien, layAnhKhuyenMai, taoAnhCho, taoAnh, layNhomCon, taoChipNhomCon, cacNgayNhanh,
     taoTheTau, taoTrangTau, taoNutLienHe, taoKhoiChinhSach, taoMucGioiThieu, khoiChayTrangChu, khoiChayTrangTau
   };
 }

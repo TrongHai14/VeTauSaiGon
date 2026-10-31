@@ -323,7 +323,7 @@ ${o('dat-cho-ghi-chu', 'ghiChu', 'Ghi chú <small>(không bắt buộc)</small>'
               <h2>Đơn đã được hủy</h2>
               <p>Vui lòng nhắn Zalo hoặc gọi Ms Nguyên 0948170036 nếu cần hỗ trợ.</p>
             </div>
-            <p>Đơn đã được lưu ở <a href="don-cua-toi.html"><b>Đơn của tôi</b></a>. Tải lại trang hoặc đóng trang cũng không mất.</p>
+            <p id="nhac-luu-don" hidden>Đơn đã được lưu ở <a href="don-cua-toi.html"><b>Đơn của tôi</b></a>. Tải lại trang hoặc đóng trang cũng không mất.</p>
             <p id="nhac-zalo">Để được xác nhận nhanh hơn, quý khách gửi mã đơn kèm ảnh chụp biên lai chuyển khoản qua Zalo:</p>
             <button type="button" class="nut nut-zalo" data-hanh-dong="zalo">Gửi qua Zalo cho Ms Nguyên</button>
             <div id="khung-sao-chep" class="khung-sao-chep"></div>

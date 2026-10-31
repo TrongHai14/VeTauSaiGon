@@ -340,21 +340,53 @@ function layDonCuaToi(kho, homNay) {
     var ds = JSON.parse(kho.getItem(KHOA_DON_CUA_TOI));
     if (!Array.isArray(ds)) return [];
     var ngay = homNay || ngayHomNayDiaPhuong(new Date());
-    return ds.filter(function (b) { return conHanDonCuaToi(b, ngay); });
+    var con = ds.filter(function (b) { return conHanDonCuaToi(b, ngay); });
+    // Dọn hẳn đơn hết hạn: họ tên, SĐT không nằm lại trên máy.
+    if (con.length !== ds.length) ghiDonCuaToi(con, kho);
+    return con;
   } catch (loi) { return []; }
 }
 function ghiDonCuaToi(ds, kho) {
   try { kho.setItem(KHOA_DON_CUA_TOI, JSON.stringify(ds)); } catch (loi) { /* bỏ qua */ }
 }
-// Lưu hoặc cập nhật đơn; đơn mới nhất lên đầu. Không chép email (khách không nhập) và không hạ trạng thái đã có kết quả.
+function layMotDonCuaToi(maDon, kho) {
+  return layDonCuaToi(kho).filter(function (b) { return b.don.maDon === maDon; })[0] || null;
+}
+// Đơn đã báo chuyển khoản hoặc đã có kết quả thì khoá: khách đã trả theo nội dung này.
+function donDaKhoa(banGhi) {
+  return !!banGhi && banGhi.trangThai !== 'chua-chuyen';
+}
+// Lưu hoặc cập nhật đơn chưa khoá; đơn mới nhất lên đầu. Đơn đã khoá chỉ đổi trạng thái qua doiTrangThaiDonCuaToi.
 function luuDonCuaToi(don, trangThai, kho) {
   var ds = layDonCuaToi(kho);
   var cu = ds.filter(function (b) { return b.don.maDon === don.maDon; })[0];
+  if (donDaKhoa(cu)) return;
   var con = ds.filter(function (b) { return b.don.maDon !== don.maDon; });
   var ban = JSON.parse(JSON.stringify(don));
   delete ban.dongY;
-  con.unshift({ don: ban, trangThai: cu && cu.trangThai === 'da-tt' ? 'da-tt' : trangThai, luc: Date.now() });
+  con.unshift({ don: ban, trangThai: trangThai, luc: Date.now() });
   ghiDonCuaToi(con.slice(0, SO_DON_CUA_TOI_TOI_DA), kho);
+}
+// Chụp giá lúc khách thấy ở bước thanh toán, để biết đơn lưu có còn đúng bảng giá hiện tại không.
+function dauGiaDon(don, tau, bangTreEm) {
+  return tomTatDon(don, tau, bangTreEm).dong.map(function (d) { return d.gia + 'x' + d.soLuong; }).join('|');
+}
+function chupGiaDon(don, tau, bangTreEm) {
+  don.tongLucDat = tomTatDon(don, tau, bangTreEm).tong;
+  don.dauGia = dauGiaDon(don, tau, bangTreEm);
+}
+function giaDonDaDoi(don, tau, bangTreEm) {
+  if (typeof don.tongLucDat !== 'number') return false;
+  return tomTatDon(don, tau, bangTreEm).tong !== don.tongLucDat || (don.dauGia !== undefined && dauGiaDon(don, tau, bangTreEm) !== don.dauGia);
+}
+// Lý do không cho chuyển khoản từ "Đơn của tôi"; '' là được.
+function lyDoKhoaThanhToan(don, tau, bangTreEm, bayGio) {
+  var gio = /^(\d{1,2})h(\d{2})$/.exec((tau.gioChay && tau.gioChay.khoiHanh) || '');
+  var mocChay = new Date(don.ngay + 'T' + (gio ? (gio[1].length < 2 ? '0' : '') + gio[1] + ':' + gio[2] : '23:59') + ':00+07:00').getTime();
+  if (bayGio >= mocChay) return 'Đã qua giờ tàu chạy nên đơn này không còn chuyển khoản được. Vui lòng nhắn Zalo Ms Nguyên nếu cần hỗ trợ.';
+  if (giaDonDaDoi(don, tau, bangTreEm)) return 'Giá hoặc thực đơn đã thay đổi từ lúc đặt. Vui lòng đặt lại hoặc nhắn Zalo Ms Nguyên trước khi chuyển khoản.';
+  if (don.giuDen && new Date(don.giuDen).getTime() <= bayGio) return 'Đã hết hạn giữ chỗ. Vui lòng nhắn Zalo Ms Nguyên để kiểm tra chỗ trước khi chuyển khoản.';
+  return '';
 }
 function doiTrangThaiDonCuaToi(maDon, trangThai, kho) {
   ghiDonCuaToi(layDonCuaToi(kho).map(function (b) {
@@ -367,27 +399,33 @@ function xoaDonCuaToi(maDon, kho) {
 }
 
 var TRANG_THAI_DON_CUA_TOI = {
-  'chua-chuyen': { nhan: 'Chưa chuyển khoản', lop: 'tt-chua', mo: 'Đơn chưa được giữ. Quý khách chuyển khoản rồi bấm “Tôi đã chuyển khoản”.' },
+  'chua-chuyen': { nhan: 'Chưa chuyển khoản', lop: 'tt-chua', mo: 'Quý khách chuyển khoản rồi bấm “Tôi đã chuyển khoản”.' },
   'cho': { nhan: 'Đang chờ xác nhận', lop: 'tt-cho', mo: 'Ms Nguyên sẽ kiểm tra tiền và gửi code vé điện tử qua Zalo trong vòng 24 giờ.' },
   'da-tt': { nhan: 'Giao dịch thành công', lop: 'tt-xong', mo: 'Ms Nguyên đã nhận được thanh toán và sẽ gửi code vé điện tử cho quý khách qua Zalo.' },
   'huy': { nhan: 'Đơn đã được hủy', lop: 'tt-huy', mo: 'Vui lòng nhắn Zalo hoặc gọi Ms Nguyên 0948170036 nếu cần hỗ trợ.' }
 };
 
 // Thẻ một đơn. moThanhToan: đang mở phần chuyển khoản của đơn chưa chuyển.
-function taoTheDonCuaToi(banGhi, tau, bangTreEm, cauHinhThanhToan, lienHe, moThanhToan) {
+function taoTheDonCuaToi(banGhi, tau, bangTreEm, cauHinhThanhToan, lienHe, moThanhToan, bayGio) {
   var e = escapeHtmlDatCho;
   var don = banGhi.don;
   var tt = TRANG_THAI_DON_CUA_TOI[banGhi.trangThai] || TRANG_THAI_DON_CUA_TOI.cho;
   var ma = e(don.maDon);
+  var laChuaChuyen = banGhi.trangThai === 'chua-chuyen';
+  var lyDoKhoa = laChuaChuyen ? lyDoKhoaThanhToan(don, tau, bangTreEm, bayGio === undefined ? Date.now() : bayGio) : '';
+  // Bảng giá đã đổi thì không tính lại theo giá mới: hiện đúng tổng lúc đặt.
+  var tomTat = giaDonDaDoi(don, tau, bangTreEm)
+    ? '<p>Ngày lên tàu: <b>' + e(dinhDangNgay(don.ngay)) + '</b></p><p>Tổng lúc đặt: <b>' + e(hamHienThi.dinhDangGia(don.tongLucDat)) + '</b></p>'
+    : taoTomTatDon(don, tau, bangTreEm, '');
   var html = '<article class="the-form the-don" data-ma-don="' + ma + '">' +
     '<div class="the-don-dau"><div><h2>' + e(tau.ten) + '</h2><p>Mã đơn: <b>' + ma + '</b></p></div>' +
     '<span class="nhan-tt ' + tt.lop + '">' + e(tt.nhan) + '</span></div>' +
-    '<p class="the-don-mo">' + e(tt.mo) + '</p>' + taoTomTatDon(don, tau, bangTreEm, '');
-  if (banGhi.trangThai === 'chua-chuyen' && moThanhToan) {
+    '<p class="the-don-mo">' + e(lyDoKhoa || tt.mo) + '</p>' + tomTat;
+  if (laChuaChuyen && !lyDoKhoa && moThanhToan) {
     html += '<div class="the-don-tt">' + taoKhoiThanhToan(don, tau, bangTreEm, cauHinhThanhToan) + '</div>';
   }
   html += '<p class="thong-bao the-don-bao" role="status"></p><div class="nhom-nut-gui">';
-  if (banGhi.trangThai === 'chua-chuyen') {
+  if (laChuaChuyen && !lyDoKhoa) {
     html += moThanhToan
       ? '<button type="button" class="nut" data-viec="da-chuyen">Tôi đã chuyển khoản</button>'
       : '<button type="button" class="nut" data-viec="mo-tt">Xem thông tin chuyển khoản</button>';
@@ -399,8 +437,9 @@ function taoTheDonCuaToi(banGhi, tau, bangTreEm, cauHinhThanhToan, lienHe, moTha
 
 // Khách báo đã chuyển khoản: báo Google Sheet (nếu đã giữ chỗ) rồi gửi email cho Ms Nguyên. Trả Promise<đã gửi được email>.
 function guiBaoDaChuyen(don, tau, bangTreEm, cauHinhThanhToan) {
+  // Không ghi đè giá đã chụp ở bước thanh toán: trang xác nhận cần so với bảng giá hiện tại.
+  if (typeof don.tongLucDat !== 'number') chupGiaDon(don, tau, bangTreEm);
   var tk = layTaiKhoan(cauHinhThanhToan, don);
-  don.tongLucDat = tomTatDon(don, tau, bangTreEm).tong;
   var linkXacNhan = taoLinkXacNhan(don);
   // Gửi cả khi lần giữ chỗ bị lỗi mạng (máy chủ có thể đã giữ được); không có đơn thì máy chủ trả khong-co-don.
   var baoChuyen = (don.giuCho === 'da-giu' || don.giuCho === 'loi')
@@ -410,7 +449,11 @@ function guiBaoDaChuyen(don, tau, bangTreEm, cauHinhThanhToan) {
     if (kqChuyen && kqChuyen.ok) { don.daChuyen = kqChuyen.vuot ? 'vuot' : 'ok'; don.vuotCho = kqChuyen.vuot || 0; }
     else if (kqChuyen) { don.daChuyen = kqChuyen.loi === 'da-huy' ? 'da-huy' : 'loi'; don.loiChuyen = kqChuyen.loi || ''; }
     return guiEmailDatCho(taoDuLieuEmail(don, tau, bangTreEm, tk, linkXacNhan), typeof fetch === 'function' ? fetch.bind(window) : null);
-  });
+  }).then(null, function () { return false; });
+}
+// Trạng thái sau khi đã báo chuyển khoản.
+function trangThaiSauKhiBao(don) {
+  return don.daChuyen === 'da-huy' ? 'huy' : 'cho';
 }
 
 // Đổi màn hình bước 4 theo kết quả ('da-tt' hoặc 'huy'); đơn hủy nhầm rồi xác nhận lại thì đổi sang thành công.
@@ -1337,12 +1380,17 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     } else if (hanhDong === 'buoc-3') {
       docThongTin();
       if (!baoLoi(kiemTraBuoc2(don), ['hoTen', 'soDienThoai', 'dongY'])) return;
+      if (!cheDoMsNguyen && donDaKhoa(layMotDonCuaToi(don.maDon, khoDon))) {
+        thongBao('Đơn này đã báo chuyển khoản nên không sửa được trên web. Xem ở Đơn của tôi hoặc nhắn Zalo Ms Nguyên 0948170036.', 'loi-gui');
+        return;
+      }
       if (!don.maDon) {
         don.maDon = taoMaDon(new Date(), Math.random);
         don.ngayDat = ngayHomNayDiaPhuong(new Date());
       }
       var hienThanhToan = function () {
         khungThanhToan.innerHTML = taoLoiNhanGiuCho(don.giuDen) + taoKhoiThanhToan(don, tauHienTai(), bangTreEm, cauHinhThanhToan) + taoKhoiMsNguyen(cheDoMsNguyen, don);
+        chupGiaDon(don, tauHienTai(), bangTreEm);
         if (!cheDoMsNguyen) {
           luuDonCuaToi(don, 'chua-chuyen', khoDon);
           if (typeof capNhatSoDonCuaToi === 'function') capNhatSoDonCuaToi();
@@ -1397,6 +1445,10 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
       });
     } else if (hanhDong === 'da-chuyen') {
       if (dangGui) return;
+      if (!cheDoMsNguyen && donDaKhoa(layMotDonCuaToi(don.maDon, khoDon))) {
+        thongBao('Đơn này đã báo chuyển khoản rồi. Xem ở Đơn của tôi hoặc nhắn Zalo Ms Nguyên 0948170036.', 'da-gui');
+        return;
+      }
       dangGui = true;
       nut.disabled = true;
       thongBao('Đang gửi thông tin cho Ms Nguyên…', '');
@@ -1407,7 +1459,10 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
         goc.querySelector('#email-ok').hidden = !ok;
         goc.querySelector('#email-loi').hidden = ok;
         denBuoc(4);
-        if (!cheDoMsNguyen) luuDonCuaToi(don, 'cho', khoDon);
+        // Email lỗi thì giữ "chưa chuyển" để khách gửi lại được ở Đơn của tôi.
+        if (!cheDoMsNguyen && ok) luuDonCuaToi(don, trangThaiSauKhiBao(don), khoDon);
+        var nhacLuu = goc.querySelector('#nhac-luu-don');
+        if (nhacLuu) nhacLuu.hidden = cheDoMsNguyen || !layMotDonCuaToi(don.maDon, khoDon);
         theoDoiDonVuaGui(don.maDon);
       });
     } else if (hanhDong === 'mo-xac-nhan') {
@@ -1723,7 +1778,7 @@ if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
     taoMaDon, laMaDon, taoKhoiUyTin, layLogoDaiLy, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
-    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, loiNhacDoiTra, nhoDonChoXacNhan, layDonChoXacNhan, quenDonChoXacNhan, hienKetQuaThanhToan, layDonCuaToi, luuDonCuaToi, doiTrangThaiDonCuaToi, xoaDonCuaToi, taoTheDonCuaToi, capNhatKhoaCongKhaiMoiNhat, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
+    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, loiNhacDoiTra, nhoDonChoXacNhan, layDonChoXacNhan, quenDonChoXacNhan, hienKetQuaThanhToan, layDonCuaToi, layMotDonCuaToi, donDaKhoa, luuDonCuaToi, doiTrangThaiDonCuaToi, xoaDonCuaToi, taoTheDonCuaToi, chupGiaDon, giaDonDaDoi, lyDoKhoaThanhToan, guiBaoDaChuyen, trangThaiSauKhiBao, capNhatKhoaCongKhaiMoiNhat, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };
 }
