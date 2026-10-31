@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tạo phiếu cho khách nhắn riêng | Vé Tàu Sài Gòn</title>
+  <meta name="description" content="Trang nội bộ tạo phiếu xác nhận dịch vụ du thuyền.">
+  <meta property="og:title" content="Tạo phiếu cho khách nhắn riêng | Vé Tàu Sài Gòn">
+  <meta property="og:description" content="Trang nội bộ tạo phiếu xác nhận dịch vụ du thuyền.">
+  <meta property="og:url" content="https://vetausaigon.vn/tao-phieu.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="vi_VN">
+  <meta name="theme-color" content="#0194f3">
+  <link rel="icon" type="image/png" href="anh/logo/logo-nguyen-nguyen-trong-suot.png">
+  <link rel="apple-touch-icon" href="anh/logo/logo-nguyen-nguyen-trong-suot.png">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+  <script>try{if(localStorage.getItem('veTauSaiGon.giaoDien')==='toi')document.documentElement.setAttribute('data-giao-dien','toi')}catch(e){}</script>
+  <link rel="stylesheet" href="css/style.css?v=006feeb0">
+</head>
+<body class="trang-dat-cho">
+  <header class="dau-trang">
+    <div class="khung">
+      <a class="logo" href="index.html"><span class="logo-hinh" data-logo="header"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 5"/><path d="M7 12V7h10v5"/><path d="M12 4v3"/></svg></span><span>Vé Tàu <b>Sài Gòn</b></span></a>
+      <div class="chon-ngon-ngu" role="group" aria-label="Ngôn ngữ / Language">
+        <button type="button" data-ngon-ngu="vi" lang="vi" aria-label="VI – Tiếng Việt"><svg class="co" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#da251d"/><path fill="#ff0" d="M15 4l1.18 3.63h3.82l-3.09 2.24 1.18 3.63L15 11.26l-3.09 2.24 1.18-3.63L10 7.63h3.82z"/></svg><span>VI</span></button><button type="button" data-ngon-ngu="en" lang="en" aria-label="EN – English"><svg class="co" viewBox="0 0 60 40" aria-hidden="true"><clipPath id="co-anh-cat"><rect width="60" height="40"/></clipPath><g clip-path="url(#co-anh-cat)"><rect width="60" height="40" fill="#012169"/><path d="M0 0l60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40M60 0L0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></g></svg><span>EN</span></button>
+      </div>
+      <nav class="menu-chinh">
+        <a href="index.html#danh-sach">Du thuyền</a>
+        <a href="dat-cho.html">Đặt chỗ</a>
+        <a href="faq.html">FAQ</a>
+        <a href="#lien-he">Liên hệ</a>
+        <button type="button" class="nut-giao-dien" id="nut-giao-dien" aria-pressed="false" aria-label="Đổi giao diện sáng hoặc tối" title="Đổi giao diện sáng hoặc tối"><svg class="icon-toi" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 14.5A9 9 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z"/></svg><svg class="icon-sang" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg></button>
+      </nav>
+    </div>
+  </header>
+  <main class="khung" id="tao-phieu" data-khong-dich>
+    <div class="dau-trang-dat">
+      <h1>Tạo phiếu cho khách nhắn riêng</h1>
+      <p>Trang nội bộ. Điền thông tin khách đặt qua Zalo hoặc điện thoại để ra phiếu xác nhận dịch vụ du thuyền. Chỉ tạo phiếu khi đã thấy tiền vào tài khoản.</p>
+    </div>
+    <div class="bo-cuc-dat">
+      <div class="cot-form">
+        <form class="the-form" id="form-tao-phieu" novalidate>
+          <h2>Thông tin đơn</h2>
+          <div class="luoi-form">
+            <div class="o-nhap"><label for="tp-tau">Du thuyền</label><select id="tp-tau" name="tau"></select><p class="loi" data-loi="tau"></p></div>
+            <div class="o-nhap"><label for="tp-ngay">Ngày đi</label><input type="date" id="tp-ngay" name="ngay"><p class="loi" data-loi="ngay"></p></div>
+            <div class="o-nhap ca-dong"><label for="tp-loai">Loại dịch vụ</label><select id="tp-loai" name="loai"></select><p class="loi" data-loi="loai"></p></div>
+          </div>
+          <div class="luoi-form" id="khung-mon-tay" style="margin-top:12px"></div>
+          <p class="loi" data-loi="mon"></p>
+          <p style="margin:12px 0"><b>Tổng thanh toán: <span id="tong-tay">—</span></b></p>
+          <h2>Khách hàng</h2>
+          <div class="luoi-form">
+            <div class="o-nhap"><label for="tp-ten">Họ tên</label><input type="text" id="tp-ten" name="hoTen" autocomplete="off"><p class="loi" data-loi="hoTen"></p></div>
+            <div class="o-nhap"><label for="tp-sdt">Số điện thoại</label><input type="tel" inputmode="tel" id="tp-sdt" name="soDienThoai" autocomplete="off"><p class="loi" data-loi="soDienThoai"></p></div>
+            <div class="o-nhap"><label for="tp-tk">Tài khoản nhận tiền</label><select id="tp-tk" name="taiKhoan"><option value="caNhan">Tài khoản cá nhân</option><option value="congTy">Tài khoản công ty</option></select><p class="loi" data-loi="taiKhoan"></p></div>
+            <div class="o-nhap ca-dong"><label for="code-ve">Code vé điện tử <small>(để trống: web tự tạo; tàu có cấp code riêng thì gõ vào đây)</small></label><input type="text" id="code-ve" name="codeVe" autocomplete="off"><p class="loi" data-loi="codeVe"></p></div>
+          </div>
+          <label class="o-chon" style="margin-top:14px"><input type="checkbox" name="daNhanTien"><span><strong>Tôi đã kiểm tra: tài khoản đã nhận đủ tiền</strong><small>Đúng số tiền ở trên</small></span></label>
+          <div class="nut-buoc"><button type="submit" class="nut">Tạo phiếu “Đã thanh toán”</button></div>
+          <p class="thong-bao" id="thong-bao" role="status"></p>
+        </form>
+      </div>
+      <section class="cot-phieu" id="khu-vuc-phieu" hidden>
+        <div class="cot-phieu-tieu-de"><h2>Phiếu xác nhận</h2></div>
+        <div class="khung-phieu" id="khung-phieu"></div>
+        <div class="nhom-nut-gui">
+          <button type="button" class="nut nut-xanh" data-hanh-dong="tai-anh">Tải ảnh phiếu</button>
+          <button type="button" class="nut nut-vien" data-hanh-dong="in">In / Lưu PDF</button>
+          <button type="button" class="nut nut-vien" data-hanh-dong="phieu-moi">Tạo phiếu khác</button>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="chan-trang" id="lien-he">
+    <div class="khung">
+      <div class="chan-trang-luoi">
+        <div class="chan-trang-cong-ty">
+          <a class="logo" href="index.html"><span class="logo-hinh" data-logo="footer"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l1.5 3h15L21 17"/><path d="M5 17l-1-5h16l-1 5"/><path d="M7 12V7h10v5"/><path d="M12 4v3"/></svg></span><span>Vé Tàu Sài Gòn</span></a>
+          <p class="huy-hieu-lon">★ Đại lý chính thức</p>
+          <h3>Công ty TNHH Nguyên Nguyên Global</h3>
+          <p data-gioi-thieu>Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. Chúng tôi tư vấn chọn tàu, chọn thực đơn, giữ chỗ và xuất hóa đơn VAT cho khách lẻ, gia đình và doanh nghiệp.</p>
+          <div class="mang-xa-hoi">
+            <a class="nut-mxh nut-mxh-facebook" href="https://www.facebook.com/share/19dfPzqptZ/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8.1v3h2.5V21h2.9z"/></svg><span>Facebook</span></a>
+            <a class="nut-mxh nut-mxh-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener" aria-label="Zalo"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.5 3 2 6.9 2 11.7c0 2.7 1.4 5.1 3.6 6.7-.1.9-.5 2.1-1.4 3 0 0 2.6-.2 4.3-1.5 1.1.3 2.3.5 3.5.5 5.5 0 10-3.9 10-8.7S17.5 3 12 3zm-4.6 11.1H5.2v-.9l2.4-3.3H5.3V8.9h3.4v.9l-2.4 3.3h2.1v1zm2.9 0h-1V8.9h1v5.2zm4.4 0h-.9l-.1-.4c-.3.3-.7.5-1.2.5-1.1 0-1.9-.9-1.9-2s.8-2 1.9-2c.5 0 .9.2 1.2.5V10.6h1v3.5zm3.4.1c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg><span>Zalo</span></a>
+            <a class="nut-mxh nut-mxh-tiktok" href="https://www.tiktok.com/@nguyennguyentravel" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v2.6c-1.4.1-2.6-.3-3.9-1.1v5.9c0 7.4-8.1 9.7-11.3 4.4-2.1-3.4-.8-9.4 5.9-9.6v2.7c-.5.1-1 .2-1.5.4-1.5.5-2.3 1.4-2.1 3 .5 3.2 6.4 4.1 5.9-2.1V3h3.1z"/></svg><span>TikTok</span></a>
+          </div>
+        </div>
+        <div>
+          <h3>Du thuyền</h3>
+          <ul>
+            <li><a href="tau/indochina-star.html">Indochina Star</a></li>
+            <li><a href="tau/ben-nghe.html">Bến Nghé</a></li>
+            <li><a href="tau/indochina-queen.html">Indochina Queen</a></li>
+            <li><a href="tau/elite-of-saigon.html">Elite of Saigon</a></li>
+            <li><a href="tau/saigon-princess.html">Saigon Princess</a></li>
+            <li><a href="tau/ben-thanh-princess.html">Bến Thành Princess</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Thông tin liên hệ</h3>
+          <ul class="ds-lien-he">
+            <li><span>Mã số thuế</span><b>0319143429</b></li>
+            <li><span>Hotline</span><b>Ms Nguyên – <a href="tel:0948170036">0948170036</a></b></li>
+            <li><span>Zalo</span><b><a href="https://zalo.me/0948170036" target="_blank" rel="noopener">0948170036</a></b></li>
+            <li><span>Điểm đón khách</span><b>5 Nguyễn Tất Thành, Phường Xóm Chiếu, Hồ Chí Minh (cạnh Bến Nhà Rồng) · <a href="https://www.google.com/maps/search/?api=1&amp;query=5%20Nguy%E1%BB%85n%20T%E1%BA%A5t%20Th%C3%A0nh%2C%20X%C3%B3m%20Chi%E1%BA%BFu%2C%20H%E1%BB%93%20Ch%C3%AD%20Minh%20(c%E1%BA%A1nh%20B%E1%BA%BFn%20Nh%C3%A0%20R%E1%BB%93ng)" target="_blank" rel="noopener">Xem bản đồ</a></b></li>
+          </ul>
+          <h3 style="margin-top:16px">Hỗ trợ khách hàng</h3>
+          <ul>
+            <li><a href="chinh-sach.html#tre-em-chung">Chính sách trẻ em</a></li>
+            <li><a href="chinh-sach.html#dieu-kien-ve">Điều kiện vé</a></li>
+            <li><a href="chinh-sach.html#doi-tra">Chính sách đổi trả vé</a></li>
+            <li><a href="chinh-sach.html#huong-dan-ve">Hướng dẫn sử dụng vé</a></li>
+            <li><a href="chinh-sach.html#luu-y">Lưu ý quan trọng</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="cong-ty">
+        <p>© 2026 <strong>Công ty TNHH Nguyên Nguyên Global</strong> · MST: 0319143429 <span class="huy-hieu">Đại lý chính thức</span></p>
+        <p>Hotline: Ms Nguyên · SĐT: <a href="tel:0948170036">0948170036</a></p>
+      </div>
+    </div>
+  </footer>
+  <div class="thanh-lien-he" id="thanh-lien-he" hidden></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="js/tu-dien-en.js?v=37745a72"></script>
+  <script src="js/ngon-ngu.js?v=ea2784a1"></script>
+  <script src="js/cau-hinh.js?v=da0d7524"></script>
+  <script src="js/du-lieu-tau.js?v=1ee495bb"></script>
+  <script src="js/lich-cho-du-lieu.js?v=6e23d947"></script>
+  <script src="js/lich-cho.js?v=c26739c7"></script>
+  <script src="js/hien-thi.js?v=0492f429"></script>
+  <script src="js/dat-cho.js?v=f28f8690"></script>
+  <script src="js/tao-phieu.js?v=d4ae2ddb"></script>
+  <script>khoiChayTrangTaoPhieu();</script>
+</body>
+</html>

@@ -205,3 +205,23 @@ Có thể nối lịch với Google Sheet để chỗ tự trừ khi khách đ�
 - Lịch gửi kèm số khách: ngày nào không đủ chỗ cho số khách đó thì bị khoá. Khách chỉ thấy còn chỗ hoặc hết chỗ, không thấy con số.
 - Khách bấm "Tiếp tục" sang bước thanh toán thì web giữ chỗ 1 tiếng để khách chuyển khoản; khách bấm "Tôi đã chuyển khoản" thì chỗ giữ tới khi Ms Nguyên xác nhận. Nếu vừa hết chỗ, khách được đưa về bước 1 để chọn ngày khác. Nếu lỗi mạng, khách vẫn thanh toán được và email gửi Ms Nguyên ghi "CHƯA giữ được chỗ tự động".
 - Ms Nguyên tạo phiếu ở trang xác nhận và nhập Mã quản lý thì đơn tự đổi sang "Đã thanh toán".
+
+## Tạo phiếu cho khách nhắn riêng
+
+Khách đặt qua Zalo hoặc điện thoại: mở `https://vetausaigon.vn/tao-phieu.html`, điền tàu, ngày, thực đơn, thông tin khách, tích "đã nhận đủ tiền" rồi bấm **Tạo phiếu**. Trang chỉ cần điền thông tin, không cần khoá ký, dùng được trên máy nào cũng được. Phiếu cùng mẫu với phiếu đặt trên web, có code vé nhưng **không có mã QR chữ ký số**, nên không kiểm tra được bằng trang kiem-tra-ve.
+
+- Trang này không có liên kết từ trang của khách và không hiện trên Google. Nên đưa vào Cloudflare Zero Trust cùng `xac-nhan.html`.
+- Giá lấy theo bảng giá của web, chưa có ô nhập giá riêng.
+- Đơn tạo ở đây không tự ghi vào Google Sheet.
+
+## Giao diện sáng / tối
+
+Nút mặt trời / mặt trăng ở cuối menu. Lựa chọn lưu trên máy khách, mặc định là nền sáng. Màu nền tối nằm ở cuối `css/style.css` (`html[data-giao-dien="toi"]`). Phiếu xác nhận luôn giữ nền trắng.
+
+## Hiệu ứng
+
+Dùng GSAP (`js/hieu-ung.js`), chỉ ở trang chủ và trang tàu: chữ ảnh bìa hiện dần, các khối trượt nhẹ lên khi cuộn tới. Không tải được GSAP hoặc máy bật "giảm chuyển động" thì bỏ qua, nội dung vẫn hiện đủ.
+
+## Chính sách đổi trả
+
+Mục `doi-tra` có `chiApDung: ['indochina-queen', 'indochina-star']`, nên chỉ hiện trên trang 2 tàu này. Cam kết "tàu hết chỗ thì hoàn 100% hoặc đổi ngày" là chuyện riêng và áp dụng cho mọi tàu.

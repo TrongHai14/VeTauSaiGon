@@ -17,7 +17,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=fd4672b9">
+  <script>try{if(localStorage.getItem('veTauSaiGon.giaoDien')==='toi')document.documentElement.setAttribute('data-giao-dien','toi')}catch(e){}</script>
+  <link rel="stylesheet" href="css/style.css?v=006feeb0">
 </head>
 <body>
   <header class="dau-trang">
@@ -31,6 +32,7 @@
         <a href="dat-cho.html">Đặt chỗ</a>
         <a href="faq.html">FAQ</a>
         <a href="#lien-he">Liên hệ</a>
+        <button type="button" class="nut-giao-dien" id="nut-giao-dien" aria-pressed="false" aria-label="Đổi giao diện sáng hoặc tối" title="Đổi giao diện sáng hoặc tối"><svg class="icon-toi" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 14.5A9 9 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z"/></svg><svg class="icon-sang" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg></button>
       </nav>
     </div>
   </header>
@@ -43,8 +45,8 @@
       <div class="chinh-sach hoi-dap">
         <details open><summary>Thanh toán thế nào? Có xuất hóa đơn VAT không?</summary><p>Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích &quot;Tôi cần xuất hóa đơn VAT&quot; và chuyển vào tài khoản Công ty TNHH Nguyên Nguyên Global.</p></details>
         <details><summary>Bao lâu thì nhận được vé?</summary><p>Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.</p></details>
-        <details><summary>Nếu tàu hết chỗ ngày tôi chọn thì sao?</summary><p>Sau khi quý khách thanh toán, Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách. Ngày nào tàu đã báo hết chỗ sẽ bị khoá trên lịch đặt chỗ.</p></details>
-        <details><summary>Làm sao biết phiếu là thật?</summary><p>Mỗi phiếu có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy &quot;VÉ HỢP LỆ&quot; cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ.</p></details>
+        <details><summary>Nếu tàu hết chỗ ngày tôi chọn thì sao?</summary><p>Sau khi quý khách thanh toán, Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách. Ngày nào tàu đã báo hết chỗ sẽ bị khoá trên lịch đặt chỗ.</p></details>
+        <details><summary>Làm sao biết phiếu là thật?</summary><p>Phiếu đặt trên web có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy &quot;VÉ HỢP LỆ&quot; cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu Ms Nguyên lập riêng cho khách đặt qua Zalo hoặc điện thoại không có mã QR; cần kiểm tra, vui lòng liên hệ Ms Nguyên 0948170036.</p></details>
         <details><summary>Trẻ em tính giá thế nào?</summary><p>Mỗi tàu có chính sách trẻ em riêng (độ tuổi, chiều cao, số bé miễn phí đi kèm người lớn). Chính sách của từng tàu:</p>
         <ul class="tre-em-tung-tau">
           <li><a href="tau/indochina-star.html"><b>Indochina Star</b></a>
@@ -75,8 +77,16 @@
             <li><span class="nhan-nho">Set menu</span> <span>Miễn phí:</span> <span>Dưới 6 tuổi (ăn chung với bố mẹ, tặng 1 phần soup)</span><br><small>Mỗi người lớn kèm tối đa 1 bé dưới 6 tuổi, bé phát sinh phụ thu 100.000 VND/bé. Trẻ 6–11 tuổi: chọn thực đơn Trẻ em (Donald hoặc Pluto).</small></li>
           </ul></li>
         </ul></details>
-        <details><summary>Có đổi ngày hoặc hủy vé được không?</summary><p>Không hoàn/hủy vé trong ngày sử dụng. Đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới.</p></details>
+        <details><summary>Có đổi ngày hoặc hủy vé được không?</summary><p>Chính sách đổi trả chỉ áp dụng cho Indochina Queen và Indochina Star: không hoàn/hủy vé trong ngày sử dụng; đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới. Các tàu khác không hỗ trợ hoàn/hủy vé hoặc đổi ngày theo yêu cầu của khách. Riêng trường hợp tàu báo hết chỗ ngày đã chọn, quý khách vẫn được hoàn 100% hoặc đổi ngày.</p></details>
         <details><summary>Đón khách ở đâu? Nên có mặt lúc nào?</summary><p>Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.</p></details>
+        <details><summary>Tôi đến trễ thì có được hỗ trợ không?</summary><p>Quý khách vui lòng báo Ms Nguyên sớm nhất có thể. Nguyên Nguyên Travel sẽ kiểm tra khả năng hỗ trợ theo quy định của tàu, nhưng không thể cam kết nếu đã quá giờ tàu chạy.</p></details>
+        <details><summary>Tôi có đổi tên người đi được không?</summary><p>Vui lòng báo Ms Nguyên để kiểm tra điều kiện đổi tên và phí phát sinh (nếu có).</p></details>
+        <details><summary>Đi đoàn đông thì đặt thế nào?</summary><p>Đoàn đông sẽ được báo giá riêng và hỗ trợ giữ chỗ nếu đủ điều kiện. Quý khách vui lòng gọi hoặc nhắn Zalo Ms Nguyên 0948170036.</p></details>
+        <details><summary>Tôi cần suất ăn đặc biệt được không?</summary><p>Quý khách vui lòng báo trước khi đặt. Nguyên Nguyên Travel sẽ kiểm tra khả năng đáp ứng với tàu rồi mới xác nhận.</p></details>
+        <details><summary>Tôi có chọn được vị trí ngồi cụ thể không?</summary><p>Nguyên Nguyên Travel hỗ trợ theo tình trạng chỗ thực tế, không đảm bảo được nếu vị trí đó đã kín.</p></details>
+        <details><summary>Mang rượu lên tàu có bị phụ thu không?</summary><p>Có phụ thu như sau: rượu gạo 100.000 VND/lít; rượu vang 250.000 VND/chai; soju (chai dưới 1 lít) 100.000 VND/chai; whisky 350.000 VND/chai.</p></details>
+        <details><summary>Trên tàu có backdrop để chụp hình không?</summary><p>Có. Kích thước ngang 4 m, cao 2,5 m. Quý khách tự in và giao đến tàu, bên tàu sẽ gắn lên khung và treo giúp.</p></details>
+        <details><summary>Có đặt được heo sữa quay không?</summary><p>Có. Heo sữa quay (2,8–3,2 kg) giá 3.240.000 VND/con.</p></details>
       </div>
     </section>
   </main>
@@ -138,13 +148,13 @@
       <a class="lh-noi lh-noi-zalo" href="https://zalo.me/0948170036" target="_blank" rel="noopener" aria-label="Nhắn Zalo 0948170036"><span class="lh-noi-chu">Nhắn Zalo</span><span class="lh-noi-tron"><b>Zalo</b></span></a>
     </div>
   </div>
-  <script src="js/tu-dien-en.js?v=3f04cdff"></script>
+  <script src="js/tu-dien-en.js?v=37745a72"></script>
   <script src="js/ngon-ngu.js?v=ea2784a1"></script>
   <script src="js/cau-hinh.js?v=da0d7524"></script>
-  <script src="js/du-lieu-tau.js?v=11a30b4e"></script>
+  <script src="js/du-lieu-tau.js?v=1ee495bb"></script>
   <script src="js/lich-cho-du-lieu.js?v=6e23d947"></script>
   <script src="js/lich-cho.js?v=c26739c7"></script>
-  <script src="js/hien-thi.js?v=916395bf"></script>
+  <script src="js/hien-thi.js?v=0492f429"></script>
   <script>apDungCauHinhChung('');</script>
 </body>
 </html>

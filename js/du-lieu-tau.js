@@ -415,7 +415,7 @@ var CHINH_SACH_CHUNG = [
     nhom: [
       { tieuDe: null, dong: [
         'Xác nhận: quý khách sẽ nhận được vé trong vòng 24 giờ kể từ khi đặt và thanh toán thành công.',
-        'Chỗ trên tàu do Ms Nguyên xác nhận với tàu sau khi quý khách thanh toán. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách.',
+        'Chỗ trên tàu do Ms Nguyên xác nhận với tàu sau khi quý khách thanh toán. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách.',
         'Vé chỉ có giá trị vào đúng ngày đăng ký.'
       ] },
       { tieuDe: 'Giá đã bao gồm', dong: ['Vé lên tàu.', 'Ăn buffet hoặc set menu theo vé đã đặt.', 'Thuế, phí vào cảng.'] },
@@ -423,8 +423,10 @@ var CHINH_SACH_CHUNG = [
     ]
   },
   {
-    id: 'doi-tra', tieuDe: 'Chính sách đổi trả vé',
+    // Chỉ tàu trong chiApDung mới hiện mục này trên trang tàu.
+    id: 'doi-tra', tieuDe: 'Chính sách đổi trả vé', chiApDung: ['indochina-queen', 'indochina-star'],
     nhom: [
+      { tieuDe: null, dong: ['Áp dụng khi khách muốn hoàn/hủy hoặc đổi ngày: chỉ có ở Indochina Queen và Indochina Star. Trường hợp tàu hết chỗ xem mục Điều kiện vé.'] },
       { tieuDe: 'Hoàn/Hủy vé', dong: ['Không áp dụng hoàn tiền hoặc hủy vé trong ngày sử dụng dịch vụ.'] },
       { tieuDe: 'Đổi ngày sử dụng', dong: [
         'Hỗ trợ linh hoạt đổi sang ngày khác nếu quý khách thông báo trước 2–3 ngày (tùy thuộc vào số lượng vé và tình trạng chỗ).',

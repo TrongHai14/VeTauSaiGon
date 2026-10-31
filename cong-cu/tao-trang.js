@@ -39,6 +39,7 @@ ${anh && fs.existsSync(path.join(GOC, anh)) ? '  <meta property="og:image" conte
   <link rel="icon" type="image/png" href="${tt}anh/logo/logo-nguyen-nguyen-trong-suot.png">
   <link rel="apple-touch-icon" href="${tt}anh/logo/logo-nguyen-nguyen-trong-suot.png">${anChiMuc ? '\n  <meta name="robots" content="noindex, nofollow">' : ''}
   ${FONT}
+  <script>try{if(localStorage.getItem('veTauSaiGon.giaoDien')==='toi')document.documentElement.setAttribute('data-giao-dien','toi')}catch(e){}</script>
   <link rel="stylesheet" href="${tt}css/style.css?v=${maPhienBan('css/style.css')}">
 </head>`;
 }
@@ -56,6 +57,7 @@ function header(tt) {
         <a href="${tt}dat-cho.html">Đặt chỗ</a>
         <a href="${tt}faq.html">FAQ</a>
         <a href="#lien-he">Liên hệ</a>
+        <button type="button" class="nut-giao-dien" id="nut-giao-dien" aria-pressed="false" aria-label="Đổi giao diện sáng hoặc tối" title="Đổi giao diện sáng hoặc tối"><svg class="icon-toi" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 14.5A9 9 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z"/></svg><svg class="icon-sang" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg></button>
       </nav>
     </div>
   </header>`;
@@ -170,11 +172,19 @@ const treEmTungTau = DANH_SACH_TAU.map((t) => {
 const CAU_HOI_FAQ = [
   ['Thanh toán thế nào? Có xuất hóa đơn VAT không?', 'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản ' + CONG_TY.ten + '.'],
   ['Bao lâu thì nhận được vé?', 'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua email và Zalo. Khi lên tàu, xuất trình vé qua điện thoại.'],
-  ['Nếu tàu hết chỗ ngày tôi chọn thì sao?', 'Sau khi quý khách thanh toán, Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách. Ngày nào tàu đã báo hết chỗ sẽ bị khoá trên lịch đặt chỗ.'],
-  ['Làm sao biết phiếu là thật?', 'Mỗi phiếu có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ.'],
+  ['Nếu tàu hết chỗ ngày tôi chọn thì sao?', 'Sau khi quý khách thanh toán, Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách. Ngày nào tàu đã báo hết chỗ sẽ bị khoá trên lịch đặt chỗ.'],
+  ['Làm sao biết phiếu là thật?', 'Phiếu đặt trên web có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu Ms Nguyên lập riêng cho khách đặt qua Zalo hoặc điện thoại không có mã QR; cần kiểm tra, vui lòng liên hệ Ms Nguyên 0948170036.'],
   ['Trẻ em tính giá thế nào?', 'Mỗi tàu có chính sách trẻ em riêng (độ tuổi, chiều cao, số bé miễn phí đi kèm người lớn). Chính sách của từng tàu:'],
-  ['Có đổi ngày hoặc hủy vé được không?', 'Không hoàn/hủy vé trong ngày sử dụng. Đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới.'],
-  ['Đón khách ở đâu? Nên có mặt lúc nào?', 'Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.']
+  ['Có đổi ngày hoặc hủy vé được không?', 'Chính sách đổi trả chỉ áp dụng cho Indochina Queen và Indochina Star: không hoàn/hủy vé trong ngày sử dụng; đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới. Các tàu khác không hỗ trợ hoàn/hủy vé hoặc đổi ngày theo yêu cầu của khách. Riêng trường hợp tàu báo hết chỗ ngày đã chọn, quý khách vẫn được hoàn 100% hoặc đổi ngày.'],
+  ['Đón khách ở đâu? Nên có mặt lúc nào?', 'Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.'],
+  ['Tôi đến trễ thì có được hỗ trợ không?', 'Quý khách vui lòng báo Ms Nguyên sớm nhất có thể. Nguyên Nguyên Travel sẽ kiểm tra khả năng hỗ trợ theo quy định của tàu, nhưng không thể cam kết nếu đã quá giờ tàu chạy.'],
+  ['Tôi có đổi tên người đi được không?', 'Vui lòng báo Ms Nguyên để kiểm tra điều kiện đổi tên và phí phát sinh (nếu có).'],
+  ['Đi đoàn đông thì đặt thế nào?', 'Đoàn đông sẽ được báo giá riêng và hỗ trợ giữ chỗ nếu đủ điều kiện. Quý khách vui lòng gọi hoặc nhắn Zalo Ms Nguyên 0948170036.'],
+  ['Tôi cần suất ăn đặc biệt được không?', 'Quý khách vui lòng báo trước khi đặt. Nguyên Nguyên Travel sẽ kiểm tra khả năng đáp ứng với tàu rồi mới xác nhận.'],
+  ['Tôi có chọn được vị trí ngồi cụ thể không?', 'Nguyên Nguyên Travel hỗ trợ theo tình trạng chỗ thực tế, không đảm bảo được nếu vị trí đó đã kín.'],
+  ['Mang rượu lên tàu có bị phụ thu không?', 'Có phụ thu như sau: rượu gạo 100.000 VND/lít; rượu vang 250.000 VND/chai; soju (chai dưới 1 lít) 100.000 VND/chai; whisky 350.000 VND/chai.'],
+  ['Trên tàu có backdrop để chụp hình không?', 'Có. Kích thước ngang 4 m, cao 2,5 m. Quý khách tự in và giao đến tàu, bên tàu sẽ gắn lên khung và treo giúp.'],
+  ['Có đặt được heo sữa quay không?', 'Có. Heo sữa quay (2,8–3,2 kg) giá 3.240.000 VND/con.']
 ];
 
 // ---------- index.html ----------
@@ -218,6 +228,8 @@ ${header('')}
 ${footer('')}
 ${script('', SCRIPT_CHUNG)}
   <script>khoiChayTrangChu();</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+${script('', ['hieu-ung.js'])}
 </body>
 </html>
 `);
@@ -271,7 +283,7 @@ ${o('dat-cho-cong-ty-dia-chi', 'congTyDiaChi', 'Địa chỉ công ty', '<input 
             </div>
           </div>
           <div class="the-form">
-            <label class="o-chon"><input type="checkbox" name="dongY" id="dat-cho-dong-y"><span><strong>Tôi đã đọc và đồng ý <a href="chinh-sach.html" target="_blank" rel="noopener">điều kiện vé &amp; chính sách đổi trả</a></strong><small>Không hoàn/hủy vé trong ngày sử dụng. Đổi ngày cần báo trước 2–3 ngày.</small></span></label>
+            <label class="o-chon"><input type="checkbox" name="dongY" id="dat-cho-dong-y"><span><strong>Tôi đã đọc và đồng ý <a href="chinh-sach.html" target="_blank" rel="noopener">điều kiện vé &amp; chính sách</a></strong><small id="dong-y-doi-tra" hidden></small></span></label>
             <p class="loi" data-loi="dongY"></p>
           </div>
           <div class="nut-buoc"><button type="button" class="nut nut-vien" data-hanh-dong="ve-buoc-1">Quay lại</button><button type="button" class="nut" data-hanh-dong="buoc-3">Tiếp tục thanh toán</button></div>
@@ -398,6 +410,58 @@ ${script('', SCRIPT_CHUNG)}
 </html>
 `);
 
+// ---------- tao-phieu.html (khách nhắn riêng: tự điền thông tin rồi tạo phiếu; không có liên kết từ trang khách) ----------
+ghi('tao-phieu.html', `${dau('', { tieuDe: 'Tạo phiếu cho khách nhắn riêng | Vé Tàu Sài Gòn', moTa: 'Trang nội bộ tạo phiếu xác nhận dịch vụ du thuyền.', anh: '', url: TEN_MIEN + '/tao-phieu.html', anChiMuc: true })}
+<body class="trang-dat-cho">
+${header('')}
+  <main class="khung" id="tao-phieu" data-khong-dich>
+    <div class="dau-trang-dat">
+      <h1>Tạo phiếu cho khách nhắn riêng</h1>
+      <p>Trang nội bộ. Điền thông tin khách đặt qua Zalo hoặc điện thoại để ra phiếu xác nhận dịch vụ du thuyền. Chỉ tạo phiếu khi đã thấy tiền vào tài khoản.</p>
+    </div>
+    <div class="bo-cuc-dat">
+      <div class="cot-form">
+        <form class="the-form" id="form-tao-phieu" novalidate>
+          <h2>Thông tin đơn</h2>
+          <div class="luoi-form">
+            <div class="o-nhap"><label for="tp-tau">Du thuyền</label><select id="tp-tau" name="tau"></select><p class="loi" data-loi="tau"></p></div>
+            <div class="o-nhap"><label for="tp-ngay">Ngày đi</label><input type="date" id="tp-ngay" name="ngay"><p class="loi" data-loi="ngay"></p></div>
+            <div class="o-nhap ca-dong"><label for="tp-loai">Loại dịch vụ</label><select id="tp-loai" name="loai"></select><p class="loi" data-loi="loai"></p></div>
+          </div>
+          <div class="luoi-form" id="khung-mon-tay" style="margin-top:12px"></div>
+          <p class="loi" data-loi="mon"></p>
+          <p style="margin:12px 0"><b>Tổng thanh toán: <span id="tong-tay">—</span></b></p>
+          <h2>Khách hàng</h2>
+          <div class="luoi-form">
+            <div class="o-nhap"><label for="tp-ten">Họ tên</label><input type="text" id="tp-ten" name="hoTen" autocomplete="off"><p class="loi" data-loi="hoTen"></p></div>
+            <div class="o-nhap"><label for="tp-sdt">Số điện thoại</label><input type="tel" inputmode="tel" id="tp-sdt" name="soDienThoai" autocomplete="off"><p class="loi" data-loi="soDienThoai"></p></div>
+            <div class="o-nhap"><label for="tp-tk">Tài khoản nhận tiền</label><select id="tp-tk" name="taiKhoan"><option value="caNhan">Tài khoản cá nhân</option><option value="congTy">Tài khoản công ty</option></select><p class="loi" data-loi="taiKhoan"></p></div>
+            <div class="o-nhap ca-dong"><label for="code-ve">Code vé điện tử <small>(để trống: web tự tạo; tàu có cấp code riêng thì gõ vào đây)</small></label><input type="text" id="code-ve" name="codeVe" autocomplete="off"><p class="loi" data-loi="codeVe"></p></div>
+          </div>
+          <label class="o-chon" style="margin-top:14px"><input type="checkbox" name="daNhanTien"><span><strong>Tôi đã kiểm tra: tài khoản đã nhận đủ tiền</strong><small>Đúng số tiền ở trên</small></span></label>
+          <div class="nut-buoc"><button type="submit" class="nut">Tạo phiếu “Đã thanh toán”</button></div>
+          <p class="thong-bao" id="thong-bao" role="status"></p>
+        </form>
+      </div>
+      <section class="cot-phieu" id="khu-vuc-phieu" hidden>
+        <div class="cot-phieu-tieu-de"><h2>Phiếu xác nhận</h2></div>
+        <div class="khung-phieu" id="khung-phieu"></div>
+        <div class="nhom-nut-gui">
+          <button type="button" class="nut nut-xanh" data-hanh-dong="tai-anh">Tải ảnh phiếu</button>
+          <button type="button" class="nut nut-vien" data-hanh-dong="in">In / Lưu PDF</button>
+          <button type="button" class="nut nut-vien" data-hanh-dong="phieu-moi">Tạo phiếu khác</button>
+        </div>
+      </section>
+    </div>
+  </main>
+${footer('', true)}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+${script('', SCRIPT_CHUNG.concat(['dat-cho.js', 'tao-phieu.js']))}
+  <script>khoiChayTrangTaoPhieu();</script>
+</body>
+</html>
+`);
+
 // ---------- kiem-tra-ve.html (nhân viên quét QR trên phiếu) ----------
 ghi('kiem-tra-ve.html', `${dau('', { tieuDe: 'Kiểm tra vé | Vé Tàu Sài Gòn', moTa: 'Kiểm tra phiếu xác nhận du thuyền có chữ ký số.', anh: '', url: TEN_MIEN + '/kiem-tra-ve.html', anChiMuc: true })}
 <body class="trang-kiem-tra-ve">
@@ -427,6 +491,8 @@ ${header('../')}
 ${footer('../')}
 ${script('../', SCRIPT_CHUNG)}
   <script>khoiChayTrangTau();</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+${script('../', ['hieu-ung.js'])}
 </body>
 </html>
 `);
@@ -454,6 +520,6 @@ ${script('/', SCRIPT_CHUNG)}
 const trangCongKhai = ['', 'dat-cho.html', 'chinh-sach.html', 'faq.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
 ghi('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
   trangCongKhai.map((p) => '  <url><loc>' + TEN_MIEN + '/' + p + '</loc></url>').join('\n') + '\n</urlset>\n');
-ghi('robots.txt', 'User-agent: *\nDisallow: /xac-nhan.html\nDisallow: /kiem-tra-ve.html\n\nSitemap: ' + TEN_MIEN + '/sitemap.xml\n');
+ghi('robots.txt', 'User-agent: *\nDisallow: /xac-nhan.html\nDisallow: /kiem-tra-ve.html\nDisallow: /tao-phieu.html\n\nSitemap: ' + TEN_MIEN + '/sitemap.xml\n');
 
-console.log('Đã tạo lại', 7 + DANH_SACH_TAU.length, 'trang.');
+console.log('Đã tạo lại', 8 + DANH_SACH_TAU.length, 'trang.');

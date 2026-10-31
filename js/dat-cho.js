@@ -267,7 +267,7 @@ function kiemTraBuoc2(don) {
   if (hoTen.length < 1 || hoTen.length > 100) loi.hoTen = 'Vui lòng nhập họ tên.';
   if (chuanHoaSoDienThoai(don.soDienThoai) === null) loi.soDienThoai = 'Số điện thoại không hợp lệ.';
   if (!laEmail(don.email || '')) loi.email = 'Vui lòng nhập email để nhận vé điện tử (PDF).';
-  if (!don.dongY) loi.dongY = 'Vui lòng đồng ý điều kiện vé và chính sách đổi trả.';
+  if (!don.dongY) loi.dongY = 'Vui lòng đồng ý điều kiện vé và chính sách.';
   if (don.vat) {
     var ct = don.congTy || {};
     if (!ct.ten || !ct.ten.trim()) loi.congTyTen = 'Vui lòng nhập tên công ty.';
@@ -285,6 +285,17 @@ function taoMaDon(date, ngauNhien) {
   for (var i = 0; i < 4; i++) duoi += kyTu.charAt(Math.floor(ngauNhien() * kyTu.length) % kyTu.length);
   var hai = function (n) { return (n < 10 ? '0' : '') + n; };
   return 'VT' + hai(date.getFullYear() % 100) + hai(date.getMonth() + 1) + hai(date.getDate()) + duoi;
+}
+
+// Dòng nhắc đổi trả ở ô đồng ý: chỉ tàu có chính sách đổi trả (Queen, Star) mới hiện.
+function loiNhacDoiTra(slug) {
+  var ds = typeof CHINH_SACH_CHUNG !== 'undefined' ? CHINH_SACH_CHUNG : require('./du-lieu-tau.js').CHINH_SACH_CHUNG;
+  for (var i = 0; i < ds.length; i++) {
+    if (ds[i].id === 'doi-tra') {
+      return ds[i].chiApDung && ds[i].chiApDung.indexOf(slug) !== -1 ? 'Không hoàn/hủy vé trong ngày sử dụng. Đổi ngày cần báo trước 2–3 ngày.' : '';
+    }
+  }
+  return '';
 }
 
 function soChoCuaDon(don, tau, bangTreEm) {
@@ -871,7 +882,7 @@ function taoKhoiThanhToan(don, tau, bangTreEm, cauHinhThanhToan) {
   var html = taoKhoiUyTin(layCongTy(), '') + '<p class="loi-nhan">Quý khách thanh toán vé trước để tàu giữ chỗ. Thanh toán xong, Ms Nguyên sẽ gửi <b>phiếu xác nhận</b> và ' +
     '<b>code vé điện tử</b>; khi lên tàu quý khách đưa code cho nhân viên soát vé.</p>' +
     '<p class="loi-nhan cam-ket-hoan">Chỗ trên tàu do Ms Nguyên xác nhận với tàu sau khi quý khách thanh toán. ' +
-    'Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên <b>hoàn 100% số tiền</b> hoặc đổi sang ngày khác theo lựa chọn của quý khách.</p>';
+    'Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel <b>hoàn 100% số tiền</b> hoặc đổi sang ngày khác theo lựa chọn của quý khách.</p>';
   if (!don.vat) {
     html += '<div class="chon-tai-khoan" role="radiogroup">';
     var cacTk = ['caNhan', 'congTy'];
@@ -952,6 +963,13 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     don.ngay = '';
     el.ngay.value = '';
   }
+  var oDoiTra = document.getElementById('dong-y-doi-tra');
+  function capNhatDoiTra() {
+    if (!oDoiTra) return;
+    oDoiTra.textContent = loiNhacDoiTra(don.slugTau);
+    oDoiTra.hidden = !oDoiTra.textContent;
+  }
+  capNhatDoiTra();
   var khungLich = document.getElementById('lich-dat-cho');
   var lich = null;
   try {
@@ -1099,6 +1117,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     // Đổi tàu: ngày đang chọn mà tàu mới đã hết chỗ thì bỏ chọn.
     if (tau && don.ngay && hamLichCho.trangThaiNgay(tau.slug, don.ngay, hamLichCho.ngayHomNayVN()) === 'het') { don.ngay = ''; el.ngay.value = ''; hienNgayDaChon(); }
     if (lich) lich.ve(don.ngay);
+    capNhatDoiTra();
     capNhatNhomAnh();
     veMon();
     veTomTat();
@@ -1563,7 +1582,7 @@ if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
     taoMaDon, laMaDon, taoKhoiUyTin, layLogoDaiLy, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
-    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, capNhatKhoaCongKhaiMoiNhat, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
+    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, loiNhacDoiTra, capNhatKhoaCongKhaiMoiNhat, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };
 }

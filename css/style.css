@@ -817,3 +817,38 @@ html.dang-dich body { visibility: hidden; }
 
 /* Ảnh lớn trang tàu tự chuyển (js/hien-thi.js chayAnhLonTau). */
 .anh-lon-chuyen { transition: opacity .45s ease; }
+
+/* ---------- Nút và màu giao diện tối ---------- */
+.nut-giao-dien { width: 36px; height: 36px; flex: none; display: inline-grid; place-items: center; padding: 0; border: 1px solid var(--vien); border-radius: var(--bo-goc); background: var(--nen); color: var(--chu); }
+.nut-giao-dien svg { width: 18px; height: 18px; }
+.nut-giao-dien .icon-sang, html[data-giao-dien="toi"] .nut-giao-dien .icon-toi { display: none; }
+html[data-giao-dien="toi"] .nut-giao-dien .icon-sang { display: block; }
+html[data-giao-dien="toi"] {
+  color-scheme: dark;
+  --xanh-dam: #6cc0ff; --xanh-nhat: #12324a; --cam-nhat: #3a2116;
+  --chu: #e8eef3; --chu-phu: #9fb0bc; --nen: #0c151c; --trang: #15212b; --vien: #2a3944; --xanh-la: #3ecb82;
+  --bong: 0 2px 8px rgba(0, 0, 0, .4); --bong-dam: 0 8px 28px rgba(0, 0, 0, .55);
+}
+html[data-giao-dien="toi"] .o-nhap input, html[data-giao-dien="toi"] .o-nhap select, html[data-giao-dien="toi"] .o-nhap textarea,
+html[data-giao-dien="toi"] .khung-sao-chep textarea, html[data-giao-dien="toi"] #khung-khoa textarea { background: var(--nen); color: var(--chu); }
+html[data-giao-dien="toi"] .the-tau-nhan span { color: #0770cd; }
+html[data-giao-dien="toi"] ol.cac-buoc-dat li.xong b { background: #0a8a4a; }
+html[data-giao-dien="toi"] .lich-it { background: #3a2a12; }
+html[data-giao-dien="toi"] .lich-it small { color: #ffb765; }
+html[data-giao-dien="toi"] .lich-con small { color: #4fd08d; }
+html[data-giao-dien="toi"] .lich-het { background: #1d2a33; color: #6f808c; }
+html[data-giao-dien="toi"] .lich-het small { color: #6f808c; }
+html[data-giao-dien="toi"] .lich-qua { color: #4d5c67; }
+/* Khối báo màu nền sáng: giữ chữ đậm để đọc được. */
+html[data-giao-dien="toi"] .canh-bao-tre, html[data-giao-dien="toi"] .ve-ngay-lech { background: #3a2a12; color: #ffc98a; }
+html[data-giao-dien="toi"] .giu-cho { background: #123a26; color: #8fe3b6; }
+html[data-giao-dien="toi"] .khoa-canh-bao { color: #ffc98a; }
+html[data-giao-dien="toi"] .khoa-loi, html[data-giao-dien="toi"] .loi { color: #ff8d8f; }
+
+/* Cột nội dung trang tàu không được rộng hơn màn hình (màn hẹp, nội dung dài). */
+.cot-chinh { min-width: 0; }
+.thanh-lien-he .gia-nho { min-width: 0; flex: 1 1 auto; }
+html[data-giao-dien="toi"] .thong-bao.da-gui { background: #123a26; color: #8fe3b6; }
+html[data-giao-dien="toi"] .thong-bao.loi-gui, html[data-giao-dien="toi"] .qr-loi { background: #3f1a1c; color: #ff9d9f; }
+/* Màn rất hẹp: thu gọn menu để nút sáng/tối không bị che. */
+@media (max-width: 360px) { .menu-chinh { gap: 0; } .menu-chinh a { padding: 6px 7px; font-size: 13.5px; } }

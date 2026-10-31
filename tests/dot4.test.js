@@ -82,7 +82,7 @@ test('trang tau: co muc Lich con cho; Dieu kien ve khong lap chinh sach tre em c
     assert.ok(html.includes('<a href="#lich-cho">Lịch còn chỗ</a>') && html.includes('id="lich-tau"'), t.slug);
     const dk = html.slice(html.indexOf('id="dieu-kien"'));
     assert.ok(!dk.includes('id="tre-em-chung"'), t.slug + ' khong lap tre em');
-    assert.ok(dk.includes('id="dieu-kien-ve"') && dk.includes('id="doi-tra"'), t.slug + ' van giu dieu kien ve, doi tra');
+    assert.ok(dk.includes('id="dieu-kien-ve"'), t.slug + ' van giu dieu kien ve');
     assert.ok(!html.includes('id="lien-he"'), t.slug + ' bo muc lien he (da gom vao nut noi)');
     assert.ok(html.indexOf('id="tre-em"') > 0, t.slug + ' muc tre em rieng cua tau van con');
   }

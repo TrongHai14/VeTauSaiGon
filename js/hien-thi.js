@@ -532,7 +532,9 @@ function taoTrangTau(tau, lienHe, tienTo) {
     ['giai-tri', 'Giải trí', tau.giaiTri && tau.giaiTri.length > 0
       ? taoMuc('giai-tri', 'nhac', 'Dịch vụ giải trí', taoDanhSachDau(tau.giaiTri)) : ''],
     ['dieu-kien', 'Điều kiện vé', taoMuc('dieu-kien', 'khien', 'Điều kiện vé &amp; chính sách',
-      taoKhoiChinhSach(CHINH_SACH_CHUNG.filter(function (m) { return m.id !== 'tre-em-chung'; }), false) +
+      taoKhoiChinhSach(CHINH_SACH_CHUNG.filter(function (m) {
+        return m.id !== 'tre-em-chung' && (!m.chiApDung || m.chiApDung.indexOf(tau.slug) !== -1);
+      }), false) +
       '<p class="ghi-chu">Xem đầy đủ tại <a href="' + escapeHtml(tienTo + 'chinh-sach.html') + '">Chính sách &amp; điều kiện vé</a>.</p>')]
   ];
   var tab = '';
@@ -708,8 +710,26 @@ function ganLienHeNoi() {
   });
 }
 
+// Nút đổi giao diện sáng/tối: lưu lựa chọn trên máy khách. Phiếu xác nhận luôn giữ nền trắng.
+function ganNutGiaoDien() {
+  var nut = document.getElementById && document.getElementById('nut-giao-dien');
+  if (!nut || nut.__daGan || !nut.addEventListener) return;
+  nut.__daGan = true;
+  var goc = document.documentElement;
+  if (!goc || !goc.getAttribute) return;
+  nut.setAttribute('aria-pressed', String(goc.getAttribute('data-giao-dien') === 'toi'));
+  nut.addEventListener('click', function () {
+    var toi = goc.getAttribute('data-giao-dien') !== 'toi';
+    if (toi) goc.setAttribute('data-giao-dien', 'toi');
+    else goc.removeAttribute('data-giao-dien');
+    nut.setAttribute('aria-pressed', String(toi));
+    try { localStorage.setItem('veTauSaiGon.giaoDien', toi ? 'toi' : 'sang'); } catch (loi) { /* bỏ qua */ }
+  });
+}
+
 function apDungCauHinhChung(tienTo) {
   if (typeof document === 'undefined' || !document.querySelectorAll) return;
+  ganNutGiaoDien();
   ganLienHeNoi();
   var ch = layCauHinh();
   var logo = ch.logo || {};
