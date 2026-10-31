@@ -40,7 +40,7 @@ function taoOChonMonTay(tau, loai) {
   return html + oSo('treEmMienPhi', 'Bé miễn phí', 0);
 }
 
-// Phiếu gửi khách kiểm tra thông tin TRƯỚC khi chuyển khoản: chỉ có thông tin đặt vé, không giá, không tài khoản.
+// Phiếu gửi khách kiểm tra thông tin TRƯỚC khi chuyển khoản: thông tin đặt vé và giá tiền, không có tài khoản.
 function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm) {
   var e = escapeHtmlDatCho;
   var tt = tomTatDon(don, tau, bangTreEm);
@@ -48,7 +48,7 @@ function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm) {
   for (var i = 0; i < tt.dong.length; i++) {
     var d = tt.dong[i];
     dongMon += '<tr>' + (i === 0 ? '<td class="nhan" rowspan="' + tt.dong.length + '">Thực đơn</td>' : '') +
-      '<td colspan="2">' + e(d.ten) + '</td><td class="giua">x ' + d.soLuong + '</td></tr>';
+      '<td colspan="2">' + e(d.ten) + '</td><td class="giua">' + e(soVnd(d.gia)) + ' x ' + d.soLuong + '</td></tr>';
   }
   return '<div class="phieu phieu-gon" id="phieu" data-khong-dich><div class="phieu-noi">' +
     '<h2>PHIẾU XÁC NHẬN THÔNG TIN ĐẶT VÉ</h2>' +
@@ -61,6 +61,7 @@ function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm) {
     '<td class="giua xanh-chu">Người lớn</td><td class="giua xanh-chu">' + (don.loai === 'setMenu' ? 'Trẻ em (menu trẻ em)' : 'Trẻ em (50%)') + '</td><td class="giua xanh-chu">Trẻ em miễn phí</td></tr>' +
     '<tr><td class="giua do">' + tt.khach.nguoiLon + '</td><td class="giua do">' + tt.khach.treEm50 + '</td><td class="giua do">' + tt.khach.treEmMienPhi + '</td></tr>' +
     dongMon +
+    '<tr><td class="nhan">Tổng tiền</td><td colspan="3" class="giua do">' + e(soVnd(tt.tong)) + ' VND</td></tr>' +
     '</tbody></table></div></div>';
 }
 
