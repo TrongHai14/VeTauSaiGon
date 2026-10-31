@@ -857,3 +857,5 @@ html[data-giao-dien="toi"] .thong-bao.loi-gui, html[data-giao-dien="toi"] .qr-lo
 #don-cu p { margin: 0; }
 #don-cu p + p { margin-top: 8px; }
 #da-thanh-toan h2, #don-da-huy h2 { text-align: center; }
+.phieu-gon .phieu-noi { padding-bottom: 30px; }
+.phieu-gon h2 { margin-top: 0; margin-bottom: 16px; }

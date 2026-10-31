@@ -380,8 +380,9 @@ test('phieu chuyen khoan: khong can da nhan tien, khong co code ve; dung tong, t
   t.el.hoTen.value = '<img src=x onerror=alert(1)>';
   await t.nop();
   const html = t.phanTu['#khung-phieu'].innerHTML;
-  assert.ok(html.includes('PHIẾU THÔNG TIN ĐẶT VÉ VÀ CHUYỂN KHOẢN'), t.thongBao());
-  assert.ok(html.includes('Phiếu này chưa phải vé') && !html.includes('vietqr'), 'anh QR ben ngoai lam thieu anh khi tai phieu');
+  assert.ok(html.includes('PHIẾU XÁC NHẬN THÔNG TIN ĐẶT VÉ'), t.thongBao());
+  for (const chu of ['Họ và tên', 'Du thuyền', 'Indochina Queen', 'Ngày lên tàu', '10/03/2099', 'Số lượng khách', 'Người lớn', 'Trẻ em (50%)', 'Trẻ em miễn phí', 'Thực đơn']) assert.ok(html.includes(chu), chu);
+  for (const chu of ['VND', 'ACB', 'Số tài khoản', 'Nội dung', 'vietqr', 'Mã đơn', 'MST']) assert.ok(!html.includes(chu), chu);
   assert.ok(!html.includes('Code vé điện tử') && !html.includes('Đã thanh toán') && !/<img src=x/i.test(html));
   const { tk, tong, noiDung, tin } = vm.runInContext(`(function () {
     var d = { slugTau: 'indochina-queen', ngay: '2099-03-10', loai: 'buffet', buffetMa: DANH_SACH_TAU[0] && hamHienThi.layThucDonTheoLoai(timTauTheoSlug(DANH_SACH_TAU, 'indochina-queen')).buffet[0].dong[0].ma, nguoiLon: 2, treEm50: 0, treEmMienPhi: 0, mon: {}, hoTen: 'A', soDienThoai: '0912345678', taiKhoan: 'congTy', maDon: 'VT261031ABCD' };
@@ -390,7 +391,7 @@ test('phieu chuyen khoan: khong can da nhan tien, khong co code ve; dung tong, t
     return { tk: tk, tong: tomTatDon(d, tau, GIA_TRE_EM).tong, noiDung: taoNoiDungChuyenKhoan(d), tin: soanTinChuyenKhoan(d, tau, GIA_TRE_EM, tk) };
   })()`, t.ctx);
   assert.strictEqual(tk.chuTaiKhoan, vm.runInContext('CAU_HINH.thanhToan.congTy.chuTaiKhoan', t.ctx));
-  for (const chu of ['VT261031ABCD', tk.soTaiKhoan, tk.chuTaiKhoan, 'Số tiền: ' + tong, 'Nội dung: ' + noiDung]) assert.ok(tin.includes(chu), chu);
+  for (const chu of [tk.soTaiKhoan, tk.chuTaiKhoan, 'Số tiền: ' + tong, 'Nội dung: ' + noiDung]) assert.ok(tin.includes(chu), chu);
 });
 
 test('phieu chuyen khoan: van bat loi nhap; trang tao-phieu cu van bat buoc da nhan tien; trang an khoi Google va khong co lien ket', async () => {

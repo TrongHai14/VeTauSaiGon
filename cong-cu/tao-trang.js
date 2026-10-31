@@ -499,7 +499,7 @@ ${header('')}
   <main class="khung" id="tao-phieu" data-khong-dich>
     <div class="dau-trang-dat">
       <h1>Phiếu chuyển khoản cho khách nhắn riêng</h1>
-      <p>Trang nội bộ. Điền thông tin rồi gửi phiếu cho khách kiểm tra. Khách thấy đúng thì chuyển khoản. Phiếu không lưu và không gửi về đâu.</p>
+      <p>Trang nội bộ. Gửi ảnh phiếu cho khách kiểm tra thông tin. Khách đồng ý thì gửi thông tin chuyển khoản. Phiếu không lưu và không gửi về đâu.</p>
     </div>
     <div class="bo-cuc-dat">
       <div class="cot-form">
@@ -528,7 +528,7 @@ ${header('')}
         <div class="khung-phieu" id="khung-phieu"></div>
         <div class="nhom-nut-gui">
           <button type="button" class="nut nut-xanh" data-hanh-dong="tai-anh">Tải ảnh phiếu</button>
-          <button type="button" class="nut nut-vien" data-hanh-dong="chep-tin">Sao chép tin nhắn</button>
+          <button type="button" class="nut nut-vien" data-hanh-dong="chep-tin">Sao chép STK</button>
           <button type="button" class="nut nut-vien" data-hanh-dong="in">In / Lưu PDF</button>
           <button type="button" class="nut nut-vien" data-hanh-dong="phieu-moi">Tạo phiếu khác</button>
         </div>
