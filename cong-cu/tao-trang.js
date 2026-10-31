@@ -176,7 +176,7 @@ const treEmTungTau = DANH_SACH_TAU.map((t) => {
 
 // Câu hỏi thường gặp (trang faq.html).
 const CAU_HOI_FAQ = [
-  ['Thanh toán thế nào? Có xuất hóa đơn VAT không?', 'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản ' + CONG_TY.ten + '.'],
+  ['Thanh toán thế nào?', 'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn).'],
   ['Bao lâu thì nhận được vé?', 'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua Zalo. Khi lên tàu, xuất trình vé qua điện thoại.'],
   ['Nếu tàu hết chỗ ngày tôi chọn thì sao?', 'Sau khi quý khách thanh toán, Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách. Ngày nào tàu đã báo hết chỗ sẽ bị khoá trên lịch đặt chỗ.'],
   ['Làm sao biết phiếu là thật?', 'Phiếu đặt trên web có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu Ms Nguyên lập riêng cho khách đặt qua Zalo hoặc điện thoại không có mã QR; cần kiểm tra, vui lòng liên hệ Ms Nguyên 0948170036.'],
@@ -288,13 +288,6 @@ ${o('dat-cho-ngay', 'ngay', '<span id="nhan-ngay-len-tau">Ngày lên tàu</span>
 ${o('dat-cho-ho-ten', 'hoTen', 'Họ và tên', '<input type="text" id="dat-cho-ho-ten" name="hoTen" autocomplete="name" placeholder="Nguyễn Văn A">')}
 ${o('dat-cho-so-dien-thoai', 'soDienThoai', 'Số điện thoại (Zalo)', '<input type="tel" inputmode="tel" id="dat-cho-so-dien-thoai" name="soDienThoai" autocomplete="tel" placeholder="09xx xxx xxx">')}
 ${o('dat-cho-ghi-chu', 'ghiChu', 'Ghi chú <small>(không bắt buộc)</small>', '<textarea id="dat-cho-ghi-chu" name="ghiChu" placeholder="Sinh nhật, kỷ niệm, số bé dùng set menu…"></textarea>', ' ca-dong')}
-            </div>
-            <label class="o-chon"><input type="checkbox" name="vat" id="dat-cho-vat"><span><strong>Tôi cần xuất hóa đơn VAT</strong><small>Thanh toán vào tài khoản của ${e(CONG_TY.ten)}</small></span></label>
-            <div class="luoi-form" id="khung-vat" hidden>
-${o('dat-cho-cong-ty-ten', 'congTyTen', 'Tên công ty', '<input type="text" id="dat-cho-cong-ty-ten" name="congTyTen">', ' ca-dong')}
-${o('dat-cho-cong-ty-mst', 'congTyMst', 'Mã số thuế', '<input type="text" inputmode="numeric" id="dat-cho-cong-ty-mst" name="congTyMst">')}
-${o('dat-cho-cong-ty-email', 'congTyEmail', 'Email nhận hóa đơn', '<input type="email" id="dat-cho-cong-ty-email" name="congTyEmail">')}
-${o('dat-cho-cong-ty-dia-chi', 'congTyDiaChi', 'Địa chỉ công ty', '<input type="text" id="dat-cho-cong-ty-dia-chi" name="congTyDiaChi">', ' ca-dong')}
             </div>
           </div>
           <div class="the-form">

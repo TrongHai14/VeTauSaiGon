@@ -90,12 +90,11 @@ test('VietQR: dung ngan hang, so tai khoan, so tien, noi dung', () => {
   assert.ok(url.includes('accountName=' + encodeURIComponent('Lê Hoàng Thảo Nguyên')));
 });
 
-test('khoi thanh toan: co QR tu tao, co 2 lua chon tai khoan; VAT chi con tai khoan cong ty', () => {
+test('khoi thanh toan: co QR tu tao, chi con tai khoan ca nhan, khong co VAT', () => {
   const html = dc.taoKhoiThanhToan(donBuffet(), tau('indochina-queen'), GIA_TRE_EM, TT);
-  assert.ok(html.includes('img.vietqr.io') && html.includes('value="caNhan"') && html.includes('value="congTy"'));
+  assert.ok(html.includes('img.vietqr.io') && html.includes('25960437') && !html.includes('4988888666') && !html.includes('name="taiKhoan"') && !html.includes('VAT'));
   assert.ok(html.includes('1.539.000 VND'));
-  const vat = dc.taoKhoiThanhToan(donBuffet({ vat: true }), tau('indochina-queen'), GIA_TRE_EM, TT);
-  assert.ok(!vat.includes('value="caNhan"') && vat.includes('4988888666'));
+  assert.ok(dc.taoKhoiThanhToan(donBuffet({ taiKhoan: 'congTy', vat: true }), tau('indochina-queen'), GIA_TRE_EM, TT).includes('25960437'), 'don cu van hien tai khoan ca nhan');
   const coAnh = Object.assign({}, TT, { caNhan: Object.assign({}, TT.caNhan, { anhQR: 'anh/qr/qr.png' }) });
   assert.ok(dc.taoKhoiThanhToan(donBuffet(), tau('indochina-queen'), GIA_TRE_EM, coAnh).includes('src="anh/qr/qr.png"'));
 });
@@ -286,7 +285,7 @@ test('uy tin: phieu co logo dau phieu va logo chim; buoc thanh toan va tom tat d
   assert.ok(phieu.includes('onerror="this.parentNode && this.parentNode.removeChild(this)"'), 'thieu file logo thi tu an');
   const tt = dc.taoKhoiThanhToan(don, tau('indochina-queen'), GIA_TRE_EM, TT);
   assert.ok(tt.indexOf('class="khoi-uy-tin"') >= 0 && tt.indexOf('class="khoi-uy-tin"') < tt.indexOf('img.vietqr.io'), 'khung uy tin truoc ma QR');
-  for (const chu of ['Thanh toán cho đại lý chính thức', 'MST 0319143429', 'Chỉ chuyển vào 2 tài khoản ACB']) assert.ok(tt.includes(chu), chu);
+  for (const chu of ['Thanh toán cho đại lý chính thức', 'MST 0319143429', 'Chỉ chuyển vào tài khoản ACB']) assert.ok(tt.includes(chu), chu);
   const tom = dc.taoTomTatDon(don, tau('indochina-queen'), GIA_TRE_EM, '');
   assert.ok(tom.includes('class="tt-dai-ly"') && tom.includes('Đại lý chính thức'));
 });

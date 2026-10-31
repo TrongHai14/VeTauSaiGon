@@ -53,7 +53,7 @@ var CAU_HINH = {
   videoBia: '',
 
   // Giới thiệu công ty ở chân trang.
-  gioiThieuCongTy: 'Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. Chúng tôi tư vấn chọn tàu, chọn thực đơn, giữ chỗ và xuất hóa đơn VAT cho khách lẻ, gia đình và doanh nghiệp.',
+  gioiThieuCongTy: 'Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. Chúng tôi tư vấn chọn tàu, chọn thực đơn và giữ chỗ cho khách lẻ, gia đình và doanh nghiệp.',
 
   // Tài khoản nhận tiền. maNganHang là mã BIN VietQR (ACB = 970416).
   thanhToan: {

@@ -684,8 +684,7 @@ function taoKhoiUyTin(congTy, tienTo) {
   return '<div class="khoi-uy-tin">' + taoAnhLogo(tienTo, 'uy-tin-logo') +
     '<div><strong>Thanh toán cho đại lý chính thức</strong>' +
     '<span>' + e(congTy.ten) + ' · MST ' + e(congTy.mst) + '</span>' +
-    '<ul><li>' + hamHienThi.icon('khien') + 'Chỉ chuyển vào 2 tài khoản ACB ghi trên trang này</li>' +
-    '<li>' + hamHienThi.icon('the') + 'Xuất hóa đơn VAT khi cần</li>' +
+    '<ul><li>' + hamHienThi.icon('khien') + 'Chỉ chuyển vào tài khoản ACB ghi trên trang này</li>' +
     '<li>' + hamHienThi.icon('dung') + 'Vé có chữ ký số, quét QR là biết vé thật</li></ul></div></div>';
 }
 
@@ -915,25 +914,14 @@ function anhQRLoi(img) {
 function taoKhoiThanhToan(don, tau, bangTreEm, cauHinhThanhToan) {
   var e = escapeHtmlDatCho;
   var tt = tomTatDon(don, tau, bangTreEm);
-  var tk = layTaiKhoan(cauHinhThanhToan, don);
+  // Trên web khách chỉ chuyển vào tài khoản cá nhân, không xuất hóa đơn VAT.
+  var tk = cauHinhThanhToan.caNhan;
   var noiDung = taoNoiDungChuyenKhoan(don);
   var anhQR = tk.anhQR ? tk.anhQR : taoLinkVietQR(tk, tt.tong, noiDung);
   var html = taoKhoiUyTin(layCongTy(), '') + '<p class="loi-nhan">Quý khách thanh toán vé trước để tàu giữ chỗ. Thanh toán xong, Ms Nguyên sẽ gửi <b>phiếu xác nhận</b> và ' +
     '<b>code vé điện tử</b>; khi lên tàu quý khách đưa code cho nhân viên soát vé.</p>' +
     '<p class="loi-nhan cam-ket-hoan">Chỗ trên tàu do Ms Nguyên xác nhận với tàu sau khi quý khách thanh toán. ' +
     'Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel <b>hoàn 100% số tiền</b> hoặc đổi sang ngày khác theo lựa chọn của quý khách.</p>';
-  if (!don.vat) {
-    html += '<div class="chon-tai-khoan" role="radiogroup">';
-    var cacTk = ['caNhan', 'congTy'];
-    for (var i = 0; i < cacTk.length; i++) {
-      var chon = (don.taiKhoan === 'congTy' ? 'congTy' : 'caNhan') === cacTk[i];
-      html += '<label class="the-tai-khoan' + (chon ? ' dang-chon' : '') + '"><input type="radio" name="taiKhoan" value="' + cacTk[i] + '"' + (chon ? ' checked' : '') + '>' +
-        '<span><strong>' + e(cauHinhThanhToan[cacTk[i]].tieuDe) + '</strong><small>' + e(cauHinhThanhToan[cacTk[i]].nganHang + ' · ' + cauHinhThanhToan[cacTk[i]].chuTaiKhoan) + '</small></span></label>';
-    }
-    html += '</div>';
-  } else {
-    html += '<p class="hop-vat">Quý khách chọn <b>xuất hóa đơn VAT</b> nên vui lòng chuyển khoản vào tài khoản công ty.</p>';
-  }
   html += '<div class="hop-chuyen-khoan">' +
     '<div class="qr"><img src="' + e(anhQR) + '" alt="Mã QR chuyển khoản ' + e(tk.nganHang + ' ' + tk.soTaiKhoan) + '" onerror="anhQRLoi(this)">' +
     '<small>' + (tk.anhQR ? 'Quét mã rồi nhập đúng số tiền và nội dung bên cạnh' : 'Quét bằng app ngân hàng – số tiền và nội dung đã điền sẵn') + '</small></div>' +
@@ -1162,9 +1150,7 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     don.hoTen = el.hoTen.value;
     don.soDienThoai = el.soDienThoai.value;
     don.ghiChu = el.ghiChu.value;
-    don.vat = el.vat.checked;
     don.dongY = el.dongY.checked;
-    don.congTy = { ten: el.congTyTen.value.trim(), mst: el.congTyMst.value.replace(/\s/g, ''), diaChi: el.congTyDiaChi.value.trim(), email: el.congTyEmail.value.trim() };
   }
 
   // Ảnh menu từng món (lightbox dùng chung với trang tàu).
@@ -1246,9 +1232,6 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   khungMon.addEventListener('input', function (e) { capNhatTuO(e.target); });
   khungMon.addEventListener('change', function (e) { capNhatTuO(e.target); });
 
-  el.vat.addEventListener('change', function () {
-    goc.querySelector('#khung-vat').hidden = !el.vat.checked;
-  });
   form.addEventListener('submit', function (e) { e.preventDefault(); });
 
   goc.addEventListener('click', function (e) {
@@ -1266,12 +1249,11 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
       denBuoc(2);
     } else if (hanhDong === 'buoc-3') {
       docThongTin();
-      if (!baoLoi(kiemTraBuoc2(don), ['hoTen', 'soDienThoai', 'congTyTen', 'congTyMst', 'congTyDiaChi', 'congTyEmail', 'dongY'])) return;
+      if (!baoLoi(kiemTraBuoc2(don), ['hoTen', 'soDienThoai', 'dongY'])) return;
       if (!don.maDon) {
         don.maDon = taoMaDon(new Date(), Math.random);
         don.ngayDat = ngayHomNayDiaPhuong(new Date());
       }
-      if (don.vat) don.taiKhoan = 'congTy';
       var hienThanhToan = function () {
         khungThanhToan.innerHTML = taoLoiNhanGiuCho(don.giuDen) + taoKhoiThanhToan(don, tauHienTai(), bangTreEm, cauHinhThanhToan) + taoKhoiMsNguyen(cheDoMsNguyen, don);
         denBuoc(3);
@@ -1380,11 +1362,6 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
   });
 
   // Chọn tài khoản nhận tiền / sao chép số tài khoản, số tiền, nội dung.
-  khungThanhToan.addEventListener('change', function (e) {
-    if (e.target.name !== 'taiKhoan') return;
-    don.taiKhoan = e.target.value;
-    khungThanhToan.innerHTML = taoKhoiThanhToan(don, tauHienTai(), bangTreEm, cauHinhThanhToan);
-  });
   khungThanhToan.addEventListener('click', function (e) {
     var nut = e.target.closest('[data-chep]');
     if (!nut) return;

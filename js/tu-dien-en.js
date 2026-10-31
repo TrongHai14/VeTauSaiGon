@@ -174,8 +174,8 @@ var TU_DIEN_EN = {
   'Công Ty TNHH Nguyên Nguyên Global': 'Nguyen Nguyen Global Co., Ltd.',
   'Nguyên Nguyên Global': 'Nguyen Nguyen Global',
   'Logo Công ty TNHH Nguyên Nguyên Global': 'Nguyen Nguyen Global Co., Ltd. logo',
-  'Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. Chúng tôi tư vấn chọn tàu, chọn thực đơn, giữ chỗ và xuất hóa đơn VAT cho khách lẻ, gia đình và doanh nghiệp.':
-    'Nguyen Nguyen Global Co., Ltd. is an official agent for Saigon River dinner cruise tickets: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess and Bến Thành Princess. We help you choose a cruise and a menu, hold your seats and issue VAT invoices for individuals, families and companies.',
+  'Công ty TNHH Nguyên Nguyên Global là đại lý chính thức phân phối vé du thuyền ăn tối trên sông Sài Gòn: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess và Bến Thành Princess. Chúng tôi tư vấn chọn tàu, chọn thực đơn và giữ chỗ cho khách lẻ, gia đình và doanh nghiệp.':
+    'Nguyen Nguyen Global Co., Ltd. is an official agent for Saigon River dinner cruise tickets: Indochina Queen, Indochina Star, Bến Nghé, Elite of Saigon, Saigon Princess and Bến Thành Princess. We help you choose a cruise and a menu and hold your seats for individuals, families and companies.',
   'Thông tin liên hệ': 'Contact information',
   'Mã số thuế': 'Tax ID',
   '· MST: 0319143429': '· Tax ID: 0319143429',
@@ -237,9 +237,9 @@ var TU_DIEN_EN = {
   'Câu hỏi thường gặp': 'Frequently asked questions',
   'Xem đầy đủ tại': 'See full details in',
   'Chính sách & điều kiện vé': 'Policies & ticket conditions',
-  'Thanh toán thế nào? Có xuất hóa đơn VAT không?': 'How do I pay? Can I get a VAT invoice?',
-  'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản Công ty TNHH Nguyên Nguyên Global.':
-    'Pay by bank transfer using the QR code shown at the payment step (amount and reference are pre-filled). For a VAT invoice, tick "I need a VAT invoice" and pay into the account of Nguyen Nguyen Global Co., Ltd.',
+  'Thanh toán thế nào?': 'How do I pay?',
+  'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn).':
+    'Pay by bank transfer using the QR code shown at the payment step (amount and reference are pre-filled).',
   'Bao lâu thì nhận được vé?': 'When will I receive my ticket?',
   'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua Zalo. Khi lên tàu, xuất trình vé qua điện thoại.':
     'Within 24 hours of a successful payment, Ms Nguyên sends the confirmation slip and e-ticket (PDF) by Zalo. Show the ticket on your phone when boarding.',
@@ -499,10 +499,8 @@ var TU_DIEN_EN = {
   'Ghi chú': 'Notes',
   '(không bắt buộc)': '(optional)',
   'Sinh nhật, kỷ niệm, số bé dùng set menu…': 'Birthday, anniversary, number of children having set menus…',
-  'Tôi cần xuất hóa đơn VAT': 'I need a VAT invoice',
   'Thanh toán vào tài khoản của Công ty TNHH Nguyên Nguyên Global': 'Pay into the account of Nguyen Nguyen Global Co., Ltd.',
   'Tên công ty': 'Company name',
-  'Email nhận hóa đơn': 'Invoice email',
   'Địa chỉ công ty': 'Company address',
   'Tôi đã đọc và đồng ý': 'I have read and agree to the',
   'điều kiện vé & chính sách đổi trả': 'ticket conditions & change policy',
@@ -511,8 +509,7 @@ var TU_DIEN_EN = {
   'Thanh toán chuyển khoản': 'Bank transfer payment',
   'Thanh toán cho đại lý chính thức': 'Paying an official agent',
   'Công ty TNHH Nguyên Nguyên Global · MST 0319143429': 'Nguyen Nguyen Global Co., Ltd. · Tax ID 0319143429',
-  'Chỉ chuyển vào 2 tài khoản ACB ghi trên trang này': 'Only transfer to the 2 ACB accounts shown on this page',
-  'Xuất hóa đơn VAT khi cần': 'VAT invoice on request',
+  'Chỉ chuyển vào tài khoản ACB ghi trên trang này': 'Only transfer to the ACB account shown on this page',
   'Vé có chữ ký số, quét QR là biết vé thật': 'Digitally signed tickets – scan the QR to verify',
   'Quý khách thanh toán vé trước để tàu giữ chỗ. Thanh toán xong, Ms Nguyên sẽ gửi': 'Please pay in advance so the cruise can hold your seats. Once paid, Ms Nguyên will send the',
   'phiếu xác nhận': 'confirmation slip',

@@ -61,11 +61,12 @@ test('index.html: meta, khung, o tim kiem, script', () => {
   assert.ok(html.includes('khoiChayTrangChu()'));
 });
 
-test('dat-cho.html: 4 buoc, o VAT, khong co phieu cho khach, khong tai html2canvas', () => {
+test('dat-cho.html: 4 buoc, khong co o VAT, khong co phieu cho khach, khong tai html2canvas', () => {
   const html = doc('dat-cho.html');
-  for (const k of KHUNG.concat(['data-buoc="1"', 'data-buoc="2"', 'data-buoc="3"', 'data-buoc="4"', 'name="vat"',
-    'name="congTyMst"', 'data-hanh-dong="da-chuyen"', 'id="khung-tom-tat"'])) assert.ok(html.includes(k), k);
+  for (const k of KHUNG.concat(['data-buoc="1"', 'data-buoc="2"', 'data-buoc="3"', 'data-buoc="4"',
+    'data-hanh-dong="da-chuyen"', 'id="khung-tom-tat"'])) assert.ok(html.includes(k), k);
   assert.ok(!html.includes('id="phieu"') && !html.includes('html2canvas'), 'trang khach khong tao phieu');
+  assert.ok(!html.includes('name="vat"') && !html.includes('name="congTyMst"') && !html.includes('hóa đơn'), 'khong con VAT');
   assert.ok(dungThuTu(viTriScript(html, '', ['cau-hinh.js', 'du-lieu-tau.js', 'hien-thi.js', 'dat-cho.js'])));
   assert.ok(html.includes('khoiChayTrangDatCho()'));
 });
