@@ -365,8 +365,8 @@ var TU_DIEN_EN = {
   'Buffet không giới hạn ở 3 tầng': 'Unlimited buffet on 3 decks',
   'Sảnh VIP tầng 3 với 11 set menu': 'VIP hall on deck 3 with 11 set menus',
   'Nhạc dân tộc, nhạc Philippines và múa dân tộc': 'Traditional music, Filipino music and dance',
-  'Elite of Saigon có 3 tầng với 3 kiểu phục vụ: buffet ở tầng 1, set menu Âu, Á, Việt, Ấn, chay và trẻ em ở tầng 2, set chill trên sân thượng tầng 3. Tàu chạy từ 19h30 đến 21h00, đi qua Bến Bạch Đằng, cầu Ba Son, cầu Thủ Thiêm và Landmark 81 rồi quay lại Bến Nhà Rồng. Band nhạc biểu diễn live hằng đêm; từ thứ 5 đến chủ nhật có thêm dancer và DJ.':
-    'Elite of Saigon has 3 decks with 3 ways to dine: buffet on deck 1; European, Asian, Vietnamese, Indian, vegetarian and kids set menus on deck 2; and set chill on the rooftop of deck 3. The cruise runs from 19h30 to 21h00, passing Bach Dang Wharf, Ba Son Bridge, Thu Thiem Bridge and Landmark 81 before returning to Nha Rong Wharf. A live band plays every night, with dancers and a DJ from Thursday to Sunday.',
+  'Elite of Saigon có 3 tầng với 3 kiểu phục vụ: buffet ở tầng 1, set menu Âu, Á, Việt, Ấn, chay và trẻ em ở tầng 2, set chill trên sân thượng tầng 3. Tàu chạy từ 19h30 đến 21h30, đi qua Bến Bạch Đằng, cầu Ba Son, cầu Thủ Thiêm và Landmark 81 rồi quay lại Bến Nhà Rồng. Band nhạc biểu diễn live hằng đêm; từ thứ 5 đến chủ nhật có thêm dancer và DJ.':
+    'Elite of Saigon has 3 decks with 3 ways to dine: buffet on deck 1; European, Asian, Vietnamese, Indian, vegetarian and kids set menus on deck 2; and set chill on the rooftop of deck 3. The cruise runs from 19h30 to 21h30, passing Bach Dang Wharf, Ba Son Bridge, Thu Thiem Bridge and Landmark 81 before returning to Nha Rong Wharf. A live band plays every night, with dancers and a DJ from Thursday to Sunday.',
   'Buffet, set menu và set chill theo từng tầng': 'Buffet, set menus and set chill on separate decks',
   'Live band hằng đêm, DJ và dancer từ thứ 5 đến chủ nhật': 'Live band nightly, DJ and dancers Thursday to Sunday',
   'Mid-week Chill thứ 3 và thứ 5: tặng 2 bia + nachos': 'Mid-week Chill on Tuesday & Thursday: 2 free beers + nachos',
