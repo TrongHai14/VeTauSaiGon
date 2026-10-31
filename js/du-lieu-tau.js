@@ -190,7 +190,7 @@ var DANH_SACH_TAU = [
       { nhan: 'Phù hợp', giaTri: 'Ăn tối, gala dinner, tiệc công ty, hội nghị' }
     ],
     noiBat: ['Buffet, set menu và set chill theo từng tầng', 'Live band hằng đêm, DJ và dancer từ thứ 5 đến chủ nhật', 'Mid-week Chill thứ 3 và thứ 5: tặng 2 bia + nachos'],
-    gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '22h00', ghiChu: null },
+    gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '21h00', ghiChu: null },
     diaChi: DIA_CHI_MAC_DINH,
     loTrinh: [
       'Bến Nhà Rồng', 'Bến Bạch Đằng', 'Công viên Thủ Đức', 'Cầu Ba Son',
