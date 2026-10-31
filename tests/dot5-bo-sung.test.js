@@ -68,7 +68,7 @@ function dungTrang(tuyChon) {
     };
     canhPhieuVuaKhung = function () {};
     hamLichCho.ngayHomNayVN = function () { return '2026-10-31'; };
-    khoiChayTrangTaoPhieu();`, ctx);
+    khoiChayTrangTaoPhieu(${JSON.stringify(tuyChon.cheDo || '')});`, ctx);
   return {
     ctx, el, form, khungMon, phanTu, cacLoi,
     chonTau(slug, loai) { el.tau.value = slug; el.tau.listeners.change(); if (loai) { el.loai.value = loai; el.loai.listeners.change(); } },
@@ -371,4 +371,42 @@ test('Nguyen Nguyen: moi cho goi thuong hieu trong chu khach thay deu co Travel;
   assert.deepStrictEqual(loiEn, [], 'ban dich EN con goi "Nguyen Nguyen" thieu Travel');
   const { CONG_TY } = require('../js/du-lieu-tau.js');
   assert.ok(CONG_TY.ten.includes('Nguyên Nguyên Global') && !/Travel/.test(CONG_TY.ten));
+});
+
+test('phieu chuyen khoan: khong can da nhan tien, khong co code ve; dung tong, tai khoan, noi dung; ten khach khong chen HTML', async () => {
+  const t = dungTrang({ cheDo: 'chuyen-khoan' });
+  t.chonTau('indochina-queen', 'buffet');
+  t.el.daNhanTien.checked = false;
+  t.el.hoTen.value = '<img src=x onerror=alert(1)>';
+  await t.nop();
+  const html = t.phanTu['#khung-phieu'].innerHTML;
+  assert.ok(html.includes('PHIẾU THÔNG TIN ĐẶT VÉ VÀ CHUYỂN KHOẢN'), t.thongBao());
+  assert.ok(html.includes('Phiếu này chưa phải vé') && !html.includes('vietqr'), 'anh QR ben ngoai lam thieu anh khi tai phieu');
+  assert.ok(!html.includes('Code vé điện tử') && !html.includes('Đã thanh toán') && !/<img src=x/i.test(html));
+  const { tk, tong, noiDung, tin } = vm.runInContext(`(function () {
+    var d = { slugTau: 'indochina-queen', ngay: '2099-03-10', loai: 'buffet', buffetMa: DANH_SACH_TAU[0] && hamHienThi.layThucDonTheoLoai(timTauTheoSlug(DANH_SACH_TAU, 'indochina-queen')).buffet[0].dong[0].ma, nguoiLon: 2, treEm50: 0, treEmMienPhi: 0, mon: {}, hoTen: 'A', soDienThoai: '0912345678', taiKhoan: 'congTy', maDon: 'VT261031ABCD' };
+    var tau = timTauTheoSlug(DANH_SACH_TAU, 'indochina-queen');
+    var tk = layTaiKhoan(CAU_HINH.thanhToan, d);
+    return { tk: tk, tong: tomTatDon(d, tau, GIA_TRE_EM).tong, noiDung: taoNoiDungChuyenKhoan(d), tin: soanTinChuyenKhoan(d, tau, GIA_TRE_EM, tk) };
+  })()`, t.ctx);
+  assert.strictEqual(tk.chuTaiKhoan, vm.runInContext('CAU_HINH.thanhToan.congTy.chuTaiKhoan', t.ctx));
+  for (const chu of ['VT261031ABCD', tk.soTaiKhoan, tk.chuTaiKhoan, 'Số tiền: ' + tong, 'Nội dung: ' + noiDung]) assert.ok(tin.includes(chu), chu);
+});
+
+test('phieu chuyen khoan: van bat loi nhap; trang tao-phieu cu van bat buoc da nhan tien; trang an khoi Google va khong co lien ket', async () => {
+  const t = dungTrang({ cheDo: 'chuyen-khoan' });
+  t.chonTau('indochina-queen', 'buffet');
+  t.el.hoTen.value = '';
+  await t.nop();
+  assert.ok(t.loi('hoTen'));
+  assert.strictEqual(t.phanTu['#khung-phieu'].innerHTML, '');
+  const cu = dungTrang();
+  cu.chonTau('indochina-queen', 'buffet');
+  cu.el.daNhanTien.checked = false;
+  await cu.nop();
+  assert.strictEqual(cu.phanTu['#khung-phieu'].innerHTML, '');
+  const html = doc('phieu-chuyen-khoan.html');
+  assert.ok(html.includes('noindex') && !html.includes('rel="canonical"') && !html.includes('name="daNhanTien"') && !html.includes('name="codeVe"'));
+  assert.ok(doc('robots.txt').includes('Disallow: /phieu-chuyen-khoan.html') && !doc('sitemap.xml').includes('phieu-chuyen-khoan'));
+  for (const f of ['index.html', 'dat-cho.html', 'faq.html', 'chinh-sach.html']) assert.ok(!doc(f).includes('phieu-chuyen-khoan'), f);
 });

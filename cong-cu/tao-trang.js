@@ -492,6 +492,57 @@ ${script('', SCRIPT_CHUNG.concat(['dat-cho.js', 'tao-phieu.js']))}
 </html>
 `);
 
+// ---------- phieu-chuyen-khoan.html (phiếu nhắn riêng cho khách kiểm tra rồi chuyển khoản; không có liên kết từ trang khách) ----------
+ghi('phieu-chuyen-khoan.html', `${dau('', { tieuDe: 'Phiếu chuyển khoản cho khách nhắn riêng | Vé Tàu Sài Gòn', moTa: 'Trang nội bộ tạo phiếu thông tin đặt vé và chuyển khoản.', anh: '', url: TEN_MIEN + '/phieu-chuyen-khoan.html', anChiMuc: true })}
+<body class="trang-dat-cho">
+${header('')}
+  <main class="khung" id="tao-phieu" data-khong-dich>
+    <div class="dau-trang-dat">
+      <h1>Phiếu chuyển khoản cho khách nhắn riêng</h1>
+      <p>Trang nội bộ. Điền thông tin rồi gửi phiếu cho khách kiểm tra. Khách thấy đúng thì chuyển khoản. Phiếu không lưu và không gửi về đâu.</p>
+    </div>
+    <div class="bo-cuc-dat">
+      <div class="cot-form">
+        <form class="the-form" id="form-tao-phieu" novalidate>
+          <h2>Thông tin đơn</h2>
+          <div class="luoi-form">
+            <div class="o-nhap"><label for="tp-tau">Du thuyền</label><select id="tp-tau" name="tau"></select><p class="loi" data-loi="tau"></p></div>
+            <div class="o-nhap"><label for="tp-ngay">Ngày đi</label><input type="date" id="tp-ngay" name="ngay"><p class="loi" data-loi="ngay"></p></div>
+            <div class="o-nhap ca-dong"><label for="tp-loai">Loại dịch vụ</label><select id="tp-loai" name="loai"></select><p class="loi" data-loi="loai"></p></div>
+          </div>
+          <div class="luoi-form" id="khung-mon-tay" style="margin-top:12px"></div>
+          <p class="loi" data-loi="mon"></p>
+          <p style="margin:12px 0"><b>Tổng thanh toán: <span id="tong-tay">—</span></b></p>
+          <h2>Khách hàng</h2>
+          <div class="luoi-form">
+            <div class="o-nhap"><label for="tp-ten">Họ tên</label><input type="text" id="tp-ten" name="hoTen" autocomplete="off"><p class="loi" data-loi="hoTen"></p></div>
+            <div class="o-nhap"><label for="tp-sdt">Số điện thoại</label><input type="tel" inputmode="tel" id="tp-sdt" name="soDienThoai" autocomplete="off"><p class="loi" data-loi="soDienThoai"></p></div>
+            <div class="o-nhap"><label for="tp-tk">Tài khoản nhận tiền</label><select id="tp-tk" name="taiKhoan"><option value="caNhan">Tài khoản cá nhân</option><option value="congTy">Tài khoản công ty</option></select><p class="loi" data-loi="taiKhoan"></p></div>
+          </div>
+          <div class="nut-buoc"><button type="submit" class="nut">Tạo phiếu chuyển khoản</button></div>
+          <p class="thong-bao" id="thong-bao" role="status"></p>
+        </form>
+      </div>
+      <section class="cot-phieu" id="khu-vuc-phieu" hidden>
+        <div class="cot-phieu-tieu-de"><h2>Phiếu gửi khách</h2></div>
+        <div class="khung-phieu" id="khung-phieu"></div>
+        <div class="nhom-nut-gui">
+          <button type="button" class="nut nut-xanh" data-hanh-dong="tai-anh">Tải ảnh phiếu</button>
+          <button type="button" class="nut nut-vien" data-hanh-dong="chep-tin">Sao chép tin nhắn</button>
+          <button type="button" class="nut nut-vien" data-hanh-dong="in">In / Lưu PDF</button>
+          <button type="button" class="nut nut-vien" data-hanh-dong="phieu-moi">Tạo phiếu khác</button>
+        </div>
+      </section>
+    </div>
+  </main>
+${footer('', true)}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+${script('', SCRIPT_CHUNG.concat(['dat-cho.js', 'tao-phieu.js']))}
+  <script>khoiChayTrangTaoPhieu('chuyen-khoan');</script>
+</body>
+</html>
+`);
+
 // ---------- kiem-tra-ve.html (nhân viên quét QR trên phiếu) ----------
 ghi('kiem-tra-ve.html', `${dau('', { tieuDe: 'Kiểm tra vé | Vé Tàu Sài Gòn', moTa: 'Kiểm tra phiếu xác nhận du thuyền có chữ ký số.', anh: '', url: TEN_MIEN + '/kiem-tra-ve.html', anChiMuc: true })}
 <body class="trang-kiem-tra-ve">
@@ -564,6 +615,6 @@ ${script('/', SCRIPT_CHUNG)}
 const trangCongKhai = ['', 'dat-cho.html', 'chinh-sach.html', 'faq.html'].concat(DANH_SACH_TAU.map((t) => 'tau/' + t.slug + '.html'));
 ghi('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
   trangCongKhai.map((p) => '  <url><loc>' + TEN_MIEN + '/' + p + '</loc></url>').join('\n') + '\n</urlset>\n');
-ghi('robots.txt', 'User-agent: *\nDisallow: /xac-nhan.html\nDisallow: /kiem-tra-ve.html\nDisallow: /tao-phieu.html\n\nSitemap: ' + TEN_MIEN + '/sitemap.xml\n');
+ghi('robots.txt', 'User-agent: *\nDisallow: /xac-nhan.html\nDisallow: /kiem-tra-ve.html\nDisallow: /tao-phieu.html\nDisallow: /phieu-chuyen-khoan.html\n\nSitemap: ' + TEN_MIEN + '/sitemap.xml\n');
 
-console.log('Đã tạo lại', 8 + DANH_SACH_TAU.length, 'trang.');
+console.log('Đã tạo lại', 9 + DANH_SACH_TAU.length, 'trang.');

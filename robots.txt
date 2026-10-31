@@ -2,5 +2,6 @@ User-agent: *
 Disallow: /xac-nhan.html
 Disallow: /kiem-tra-ve.html
 Disallow: /tao-phieu.html
+Disallow: /phieu-chuyen-khoan.html
 
 Sitemap: https://vetausaigon.vn/sitemap.xml

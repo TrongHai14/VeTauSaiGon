@@ -40,7 +40,72 @@ function taoOChonMonTay(tau, loai) {
   return html + oSo('treEmMienPhi', 'Bé miễn phí', 0);
 }
 
-function khoiChayTrangTaoPhieu() {
+// Phiếu gửi riêng cho khách TRƯỚC khi chuyển khoản: khách kiểm tra thông tin, đúng thì chuyển. Chưa phải vé.
+function taoPhieuChuyenKhoanHtml(don, tau, congTy, lienHe, bangTreEm, tk) {
+  var e = escapeHtmlDatCho;
+  var tt = tomTatDon(don, tau, bangTreEm);
+  var noiDung = taoNoiDungChuyenKhoan(don);
+  var dongMon = '';
+  for (var i = 0; i < tt.dong.length; i++) {
+    var d = tt.dong[i];
+    dongMon += '<tr>' + (i === 0 ? '<td class="nhan" rowspan="' + tt.dong.length + '">Thực đơn</td>' : '') +
+      '<td colspan="2" class="giua">' + e(d.ten.toUpperCase()) + '</td><td>' + e(soVnd(d.gia)) + ' x ' + d.soLuong + '</td></tr>';
+  }
+  return '<div class="phieu" id="phieu" data-khong-dich><div class="phieu-goc"></div><div class="phieu-noi">' +
+    '<div class="phieu-dau">' + taoAnhLogo('', 'phieu-logo') +
+    '<div class="phieu-cong-ty"><strong>' + e(congTy.ten) + '</strong>' +
+    '<p>MST: ' + e(congTy.mst) + ' – ' + e(congTy.vaiTro) + '</p>' +
+    '<p>Hỗ trợ dịch vụ: ' + e(lienHe.tenNguoiLienHe) + ' ' + e(lienHe.soDienThoai) + '</p></div></div>' +
+    '<h2>PHIẾU THÔNG TIN ĐẶT VÉ VÀ CHUYỂN KHOẢN<br>' + e(tau.ten.toUpperCase()) + '</h2>' +
+    '<p class="phieu-ngay">Mã đơn <b>' + e(don.maDon) + '</b></p>' +
+    '<p class="phieu-luu-y">Quý khách vui lòng kiểm tra thông tin bên dưới. Nếu đúng, quý khách chuyển khoản theo mục 2; nếu có sai sót, xin báo Ms Nguyên trước khi chuyển.</p>' +
+    '<h3>1. Thông tin đặt vé:</h3><table><tbody>' +
+    '<tr><td class="nhan">Họ và tên:</td><td colspan="3">' + e(don.hoTen.trim().toUpperCase()) + '</td></tr>' +
+    '<tr><td class="nhan">Điện thoại liên hệ:</td><td colspan="3">' + e(chuanHoaSoDienThoai(don.soDienThoai) || don.soDienThoai) + '</td></tr>' +
+    '<tr><td class="nhan">Du thuyền:</td><td colspan="3">' + e(tau.ten) + ' (' + e(TEN_LOAI_DICH_VU[don.loai]) + ')</td></tr>' +
+    '<tr><td class="nhan">Ngày đi:</td><td colspan="3" class="do">' + e(dinhDangNgay(don.ngay)) + '</td></tr>' +
+    '<tr><td class="nhan" rowspan="2">Số lượng khách:</td>' +
+    '<td class="giua xanh-chu">Người lớn</td><td class="giua xanh-chu">' + (don.loai === 'setMenu' ? 'Trẻ em (menu trẻ em)' : 'Trẻ em (50%)') + '</td><td class="giua xanh-chu">Trẻ em miễn phí</td></tr>' +
+    '<tr><td class="giua do">' + tt.khach.nguoiLon + '</td><td class="giua do">' + tt.khach.treEm50 + '</td><td class="giua do">' + tt.khach.treEmMienPhi + '</td></tr>' +
+    dongMon +
+    '<tr><td class="nhan">Tổng thanh toán</td><td colspan="3" class="giua do">' + e(soVnd(tt.tong)) + ' VND</td></tr>' +
+    '</tbody></table>' +
+    '<h3>2. Thông tin chuyển khoản:</h3>' +
+    '<table><tbody>' +
+    '<tr><td class="nhan">Ngân hàng</td><td>' + e(tk.nganHang) + '</td></tr>' +
+    '<tr><td class="nhan">Số tài khoản</td><td class="do">' + e(tk.soTaiKhoan) + '</td></tr>' +
+    '<tr><td class="nhan">Chủ tài khoản</td><td>' + e(tk.chuTaiKhoan) + '</td></tr>' +
+    '<tr><td class="nhan">Số tiền</td><td class="do">' + e(soVnd(tt.tong)) + ' VND</td></tr>' +
+    '<tr><td class="nhan">Nội dung</td><td class="do">' + e(noiDung) + '</td></tr>' +
+    '</tbody></table>' +
+    '<p class="phieu-luu-y">Phiếu này chưa phải vé. Sau khi nhận đủ tiền, Ms Nguyên sẽ gửi phiếu xác nhận và code vé điện tử qua Zalo. Chỗ trên tàu do Ms Nguyên xác nhận với tàu sau khi quý khách thanh toán; nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách.</p>' +
+    '</div>' + taoPhoDem() + '</div>';
+}
+
+// Tin nhắn kèm ảnh phiếu, để khách sao chép được số tài khoản và nội dung.
+function soanTinChuyenKhoan(don, tau, bangTreEm, tk) {
+  var tt = tomTatDon(don, tau, bangTreEm);
+  return [
+    'Nguyên Nguyên Travel gửi quý khách thông tin đặt vé. Quý khách kiểm tra giúp, nếu đúng thì chuyển khoản; nếu sai xin báo lại Ms Nguyên trước khi chuyển.',
+    '- Mã đơn: ' + don.maDon,
+    '- Khách: ' + don.hoTen.trim() + ' – ' + (chuanHoaSoDienThoai(don.soDienThoai) || don.soDienThoai),
+    '- Tàu: ' + tau.ten + ' (' + TEN_LOAI_DICH_VU[don.loai] + ')',
+    '- Ngày đi: ' + dinhDangNgay(don.ngay)
+  ].concat(tt.dong.map(function (d) { return '- ' + d.ten + ': ' + soVnd(d.gia) + ' x ' + d.soLuong; }), tt.khach.treEmMienPhi > 0 ? ['- Trẻ em miễn phí: ' + tt.khach.treEmMienPhi] : [], [
+    '- Tổng: ' + soVnd(tt.tong) + ' VND',
+    '',
+    'Chuyển khoản:',
+    tk.nganHang,
+    'STK: ' + tk.soTaiKhoan,
+    'Chủ TK: ' + tk.chuTaiKhoan,
+    'Số tiền: ' + tt.tong,
+    'Nội dung: ' + taoNoiDungChuyenKhoan(don)
+  ]).join('\n');
+}
+
+// cheDo 'chuyen-khoan': trang phieu-chuyen-khoan.html, ra phiếu cho khách kiểm tra trước khi chuyển (không code vé).
+function khoiChayTrangTaoPhieu(cheDo) {
+  var laPhieuCK = cheDo === 'chuyen-khoan';
   if (typeof apDungCauHinhChung === 'function') apDungCauHinhChung('');
   var goc = document.getElementById('tao-phieu');
   var form = goc.querySelector('#form-tao-phieu');
@@ -132,6 +197,15 @@ function khoiChayTrangTaoPhieu() {
     var tau = tauDangChon();
     anPhieuCu();
     if (!baoLoi(kiemTraDonTay(don, tau, GIA_TRE_EM, hamLichCho.ngayHomNayVN()))) return;
+    if (laPhieuCK) {
+      khungPhieu.innerHTML = taoPhieuChuyenKhoanHtml(don, tau, CONG_TY, LIEN_HE, GIA_TRE_EM, layTaiKhoan(CAU_HINH.thanhToan, don));
+      donDaTao = don;
+      thongBao('Đã tạo phiếu. Tải ảnh phiếu và sao chép tin nhắn rồi gửi cho khách.', 'da-gui');
+      khuVucPhieu.hidden = false;
+      canhPhieuVuaKhung(khungPhieu);
+      khuVucPhieu.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
     if (!el.daNhanTien.checked) {
       thongBao('Chỉ tạo phiếu khi đã thấy tiền vào tài khoản.', 'loi-gui');
       return;
@@ -161,9 +235,15 @@ function khoiChayTrangTaoPhieu() {
     var viec = nut.getAttribute('data-hanh-dong');
     if (viec === 'in') { window.print(); return; }
     if (viec === 'phieu-moi') { location.reload(); return; }
+    if (viec === 'chep-tin') {
+      saoChepNoiDung(soanTinChuyenKhoan(donDaTao, tauDangChon(), GIA_TRE_EM, layTaiKhoan(CAU_HINH.thanhToan, donDaTao)), function (ok) {
+        thongBao(ok ? 'Đã sao chép tin nhắn. Dán vào Zalo rồi gửi kèm ảnh phiếu.' : 'Không sao chép được, vui lòng thử lại.', ok ? 'da-gui' : 'loi-gui');
+      });
+      return;
+    }
     thongBao('Đang tạo ảnh phiếu…', '');
     xuatAnhPhieu(document.getElementById('phieu')).then(function (blob) {
-      taiFileVeMay(blob, 'phieu-xac-nhan-' + donDaTao.maDon + '.png');
+      taiFileVeMay(blob, (laPhieuCK ? 'phieu-chuyen-khoan-' : 'phieu-xac-nhan-') + donDaTao.maDon + '.png');
       thongBao('Đã tải ảnh phiếu. Gửi ảnh này cho khách qua Zalo (SĐT ' + chuanHoaSoDienThoai(donDaTao.soDienThoai) + ').', 'da-gui');
     }, function () {
       thongBao('Chưa tạo được ảnh. Dùng nút “In / Lưu PDF” hoặc chụp màn hình phiếu.', 'loi-gui');
