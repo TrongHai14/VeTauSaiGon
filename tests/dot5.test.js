@@ -18,10 +18,11 @@ const tau = (slug) => DANH_SACH_TAU.find((t) => t.slug === slug);
 
 test('FAQ: du cau moi, gia dung va co ban tieng Anh', () => {
   const faq = doc('faq.html');
-  for (const chu of ['đến trễ', 'đổi tên', 'đoàn đông', 'suất ăn đặc biệt', 'vị trí ngồi', '100.000 VND/lít', '250.000 VND/chai', '350.000 VND/chai', 'ngang 4 m, cao 2,5 m', '3.240.000 VND/con']) {
+  for (const chu of ['đến trễ', 'đổi tên', 'đoàn đông', 'suất ăn đặc biệt', 'vị trí ngồi', 'ngang 4 m, cao 2,5 m']) {
     assert.ok(faq.includes(chu), chu);
   }
-  assert.strictEqual(nn.dichChuoi('Có. Heo sữa quay (2,8–3,2 kg) giá 3.240.000 VND/con.', 'en'), 'Yes. A roast suckling pig (2.8–3.2 kg) costs 3,240,000 VND.');
+  // Chủ web bỏ phụ thu rượu và heo sữa quay khỏi FAQ.
+  for (const chu of ['rượu', 'heo sữa', 'Heo sữa', 'whisky', '3.240.000']) assert.ok(!faq.includes(chu), chu);
 });
 
 test('Nguyen Nguyen: cau cam ket dung ten thuong hieu Travel; ten phap ly cong ty giu nguyen', () => {

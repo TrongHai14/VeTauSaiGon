@@ -323,10 +323,10 @@ function cauFaq() {
   return [...doc('faq.html').matchAll(/<details[^>]*><summary>(.*?)<\/summary><p>(.*?)<\/p>/gs)]
     .map((m) => [m[1], m[2]].map((s) => s.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').trim()));
 }
-test('FAQ: gia va so do dung yeu cau (ca 4 loai ruou, backdrop, heo sua)', () => {
+test('FAQ: so do backdrop dung yeu cau', () => {
   const t = doc('faq.html').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
-  for (const s of ['100.000 VND/lít', '250.000 VND/chai', '100.000 VND/chai', '350.000 VND/chai', '3.240.000 VND/con', '2,8–3,2 kg', 'ngang 4 m', 'cao 2,5 m']) assert.ok(t.includes(s), s);
-  assert.ok(cauFaq().length >= 14);
+  for (const s of ['ngang 4 m', 'cao 2,5 m']) assert.ok(t.includes(s), s);
+  assert.ok(cauFaq().length >= 13);
 });
 test('FAQ EN: moi cau hoi va tra loi co ban dich; so doi dung dinh dang (dau phay ngan, dau cham thap phan)', () => {
   const nn = require('../js/ngon-ngu.js');

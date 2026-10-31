@@ -182,9 +182,7 @@ const CAU_HOI_FAQ = [
   ['Đi đoàn đông thì đặt thế nào?', 'Đoàn đông sẽ được báo giá riêng và hỗ trợ giữ chỗ nếu đủ điều kiện. Quý khách vui lòng gọi hoặc nhắn Zalo Ms Nguyên 0948170036.'],
   ['Tôi cần suất ăn đặc biệt được không?', 'Quý khách vui lòng báo trước khi đặt. Nguyên Nguyên Travel sẽ kiểm tra khả năng đáp ứng với tàu rồi mới xác nhận.'],
   ['Tôi có chọn được vị trí ngồi cụ thể không?', 'Nguyên Nguyên Travel hỗ trợ theo tình trạng chỗ thực tế, không đảm bảo được nếu vị trí đó đã kín.'],
-  ['Mang rượu lên tàu có bị phụ thu không?', 'Có phụ thu như sau: rượu gạo 100.000 VND/lít; rượu vang 250.000 VND/chai; soju (chai dưới 1 lít) 100.000 VND/chai; whisky 350.000 VND/chai.'],
-  ['Trên tàu có backdrop để chụp hình không?', 'Có. Kích thước ngang 4 m, cao 2,5 m. Quý khách tự in và giao đến tàu, bên tàu sẽ gắn lên khung và treo giúp.'],
-  ['Có đặt được heo sữa quay không?', 'Có. Heo sữa quay (2,8–3,2 kg) giá 3.240.000 VND/con.']
+  ['Trên tàu có backdrop để chụp hình không?', 'Có. Kích thước ngang 4 m, cao 2,5 m. Quý khách tự in và giao đến tàu, bên tàu sẽ gắn lên khung và treo giúp.']
 ];
 
 // ---------- index.html ----------
