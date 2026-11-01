@@ -506,7 +506,6 @@ var TU_DIEN_EN = {
   'Địa chỉ công ty': 'Company address',
   'Tôi đã đọc và đồng ý': 'I have read and agree to the',
   'điều kiện vé & chính sách đổi trả': 'ticket conditions & change policy',
-  'Không hoàn/hủy vé trong ngày sử dụng. Đổi ngày cần báo trước 2–3 ngày.': 'No refunds or cancellations on the day of the cruise. Date changes need 2–3 days’ notice.',
   'Tiếp tục thanh toán': 'Continue to payment',
   'Thanh toán chuyển khoản': 'Bank transfer payment',
   'Thanh toán cho đại lý chính thức': 'Paying an official agent',

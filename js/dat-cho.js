@@ -290,17 +290,6 @@ function taoMaDon(date, ngauNhien) {
   return 'VT' + hai(date.getFullYear() % 100) + hai(date.getMonth() + 1) + hai(date.getDate()) + duoi;
 }
 
-// Dòng nhắc đổi trả ở ô đồng ý: chỉ tàu có chính sách đổi trả (Queen, Star) mới hiện.
-function loiNhacDoiTra(slug) {
-  var ds = typeof CHINH_SACH_CHUNG !== 'undefined' ? CHINH_SACH_CHUNG : require('./du-lieu-tau.js').CHINH_SACH_CHUNG;
-  for (var i = 0; i < ds.length; i++) {
-    if (ds[i].id === 'doi-tra') {
-      return ds[i].chiApDung && ds[i].chiApDung.indexOf(slug) !== -1 ? 'Không hoàn/hủy vé trong ngày sử dụng. Đổi ngày cần báo trước 2–3 ngày.' : '';
-    }
-  }
-  return '';
-}
-
 // Nhớ các đơn đang chờ xác nhận trên máy khách, để mở lại trang vẫn thấy kết quả (7 ngày, tối đa 5 đơn mới nhất).
 var KHOA_DON_CHO_XAC_NHAN = 'veTauSaiGon.donChoXacNhan';
 var HAN_NHO_DON_CHO = 7 * 24 * 3600 * 1000;
@@ -1137,13 +1126,6 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     don.ngay = '';
     el.ngay.value = '';
   }
-  var oDoiTra = document.getElementById('dong-y-doi-tra');
-  function capNhatDoiTra() {
-    if (!oDoiTra) return;
-    oDoiTra.textContent = loiNhacDoiTra(don.slugTau);
-    oDoiTra.hidden = !oDoiTra.textContent;
-  }
-  capNhatDoiTra();
   var khungLich = document.getElementById('lich-dat-cho');
   var lich = null;
   try {
@@ -1329,7 +1311,6 @@ function ganSuKienDatCho(goc, danhSachTau, bangTreEm, cauHinhThanhToan, congTy, 
     // Đổi tàu: ngày đang chọn mà tàu mới đã hết chỗ thì bỏ chọn.
     if (tau && don.ngay && hamLichCho.trangThaiNgay(tau.slug, don.ngay, hamLichCho.ngayHomNayVN()) === 'het') { don.ngay = ''; el.ngay.value = ''; hienNgayDaChon(); }
     if (lich) lich.ve(don.ngay);
-    capNhatDoiTra();
     capNhatNhomAnh();
     veMon();
     veTomTat();
@@ -1815,7 +1796,7 @@ if (typeof module !== 'undefined') {
   module.exports = {
     chuanHoaSoDienThoai, laEmail, laMaSoThue, timMon, layDongDon, tinhTongDon, demKhach, kiemTraBuoc1, kiemTraBuoc2,
     taoMaDon, laMaDon, taoKhoiUyTin, layLogoDaiLy, taoNoiDungVe, taoLinkKiemTraVe, kyPhieuAnToan, taoNoiDungChuyenKhoan, laDonHopLe, taoKhoiMsNguyen, soTreToiDa, soBeMienPhiVuot, canhBaoTreEm, phanBoTreBuffet, layTaiKhoan, taoLinkVietQR, tomTatDon, soanTinNhanDatCho, taoTieuDeEmail,
-    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, loiNhacDoiTra, nhoDonChoXacNhan, layDonChoXacNhan, quenDonChoXacNhan, hienKetQuaThanhToan, layDonCuaToi, layMotDonCuaToi, donDaKhoa, luuDonCuaToi, doiTrangThaiDonCuaToi, xoaDonCuaToi, taoTheDonCuaToi, daChonTaiKhoan, chupGiaDon, giaDonDaDoi, lyDoKhoaThanhToan, guiBaoDaChuyen, trangThaiSauKhiBao, capNhatKhoaCongKhaiMoiNhat, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
+    taoDuLieuEmail, guiEmailDatCho, soChoCuaDon, taoLoiNhanGiuCho, taoCodeVe, nhoDonChoXacNhan, layDonChoXacNhan, quenDonChoXacNhan, hienKetQuaThanhToan, layDonCuaToi, layMotDonCuaToi, donDaKhoa, luuDonCuaToi, doiTrangThaiDonCuaToi, xoaDonCuaToi, taoTheDonCuaToi, daChonTaiKhoan, chupGiaDon, giaDonDaDoi, lyDoKhoaThanhToan, guiBaoDaChuyen, trangThaiSauKhiBao, capNhatKhoaCongKhaiMoiNhat, maHoaDon, giaiMaDon, taoPhieuHtml, taoKhoiChonMon, taoTomTatDon, taoKhoiThanhToan,
     dinhDangNgay, ngayHomNayDiaPhuong, docThamSoUrl, layGiaTreEm, DIA_CHI_NHAN_EMAIL, URL_FORMSUBMIT
   };
 }

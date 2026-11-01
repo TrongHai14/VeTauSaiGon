@@ -299,7 +299,7 @@ ${o('dat-cho-cong-ty-dia-chi', 'congTyDiaChi', 'Địa chỉ công ty', '<input 
             </div>
           </div>
           <div class="the-form">
-            <label class="o-chon"><input type="checkbox" name="dongY" id="dat-cho-dong-y"><span><strong>Tôi đã đọc và đồng ý <a href="chinh-sach.html" target="_blank" rel="noopener">điều kiện vé &amp; chính sách</a></strong><small id="dong-y-doi-tra" hidden></small></span></label>
+            <label class="o-chon"><input type="checkbox" name="dongY" id="dat-cho-dong-y"><span><strong>Tôi đã đọc và đồng ý <a href="chinh-sach.html" target="_blank" rel="noopener">điều kiện vé &amp; chính sách</a></strong></span></label>
             <p class="loi" data-loi="dongY"></p>
           </div>
           <div class="nut-buoc"><button type="button" class="nut nut-vien" data-hanh-dong="ve-buoc-1">Quay lại</button><button type="button" class="nut" data-hanh-dong="buoc-3">Tiếp tục thanh toán</button></div>

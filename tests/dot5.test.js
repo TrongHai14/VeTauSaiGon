@@ -130,9 +130,7 @@ test('tao-phieu: o chon mon dung voi tung tau va loai; chu duoc thoat HTML', () 
   assert.ok(set.includes('Menu Bến Nghé 1') && set.includes('name="treEmMienPhi"'));
 });
 
-test('o dong y: dong nhac doi tra chi hien cho Queen va Star', () => {
-  assert.match(dc.loiNhacDoiTra('indochina-queen'), /Đổi ngày cần báo trước/);
-  assert.match(dc.loiNhacDoiTra('indochina-star'), /Không hoàn/);
-  for (const s of ['ben-nghe', 'elite-of-saigon', 'saigon-princess', 'ben-thanh-princess', '']) assert.strictEqual(dc.loiNhacDoiTra(s), '', s);
-  assert.ok(doc('dat-cho.html').includes('<small id="dong-y-doi-tra" hidden></small>'));
+test('o dong y: khong con dong nhac hoan huy, doi ngay', () => {
+  const html = doc('dat-cho.html');
+  assert.ok(!html.includes('dong-y-doi-tra') && !html.includes('Không hoàn/hủy vé trong ngày sử dụng') && html.includes('name="dongY"'));
 });
