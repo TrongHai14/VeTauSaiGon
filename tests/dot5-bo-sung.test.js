@@ -382,7 +382,7 @@ test('phieu chuyen khoan: khong can da nhan tien, khong co code ve; dung tong, t
   const html = t.phanTu['#khung-phieu'].innerHTML;
   assert.ok(html.includes('PHIẾU THÔNG TIN ĐẶT VÉ VÀ CHUYỂN KHOẢN'), t.thongBao());
   for (const chu of ['Họ và tên', 'Du thuyền', 'Indochina Queen', 'Ngày lên tàu', '10/03/2099', 'Số lượng khách', 'Người lớn', 'Trẻ em (50%)', 'Trẻ em miễn phí', 'Thực đơn', '562.000 x 2', 'Tổng tiền', '1.124.000 VND']) assert.ok(html.includes(chu), chu);
-  for (const chu of ['ACB', 'Số tài khoản', 'Chủ tài khoản', 'Nội dung', 'Mã đơn', 'Phiếu này chưa phải vé']) assert.ok(html.includes(chu), chu);
+  for (const chu of ['ACB', 'Số tài khoản', 'Chủ tài khoản', 'Nội dung', 'Mã đơn', 'Phiếu này chưa phải vé', 'Công ty TNHH Nguyên Nguyên Global', 'MST: 0319143429', 'Đại lý chính thức', 'Ms Nguyên 0948170036', 'hoàn 100%']) assert.ok(html.includes(chu), chu);
   assert.ok(!html.includes('vietqr.io'), 'anh QR ben ngoai khong chup duoc vao anh phieu');
   assert.ok(!html.includes('Code vé điện tử') && !html.includes('Đã thanh toán') && !/<img src=x/i.test(html));
   const { tk, tong, noiDung, tin } = vm.runInContext(`(function () {

@@ -100,7 +100,7 @@ function taoDanhSachPhieuCho(ds, danhSachTau, bangTreEm) {
 }
 
 // Phần 1: phiếu gửi khách kiểm tra thông tin và quét QR chuyển khoản. Chưa phải vé, chưa có code vé.
-function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm, tk) {
+function taoPhieuChuyenKhoanHtml(don, tau, congTy, lienHe, bangTreEm, tk) {
   var e = escapeHtmlDatCho;
   var tt = tomTatDon(don, tau, bangTreEm);
   var noiDung = taoNoiDungChuyenKhoan(don);
@@ -112,6 +112,10 @@ function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm, tk) {
       '<td colspan="2">' + e(d.ten) + '</td><td class="giua">' + e(soVnd(d.gia)) + ' x ' + d.soLuong + '</td></tr>';
   }
   return '<div class="phieu phieu-gon" id="phieu" data-khong-dich><div class="phieu-noi">' +
+    '<div class="phieu-dau">' + taoAnhLogo('', 'phieu-logo') +
+    '<div class="phieu-cong-ty"><strong>' + e(congTy.ten) + '</strong>' +
+    '<p>MST: ' + e(congTy.mst) + ' – ' + e(congTy.vaiTro) + '</p>' +
+    '<p>Hỗ trợ dịch vụ: ' + e(lienHe.tenNguoiLienHe) + ' ' + e(lienHe.soDienThoai) + '</p></div></div>' +
     '<h2>PHIẾU THÔNG TIN ĐẶT VÉ VÀ CHUYỂN KHOẢN</h2>' +
     '<p class="phieu-ngay">Mã đơn <b>' + e(don.maDon) + '</b></p>' +
     '<table><tbody>' +
@@ -125,7 +129,7 @@ function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm, tk) {
     dongMon +
     '<tr><td class="nhan">Tổng tiền</td><td colspan="3" class="giua do">' + e(soVnd(tt.tong)) + ' VND</td></tr>' +
     '</tbody></table>' +
-    '<p class="phieu-luu-y">Quý khách kiểm tra thông tin trên. Nếu đúng, xin chuyển khoản theo mã QR bên dưới; nếu sai, xin báo Ms Nguyên trước khi chuyển. Phiếu này chưa phải vé.</p>' +
+    '<p class="phieu-luu-y">Quý khách kiểm tra thông tin trên. Nếu đúng, xin chuyển khoản theo mã QR bên dưới; nếu sai, xin báo Ms Nguyên trước khi chuyển. Phiếu này chưa phải vé; sau khi nhận đủ tiền, Ms Nguyên sẽ gửi phiếu xác nhận và code vé điện tử qua Zalo. Nếu tàu hết chỗ ngày đã chọn, quý khách được hoàn 100% hoặc đổi sang ngày khác.</p>' +
     '<div class="phieu-chuyen-khoan">' + (anhQR ? '<img src="' + e(anhQR) + '" alt="Mã QR chuyển khoản">' : '') +
     '<table><tbody>' +
     '<tr><td class="nhan">Ngân hàng</td><td>' + e(tk.nganHang) + '</td></tr>' +
@@ -298,7 +302,7 @@ function khoiChayTrangTaoPhieu(cheDo) {
     if (!baoLoi(kiemTraDonTay(don, tau, GIA_TRE_EM, hamLichCho.ngayHomNayVN()))) return;
     if (laPhieuCK) {
       var tkCK = layTaiKhoan(CAU_HINH.thanhToan, don);
-      khungPhieu.innerHTML = taoPhieuChuyenKhoanHtml(don, tau, GIA_TRE_EM, tkCK);
+      khungPhieu.innerHTML = taoPhieuChuyenKhoanHtml(don, tau, CONG_TY, LIEN_HE, GIA_TRE_EM, tkCK);
       donDaTao = don;
       don.tongLucDat = tomTatDon(don, tau, GIA_TRE_EM).tong;
       luuPhieuCho(don, kho);

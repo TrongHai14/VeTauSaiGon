@@ -858,7 +858,7 @@ html[data-giao-dien="toi"] .thong-bao.loi-gui, html[data-giao-dien="toi"] .qr-lo
 #don-cu p + p { margin-top: 8px; }
 #da-thanh-toan h2, #don-da-huy h2 { text-align: center; }
 .phieu-gon .phieu-noi { padding-bottom: 30px; }
-.phieu-gon h2 { margin-top: 0; margin-bottom: 16px; }
+.phieu-gon h2 { margin-bottom: 8px; }
 .so-don { display: inline-grid; place-items: center; min-width: 18px; height: 18px; margin-left: 5px; padding: 0 5px; border-radius: 50%; background: #f26a21; color: #fff; font-size: 11.5px; font-weight: 700; line-height: 1; }
 .danh-sach-don { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-bottom: 28px; }
 .the-don-dau { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 12px; align-items: flex-start; }
