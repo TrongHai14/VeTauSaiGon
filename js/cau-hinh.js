@@ -27,7 +27,7 @@ var CAU_HINH = {
   // Lịch còn chỗ online (Google Sheet + Apps Script, xem cong-cu/google-sheet/HUONG-DAN.md).
   // url: link Web App dạng https://script.google.com/macros/s/.../exec. Để trống = chỉ dùng js/lich-cho-du-lieu.js.
   lichChoOnline: {
-    url: ''
+    url: 'https://script.google.com/macros/s/AKfycbxgt0ur7XA9E45K_7q8WmKNUyCie5NBSk2KbxYADc9NUEZwd3I9TONEIOeMq2C4dpKPjg/exec'
   },
 
   // Nút mạng xã hội ở chân trang. Để trống ('') thì nút đó không hiện trên web.

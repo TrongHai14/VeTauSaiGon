@@ -1,1 +1,1 @@
-{ "name": "vetausaigon", "private": true, "scripts": { "test": "node --test" } }
+{ "name": "vetausaigon", "private": true, "scripts": { "test": "node --require ./tests/chan-mang.js --test" } }

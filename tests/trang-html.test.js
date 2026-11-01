@@ -98,7 +98,9 @@ test('JS khong dung XHR/module; fetch( chi o dat-cho.js; email FormSubmit chi 1 
 });
 
 test('npm test dung node --test; hien-thi.js khong doi document.title', () => {
-  assert.strictEqual(JSON.parse(doc('package.json')).scripts.test, 'node --test');
+  assert.strictEqual(JSON.parse(doc('package.json')).scripts.test, 'node --require ./tests/chan-mang.js --test');
+  // Web đã nối Google Sheet thật: test chạy trong tiến trình con cũng không được gọi mạng thật.
+  assert.ok(String(global.fetch).includes('test khong duoc goi mang that'));
   assert.ok(!/document\.title/.test(doc('js/hien-thi.js')));
 });
 
