@@ -222,7 +222,7 @@ test('doi tra: trang cac tau khac Queen/Star khong co noi dung hoan/huy/doi ngay
 });
 
 test('doi tra: o tick dong y tren trang dat cho (dung chung 6 tau) khong noi doi ngay/hoan huy ma khong gioi han Queen/Star', () => {
-  const m = /id="dat-cho-dong-y".*?<\/small>/s.exec(doc('dat-cho.html'))[0].replace(/<[^>]*>/g, '');
+  const m = /id="dat-cho-dong-y".*?<\/label>/s.exec(doc('dat-cho.html'))[0].replace(/<[^>]*>/g, '');
   if (/Đổi ngày|hoàn\/hủy/i.test(m)) assert.ok(/Queen/.test(m) && /Star/.test(m), 'dat-cho.html noi doi ngay/hoan huy cho moi tau: ' + m);
 });
 
