@@ -25,7 +25,7 @@ const tong = (d, slug) => dc.tomTatDon(d, tau(slug || d.slugTau), GIA_TRE_EM);
 test('buffet 1 nguoi lon + 1 be mien phi: be khong tinh tien', () => {
   const d = don({ nguoiLon: 1, treEmMienPhi: 1 });
   const tt = tong(d);
-  assert.strictEqual(tt.tong, 615600);
+  assert.strictEqual(tt.tong, 616000);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 1, treEm50: 0, treEmMienPhi: 1 });
   assert.strictEqual(dc.soBeMienPhiVuot(d), 0);
   assert.strictEqual(dc.canhBaoTreEm(d, tau('indochina-queen')), null);
@@ -36,7 +36,7 @@ test('buffet 3 nguoi lon + 3 be mien phi: chi 1 be mien phi, 2 be con lai tinh 5
   assert.strictEqual(dc.soTreToiDa(3), 1);
   assert.strictEqual(dc.soBeMienPhiVuot(d), 2);
   const tt = tong(d);
-  assert.strictEqual(tt.tong, 3 * 615600 + 2 * 307800);
+  assert.strictEqual(tt.tong, 3 * 616000 + 2 * 308000);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 3, treEm50: 2, treEmMienPhi: 1 });
   assert.strictEqual(dc.canhBaoTreEm(d, tau('indochina-queen')), null, 'Queen (giong Star tu 19/10/2026): be vuot da tu tinh 50%');
   assert.strictEqual(dc.canhBaoTreEm(Object.assign({}, d, { slugTau: 'indochina-star', buffetMa: '0:0' }), tau('indochina-star')), null, 'Star: be vuot da tu tinh 50%');

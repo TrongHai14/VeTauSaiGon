@@ -28,15 +28,15 @@ test('laMaSoThue va laEmail', () => {
 
 test('buffet: nguoi lon gia du, tre 50% lam tron, tre mien phi 0d', () => {
   const tt = dc.tomTatDon(donBuffet(), tau('indochina-queen'), GIA_TRE_EM);
-  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong, d.thanhTien]), [[615600, 2, 1231200], [307800, 1, 307800]]);
-  assert.strictEqual(tt.tong, 1539000);
+  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong, d.thanhTien]), [[616000, 2, 1232000], [308000, 1, 308000]]);
+  assert.strictEqual(tt.tong, 1540000);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 2, treEm50: 1, treEmMienPhi: 1 });
 });
 
 test('buffet: tau khong co chinh sach 50% thi bo qua so tre 50%', () => {
   const khong50 = { 'indochina-queen': { buffet: { mienPhi: 'x', nuaGia: null } } };
   const tt = dc.tomTatDon(donBuffet(), tau('indochina-queen'), khong50);
-  assert.strictEqual(tt.tong, 1231200);
+  assert.strictEqual(tt.tong, 1232000);
 });
 
 test('set menu: moi mon x so suat, suat Tre em dem vao tre em', () => {
@@ -85,15 +85,15 @@ test('tai khoan nhan: VAT luon vao tai khoan cong ty', () => {
 test('VietQR: dung ngan hang, so tai khoan, so tien, noi dung', () => {
   const noiDung = dc.taoNoiDungChuyenKhoan(donBuffet());
   assert.strictEqual(noiDung, 'VT261007ABCD 0392082288');
-  const url = dc.taoLinkVietQR(TT.caNhan, 1539000, noiDung);
-  assert.ok(url.startsWith('https://img.vietqr.io/image/970416-25960437-compact2.png?amount=1539000&addInfo=VT261007ABCD%200392082288'));
+  const url = dc.taoLinkVietQR(TT.caNhan, 1540000, noiDung);
+  assert.ok(url.startsWith('https://img.vietqr.io/image/970416-25960437-compact2.png?amount=1540000&addInfo=VT261007ABCD%200392082288'));
   assert.ok(url.includes('accountName=' + encodeURIComponent('Lê Hoàng Thảo Nguyên')));
 });
 
 test('khoi thanh toan: co QR tu tao, co 2 lua chon tai khoan; VAT chi con tai khoan cong ty', () => {
   const html = dc.taoKhoiThanhToan(donBuffet(), tau('indochina-queen'), GIA_TRE_EM, TT);
   assert.ok(html.includes('img.vietqr.io') && html.includes('value="caNhan"') && html.includes('value="congTy"'));
-  assert.ok(html.includes('1.539.000 VND'));
+  assert.ok(html.includes('1.540.000 VND'));
   const vat = dc.taoKhoiThanhToan(donBuffet({ vat: true }), tau('indochina-queen'), GIA_TRE_EM, TT);
   assert.ok(!vat.includes('value="caNhan"') && vat.includes('4988888666'));
   const coAnh = Object.assign({}, TT, { caNhan: Object.assign({}, TT.caNhan, { anhQR: 'anh/qr/qr.png' }) });
@@ -117,11 +117,11 @@ test('tin nhan Zalo va email gom ma don, tong tien, tai khoan, VAT', () => {
   const don = donBuffet({ vat: true, congTy: { ten: 'ABC', mst: '0312345678', diaChi: '1 Lê Lợi', email: 'kt@abc.vn' } });
   const tk = dc.layTaiKhoan(TT, don);
   const tin = dc.soanTinNhanDatCho(don, tau('indochina-queen'), GIA_TRE_EM, tk);
-  assert.ok(tin.includes('- Mã đơn: VT261007ABCD') && tin.includes('- Tổng cộng: 1.539.000 VND') && tin.includes('MST 0312345678'));
+  assert.ok(tin.includes('- Mã đơn: VT261007ABCD') && tin.includes('- Tổng cộng: 1.540.000 VND') && tin.includes('MST 0312345678'));
   assert.ok(!tin.includes('xac-nhan.html'), 'khach khong nhan link tao phieu');
   const email = dc.taoDuLieuEmail(don, tau('indochina-queen'), GIA_TRE_EM, tk, 'https://x/xac-nhan.html#abc');
   assert.strictEqual(email._subject, 'Đặt chỗ mới - Indochina Queen - 24/12/2999 - VT261007ABCD');
-  assert.strictEqual(email['Tổng cộng'], '1.539.000 VND');
+  assert.strictEqual(email['Tổng cộng'], '1.540.000 VND');
   assert.strictEqual(email['Link tạo phiếu sau khi kiểm tra tiền'], 'https://x/xac-nhan.html#abc');
 });
 
@@ -138,7 +138,7 @@ test('phieu xac nhan: trang thai, ma don, code ve, ngay dat cua khach', () => {
   const don = donBuffet();
   const html = dc.taoPhieuHtml(don, tau('indochina-queen'), CONG_TY, LIEN_HE, GIA_TRE_EM, dc.layTaiKhoan(TT, don),
     { trangThai: 'Đã thanh toán.', codeVe: 'QN-1', ngayXacNhan: new Date(2026, 11, 1) });
-  for (const s of ['Đã thanh toán.', 'VT261007ABCD', 'QN-1', 'VŨ THỊ HIỀN', '24.12.2999', '0319143429', '0948170036', '1.539.000 vnd']) {
+  for (const s of ['Đã thanh toán.', 'VT261007ABCD', 'QN-1', 'VŨ THỊ HIỀN', '24.12.2999', '0319143429', '0948170036', '1.540.000 vnd']) {
     assert.ok(html.includes(s), s);
   }
   assert.ok(html.includes('Ngày đặt <b>07</b> tháng <b>10</b>'), 'lay ngay khach dat, khong lay ngay xac nhan');
@@ -177,7 +177,7 @@ test('quy dinh tre em chung (Star): 2 nguoi lon kem 1 be mien phi, be thu 2 tinh
   const don = donBuffet({ slugTau: 'indochina-star', buffetMa: '0:0', nguoiLon: 2, treEm50: 0, treEmMienPhi: 2 });
   assert.strictEqual(dc.soBeMienPhiVuot(don), 1);
   const tt = dc.tomTatDon(don, st, GIA_TRE_EM);
-  assert.strictEqual(tt.tong, 615600 * 2 + 307800);
+  assert.strictEqual(tt.tong, 616000 * 2 + 308000);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 2, treEm50: 1, treEmMienPhi: 1 });
   assert.strictEqual(dc.canhBaoTreEm(don, st, GIA_TRE_EM), null, 'be vuot da duoc tinh ve tre em nen khong canh bao');
   assert.strictEqual(dc.canhBaoTreEm(donBuffet({ slugTau: 'indochina-star', buffetMa: '0:0', treEm50: 1, treEmMienPhi: 1 }), st, GIA_TRE_EM), null);
@@ -210,9 +210,9 @@ test('Queen (giong Star): tre 5-9 tuoi tinh 50%, be mien phi thu 2 tu tinh 50%, 
   const q = tau('indochina-queen');
   const hai = donBuffet({ buffetMa: '0:0', nguoiLon: 2, treEm50: 2, treEmMienPhi: 0 });
   const tt = dc.tomTatDon(hai, q, GIA_TRE_EM);
-  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong]), [[561600, 2], [280800, 2]]);
+  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong]), [[562000, 2], [281000, 2]]);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 2, treEm50: 2, treEmMienPhi: 0 });
-  assert.strictEqual(tt.tong, 561600 * 2 + 280800 * 2);
+  assert.strictEqual(tt.tong, 562000 * 2 + 281000 * 2);
   assert.strictEqual(dc.canhBaoTreEm(hai, q), null);
   assert.strictEqual(dc.canhBaoTreEm(donBuffet({ buffetMa: '0:0', treEm50: 1, treEmMienPhi: 1 }), q), null);
   const haiBe = dc.tomTatDon(donBuffet({ buffetMa: '0:0', treEm50: 0, treEmMienPhi: 2 }), q, GIA_TRE_EM);
@@ -248,10 +248,10 @@ test('co treEm50VuotTinhNguoiLon (bang tuy chinh): tre 50% vuot tinh gia nguoi l
   const st = tau('indochina-star');
   const don = donBuffet({ slugTau: 'indochina-star', buffetMa: '0:0', nguoiLon: 2, treEm50: 2, treEmMienPhi: 0 });
   const tt = dc.tomTatDon(don, st, bang);
-  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong]), [[615600, 2], [307800, 1], [615600, 1]]);
+  assert.deepStrictEqual(tt.dong.map((d) => [d.gia, d.soLuong]), [[616000, 2], [308000, 1], [616000, 1]]);
   assert.deepStrictEqual(tt.khach, { nguoiLon: 3, treEm50: 1, treEmMienPhi: 0 });
   const thuong = dc.tomTatDon(don, st, GIA_TRE_EM);
-  assert.strictEqual(thuong.tong, 615600 * 2 + 307800 * 2, 'Star that khong co co nay');
+  assert.strictEqual(thuong.tong, 616000 * 2 + 308000 * 2, 'Star that khong co co nay');
 });
 
 test('loc nhanh set menu: Princess co chip 3/4/5 mon, Chay, Tre em; Queen (11 mon INDO) khong co', () => {

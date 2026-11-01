@@ -14,7 +14,7 @@ function escapeHtml(chuoi) {
     .replace(/'/g, '&#39;');
 }
 
-// 615600 -> '615.600 VND'. Không phải số nguyên dương -> ''.
+// 616000 -> '616.000 VND'. Không phải số nguyên dương -> ''.
 function dinhDangGia(soVnd) {
   if (typeof soVnd !== 'number' || !isFinite(soVnd) || Math.floor(soVnd) !== soVnd || soVnd <= 0) return '';
   return String(soVnd).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' VND';

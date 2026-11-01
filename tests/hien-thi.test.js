@@ -7,9 +7,9 @@ const { DANH_SACH_TAU, LIEN_HE } = require('../js/du-lieu-tau.js');
 const tau = (slug) => DANH_SACH_TAU.find((t) => t.slug === slug);
 
 test('dinhDangGia: duong chay thuan loi va gia tri khong hop le', () => {
-  assert.strictEqual(ht.dinhDangGia(615600), '615.600 VND');
+  assert.strictEqual(ht.dinhDangGia(616000), '616.000 VND');
   assert.strictEqual(ht.dinhDangGia(1047600), '1.047.600 VND');
-  for (const x of [0, -1, 1.5, NaN, null, '615600']) assert.strictEqual(ht.dinhDangGia(x), '');
+  for (const x of [0, -1, 1.5, NaN, null, '616000']) assert.strictEqual(ht.dinhDangGia(x), '');
 });
 
 test('escapeHtml', () => {
@@ -18,7 +18,7 @@ test('escapeHtml', () => {
 });
 
 test('giaThapNhat: bo bang phu thu va suat tre em', () => {
-  assert.strictEqual(ht.giaThapNhat(tau('indochina-queen')), 561600);
+  assert.strictEqual(ht.giaThapNhat(tau('indochina-queen')), 562000);
   assert.strictEqual(ht.giaThapNhat(tau('saigon-princess')), 950000, 'khong lay 850.000 cua menu tre em');
   assert.strictEqual(ht.giaThapNhat(tau('elite-of-saigon')), 1969000, 'khong lay Menu Tre em 1.749.000 hay phu thu 490.000');
 });
@@ -90,7 +90,7 @@ test('taoTrangTau chay duoc cho ca 6 tau', () => {
 test('taoTheTau: nhan loai, gia, Ben Nghe ghi 2 muc gia', () => {
   const the = ht.taoTheTau(tau('indochina-queen'), '');
   assert.ok(the.includes('data-loai="Buffet|Set menu"'));
-  assert.ok(the.includes('561.600 VND'));
+  assert.ok(the.includes('562.000 VND'));
   assert.ok(ht.taoTheTau(tau('ben-nghe'), '').includes('Set menu từ 469.000đ · Buffet 733.320đ'));
 });
 

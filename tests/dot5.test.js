@@ -124,7 +124,7 @@ test('tao-phieu: kiem tra don nhap tay bao dung tung o', () => {
 test('tao-phieu: o chon mon dung voi tung tau va loai; chu duoc thoat HTML', () => {
   const ctx = napTaoPhieu();
   const buffet = ctx.taoOChonMonTay(tau('indochina-queen'), 'buffet');
-  assert.ok(buffet.includes('name="buffetMa"') && buffet.includes('name="nguoiLon"') && buffet.includes('561.600 VND'));
+  assert.ok(buffet.includes('name="buffetMa"') && buffet.includes('name="nguoiLon"') && buffet.includes('562.000 VND'));
   const set = ctx.taoOChonMonTay(tau('ben-nghe'), 'setMenu');
   assert.strictEqual((set.match(/name="mon:/g) || []).length, 8);
   assert.ok(set.includes('Menu Bến Nghé 1') && set.includes('name="treEmMienPhi"'));

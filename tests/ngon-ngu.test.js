@@ -46,7 +46,7 @@ test('dichChuoi: tu dien, mau cau, dinh dang gio va gia; vi thi khong dich', () 
   assert.strictEqual(nn.dichChuoi('Đặt chỗ', 'vi'), null);
   assert.strictEqual(nn.dichChuoi('  Đặt   chỗ ', 'en'), 'Book', 'gop khoang trang');
   assert.strictEqual(nn.dichChuoi('Ngày 24/12/2026 · Đón 17h15', 'en'), '24 Dec 2026 · Pick-up 17:15');
-  assert.strictEqual(nn.dichChuoi('561.600 VND', 'en'), '561,600 VND');
+  assert.strictEqual(nn.dichChuoi('562.000 VND', 'en'), '562,000 VND');
   assert.strictEqual(nn.dichChuoi('Set menu từ 469.000đ · Buffet 733.320đ', 'en'), 'Set menus from 469,000 VND · Buffet 733,320 VND');
   assert.strictEqual(nn.dichChuoi('Câu này chưa có trong từ điển', 'en'), null);
   assert.strictEqual(nn.dichChuoi('0948170036', 'en'), null, 'so dien thoai giu nguyen');

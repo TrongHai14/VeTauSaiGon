@@ -53,8 +53,8 @@ Giữ nguyên: mục 4 là tàu Bến Nghé, các hình ảnh trong mục đó d
 
 - **Không đưa set menu Indochina Star lên web** (bỏ toàn bộ mục 2 "Giá setmenu" và các ảnh set menu của Star).
 - Giá buffet ghi **đúng như trong ảnh**:
-  - Tầng 1: **615.600 VND / khách**
-  - Tầng 2: **669.600 VND / khách**
+  - Tầng 1: **616.000 VND / khách**
+  - Tầng 2: **670.000 VND / khách**
 - Bỏ dòng "Buffet: 648.000 VND/Khách".
 
 ## 6. Giờ chạy, giá và quy định còn thiếu
@@ -73,9 +73,9 @@ Giữ nguyên: mục 4 là tàu Bến Nghé, các hình ảnh trong mục đó d
   3. Trẻ từ 10 tuổi (trên 1,3m): tính như người lớn.
   4. Hai người lớn được kèm 01 trẻ 1m–1,3m, từ trẻ thứ 2 tính như người lớn.
 - Giá buffet ghi đúng như trong ảnh (cùng nguyên tắc với mục 5):
-  - Tầng 1: 561.600 VND / khách
-  - Tầng 2: 615.600 VND / khách
-  - Tầng 3: 669.600 VND / khách
+  - Tầng 1: 562.000 VND / khách
+  - Tầng 2: 616.000 VND / khách
+  - Tầng 3: 670.000 VND / khách
 - Giá set menu ghi đúng như trong ảnh:
 
 | Menu | Giá / khách |

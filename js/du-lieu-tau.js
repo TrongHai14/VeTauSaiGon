@@ -47,9 +47,9 @@ var DANH_SACH_TAU = [
         tieuDe: 'Buffet',
         ghiChu: 'Tiệc buffet không giới hạn, giá đã bao gồm VAT.',
         dong: [
-          { ten: 'Tầng 1', tenPhu: null, gia: 561600 },
-          { ten: 'Tầng 2', tenPhu: null, gia: 615600 },
-          { ten: 'Tầng 3', tenPhu: null, gia: 669600 }
+          { ten: 'Tầng 1', tenPhu: null, gia: 562000 },
+          { ten: 'Tầng 2', tenPhu: null, gia: 616000 },
+          { ten: 'Tầng 3', tenPhu: null, gia: 670000 }
         ]
       },
       {
@@ -101,8 +101,8 @@ var DANH_SACH_TAU = [
         tieuDe: 'Buffet',
         ghiChu: 'Giá đã bao gồm VAT. Tầng 3 là tầng thượng để khách ngắm cảnh khi lên tàu.',
         dong: [
-          { ten: 'Tầng 1', tenPhu: null, gia: 615600 },
-          { ten: 'Tầng 2', tenPhu: null, gia: 669600 }
+          { ten: 'Tầng 1', tenPhu: null, gia: 616000 },
+          { ten: 'Tầng 2', tenPhu: null, gia: 670000 }
         ]
       }
     ],

@@ -13,7 +13,7 @@ const GOC = path.join(__dirname, '..');
 const doc = (f) => fs.readFileSync(path.join(GOC, f), 'utf8');
 const VE = {
   m: 'VT261012ABCD', t: 'indochina-queen', tt: 'Indochina Queen', n: '2026-10-20', h: 'Nguyễn Thị Hiền',
-  s: '0948170036', nl: 2, te: 1, mp: 1, g: 1539000, c: 'AB12', x: '2026-10-12'
+  s: '0948170036', nl: 2, te: 1, mp: 1, g: 1540000, c: 'AB12', x: '2026-10-12'
 };
 const b64 = (o) => Buffer.from(JSON.stringify(o), 'utf8').toString('base64url');
 const giaiGoi = (chuoi) => JSON.parse(Buffer.from(chuoi, 'base64url').toString('utf8'));

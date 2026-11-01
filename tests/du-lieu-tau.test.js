@@ -34,8 +34,8 @@ test('gio chay', () => {
 });
 test('gia khop giai-dap.md: Star, Queen, Ben Nghe', () => {
   assert.deepStrictEqual(tau('indochina-star').bangGia.map((b) => b.tieuDe), ['Buffet']);
-  assert.deepStrictEqual(bang(tau('indochina-star'), 'Buffet').dong.map((d) => d.gia), [615600, 669600]);
-  assert.deepStrictEqual(bang(tau('indochina-queen'), 'Buffet').dong.map((d) => d.gia), [561600, 615600, 669600]);
+  assert.deepStrictEqual(bang(tau('indochina-star'), 'Buffet').dong.map((d) => d.gia), [616000, 670000]);
+  assert.deepStrictEqual(bang(tau('indochina-queen'), 'Buffet').dong.map((d) => d.gia), [562000, 616000, 670000]);
   const sm = bang(tau('indochina-queen'), 'Set menu');
   assert.deepStrictEqual(sm.dong.map((d) => d.ten), ['INDO7', 'INDO8', 'INDO9', 'INDO10', 'INDO11', 'INDO12', 'INDO13', 'INDO14', 'INDO15', 'INDO16', 'INDO17']);
   assert.deepStrictEqual(sm.dong.map((d) => d.gia), [723600, 723600, 831600, 831600, 939600, 939600, 1047600, 1047600, 1209600, 1425600, 1641600]);

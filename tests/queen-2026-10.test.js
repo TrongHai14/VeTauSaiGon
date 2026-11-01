@@ -37,7 +37,7 @@ test('Queen: khong con canh bao tong tre; tinh tien giong Star', () => {
 test('Queen: 2 NL + 2 be mien phi -> be thu 2 tinh 50% (giong Star)', () => {
   const d = don('indochina-queen', { buffetMa: '0:1', treEmMienPhi: 2 });
   assert.deepStrictEqual(dc.demKhach(d, queen, GIA_TRE_EM), { nguoiLon: 2, treEm50: 1, treEmMienPhi: 1 });
-  assert.strictEqual(dc.tomTatDon(d, queen, GIA_TRE_EM).tong, 615600 * 2 + 307800);
+  assert.strictEqual(dc.tomTatDon(d, queen, GIA_TRE_EM).tong, 616000 * 2 + 308000);
 });
 
 test('Cac tau khac khong bi anh huong', () => {

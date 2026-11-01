@@ -381,7 +381,7 @@ test('phieu chuyen khoan: khong can da nhan tien, khong co code ve; dung tong, t
   await t.nop();
   const html = t.phanTu['#khung-phieu'].innerHTML;
   assert.ok(html.includes('PHIẾU THÔNG TIN ĐẶT VÉ VÀ CHUYỂN KHOẢN'), t.thongBao());
-  for (const chu of ['Họ và tên', 'Du thuyền', 'Indochina Queen', 'Ngày lên tàu', '10/03/2099', 'Số lượng khách', 'Người lớn', 'Trẻ em (50%)', 'Trẻ em miễn phí', 'Thực đơn', '561.600 x 2', 'Tổng tiền', '1.123.200 VND']) assert.ok(html.includes(chu), chu);
+  for (const chu of ['Họ và tên', 'Du thuyền', 'Indochina Queen', 'Ngày lên tàu', '10/03/2099', 'Số lượng khách', 'Người lớn', 'Trẻ em (50%)', 'Trẻ em miễn phí', 'Thực đơn', '562.000 x 2', 'Tổng tiền', '1.124.000 VND']) assert.ok(html.includes(chu), chu);
   for (const chu of ['ACB', 'Số tài khoản', 'Chủ tài khoản', 'Nội dung', 'Mã đơn', 'Phiếu này chưa phải vé']) assert.ok(html.includes(chu), chu);
   assert.ok(!html.includes('vietqr.io'), 'anh QR ben ngoai khong chup duoc vao anh phieu');
   assert.ok(!html.includes('Code vé điện tử') && !html.includes('Đã thanh toán') && !/<img src=x/i.test(html));
@@ -417,10 +417,10 @@ test('VietQR: CRC dung chuan va chuoi dung cau truc EMVCo', () => {
   const t = dungTrang();
   const goi = (s) => vm.runInContext(s, t.ctx);
   assert.strictEqual(goi("crcVietQR('123456789')"), '29B1', 'mau chuan CRC-16/CCITT-FALSE');
-  const qr = goi("taoChuoiVietQR('970416', '25960437', 1123200, 'VT261031ABCD 0912345678')");
+  const qr = goi("taoChuoiVietQR('970416', '25960437', 1124000, 'VT261031ABCD 0912345678')");
   const than = '000201' + '010212' +
     '38' + '52' + '0010A000000727' + '0122' + '0006970416' + '010825960437' + '0208QRIBFTTA' +
-    '5303704' + '54071123200' + '5802VN' + '6227' + '0823VT261031ABCD 0912345678' + '6304';
+    '5303704' + '54071124000' + '5802VN' + '6227' + '0823VT261031ABCD 0912345678' + '6304';
   assert.strictEqual(qr.slice(0, -4), than);
   assert.strictEqual(qr.slice(-4), goi('crcVietQR(' + JSON.stringify(than) + ')'));
 });
