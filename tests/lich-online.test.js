@@ -675,3 +675,26 @@ test('don cua toi: bao chuyen khoan giu gia da chup, loi thi tra false, so tren 
   const ds = [{ don: { maDon: 'A', ngay: '2099-03-10' } }, { don: { maDon: 'B', ngay: '2099-01-01' } }, null, { don: { ngay: 'sai', maDon: 'C' } }];
   assert.deepStrictEqual(locDonCuaToiConHan(ds, '2099-03-17').map((b) => b.don.maDon), ['A']);
 });
+
+test('thanh toan: phai chon 1 trong 2 moi hien QR; chon VAT la tai khoan cong ty; bo chu khong xuat hoa don o tai khoan ca nhan', () => {
+  const dc = require('../js/dat-cho.js');
+  const { DANH_SACH_TAU, GIA_TRE_EM, LIEN_HE } = require('../js/du-lieu-tau.js');
+  const { CAU_HINH } = require('../js/cau-hinh.js');
+  const tau = DANH_SACH_TAU.find((t) => t.slug === 'indochina-queen');
+  const tt = (d) => dc.taoKhoiThanhToan(donCuaToi(d), tau, GIA_TRE_EM, CAU_HINH.thanhToan);
+  const chua = tt({ taiKhoan: '' });
+  assert.ok(chua.includes('value="caNhan"') && chua.includes('value="congTy"') && !chua.includes(' checked'));
+  assert.ok(!chua.includes('vietqr') && !chua.includes('25960437') && chua.includes('để hiện mã QR'), 'chua chon thi chua co QR');
+  assert.ok(chua.includes('Chuyển khoản cá nhân') && !chua.includes('không xuất hóa đơn') && chua.includes('Chuyển khoản công ty (xuất hóa đơn VAT)'));
+  const canhan = tt({ taiKhoan: 'caNhan' });
+  assert.ok(canhan.includes('vietqr') && canhan.includes('25960437') && canhan.includes(' checked'));
+  const congty = tt({ taiKhoan: 'congTy' });
+  assert.ok(congty.includes('vietqr') && congty.includes('4988888666'));
+  const vat = tt({ taiKhoan: '', vat: true });
+  assert.ok(vat.includes('4988888666') && !vat.includes('value="caNhan"'));
+  assert.deepStrictEqual(['', 'rac', undefined].map((k) => dc.daChonTaiKhoan({ taiKhoan: k })), [false, false, false]);
+  const the = dc.taoTheDonCuaToi({ don: donCuaToi({ taiKhoan: '' }), trangThai: 'chua-chuyen' }, tau, GIA_TRE_EM, CAU_HINH.thanhToan, LIEN_HE, true);
+  assert.ok(!the.includes('data-viec="da-chuyen"') && !the.includes('vietqr'), 'the don chua chon');
+  const html = doc('dat-cho.html');
+  assert.ok(html.includes('name="vat"') && html.includes('name="congTyMst"'), 'o tich xuat hoa don van con');
+});

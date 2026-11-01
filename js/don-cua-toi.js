@@ -60,6 +60,15 @@ function khoiChayTrangDonCuaToi() {
     });
   }
 
+  khung.addEventListener('change', function (e) {
+    if (e.target.name !== 'taiKhoan') return;
+    var banGhi = layMotDonCuaToi(e.target.closest('[data-ma-don]').getAttribute('data-ma-don'), kho);
+    if (!banGhi || donDaKhoa(banGhi)) { ve(); return; }
+    banGhi.don.taiKhoan = e.target.value;
+    luuDonCuaToi(banGhi.don, 'chua-chuyen', kho);
+    ve();
+  });
+
   khung.addEventListener('click', function (e) {
     var nutChep = e.target.closest('[data-chep]');
     if (nutChep) {
@@ -87,7 +96,7 @@ function khoiChayTrangDonCuaToi() {
       if (dangGui[ma]) return;
       var banGhi = layMotDonCuaToi(ma, kho);
       // Đọc lại: tab khác có thể đã báo, hoặc trang mở lâu đã qua giờ tàu chạy.
-      if (!banGhi || !tauCua(banGhi) || donDaKhoa(banGhi) || lyDoKhoaThanhToan(banGhi.don, tauCua(banGhi), GIA_TRE_EM, Date.now())) { ve(); return; }
+      if (!banGhi || !tauCua(banGhi) || donDaKhoa(banGhi) || !daChonTaiKhoan(banGhi.don) || lyDoKhoaThanhToan(banGhi.don, tauCua(banGhi), GIA_TRE_EM, Date.now())) { ve(); return; }
       dangGui[ma] = true;
       delete baoLoiGui[ma];
       ve();
