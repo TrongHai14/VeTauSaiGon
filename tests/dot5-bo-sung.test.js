@@ -48,7 +48,7 @@ function dungTrang(tuyChon) {
   const goc = { querySelector: (s) => phanTu[s], querySelectorAll: () => cacLoi, addEventListener() {} };
   const ctx = {
     console, Promise, Date, Math, Uint32Array, String, Number, Object, Array, JSON, parseInt, isNaN, encodeURIComponent, setTimeout, Blob: function () {},
-    window: { addEventListener() {}, print() {}, matchMedia: () => ({ matches: false }) }, location: { reload() {}, search: '', hash: '' },
+    window: { addEventListener() {}, print() {}, matchMedia: () => ({ matches: false }), localStorage: tuyChon.kho }, location: { reload() {}, search: tuyChon.search || '', hash: '' },
     document: { getElementById: (id) => (id === 'tao-phieu' ? goc : null), querySelectorAll: () => [], querySelector: () => null, documentElement: {} },
     localStorage: { getItem: () => null, setItem() {} },
     crypto: { getRandomValues: (m) => { for (let i = 0; i < m.length; i++) m[i] = Math.floor(Math.random() * 4294967296); return m; } }
@@ -380,9 +380,10 @@ test('phieu chuyen khoan: khong can da nhan tien, khong co code ve; dung tong, t
   t.el.hoTen.value = '<img src=x onerror=alert(1)>';
   await t.nop();
   const html = t.phanTu['#khung-phieu'].innerHTML;
-  assert.ok(html.includes('PHIẾU XÁC NHẬN THÔNG TIN ĐẶT VÉ'), t.thongBao());
+  assert.ok(html.includes('PHIẾU THÔNG TIN ĐẶT VÉ VÀ CHUYỂN KHOẢN'), t.thongBao());
   for (const chu of ['Họ và tên', 'Du thuyền', 'Indochina Queen', 'Ngày lên tàu', '10/03/2099', 'Số lượng khách', 'Người lớn', 'Trẻ em (50%)', 'Trẻ em miễn phí', 'Thực đơn', '561.600 x 2', 'Tổng tiền', '1.123.200 VND']) assert.ok(html.includes(chu), chu);
-  for (const chu of ['ACB', 'Số tài khoản', 'Nội dung', 'vietqr', 'Mã đơn', 'MST']) assert.ok(!html.includes(chu), chu);
+  for (const chu of ['ACB', 'Số tài khoản', 'Chủ tài khoản', 'Nội dung', 'Mã đơn', 'Phiếu này chưa phải vé']) assert.ok(html.includes(chu), chu);
+  assert.ok(!html.includes('vietqr.io'), 'anh QR ben ngoai khong chup duoc vao anh phieu');
   assert.ok(!html.includes('Code vé điện tử') && !html.includes('Đã thanh toán') && !/<img src=x/i.test(html));
   const { tk, tong, noiDung, tin } = vm.runInContext(`(function () {
     var d = { slugTau: 'indochina-queen', ngay: '2099-03-10', loai: 'buffet', buffetMa: DANH_SACH_TAU[0] && hamHienThi.layThucDonTheoLoai(timTauTheoSlug(DANH_SACH_TAU, 'indochina-queen')).buffet[0].dong[0].ma, nguoiLon: 2, treEm50: 0, treEmMienPhi: 0, mon: {}, hoTen: 'A', soDienThoai: '0912345678', taiKhoan: 'congTy', maDon: 'VT261031ABCD' };
@@ -407,7 +408,50 @@ test('phieu chuyen khoan: van bat loi nhap; trang tao-phieu cu van bat buoc da n
   await cu.nop();
   assert.strictEqual(cu.phanTu['#khung-phieu'].innerHTML, '');
   const html = doc('phieu-chuyen-khoan.html');
-  assert.ok(html.includes('noindex') && !html.includes('rel="canonical"') && !html.includes('name="daNhanTien"') && !html.includes('name="codeVe"'));
+  assert.ok(html.includes('noindex') && !html.includes('rel="canonical"') && !html.includes('name="daNhanTien"') && !html.includes('name="codeVe"') && html.includes('qrcode.min.js') && html.includes('id="ds-phieu-cho"'));
   assert.ok(doc('robots.txt').includes('Disallow: /phieu-chuyen-khoan.html') && !doc('sitemap.xml').includes('phieu-chuyen-khoan'));
   for (const f of ['index.html', 'dat-cho.html', 'faq.html', 'chinh-sach.html']) assert.ok(!doc(f).includes('phieu-chuyen-khoan'), f);
+});
+
+test('VietQR: CRC dung chuan va chuoi dung cau truc EMVCo', () => {
+  const t = dungTrang();
+  const goi = (s) => vm.runInContext(s, t.ctx);
+  assert.strictEqual(goi("crcVietQR('123456789')"), '29B1', 'mau chuan CRC-16/CCITT-FALSE');
+  const qr = goi("taoChuoiVietQR('970416', '25960437', 1123200, 'VT261031ABCD 0912345678')");
+  const than = '000201' + '010212' +
+    '38' + '52' + '0010A000000727' + '0122' + '0006970416' + '010825960437' + '0208QRIBFTTA' +
+    '5303704' + '54071123200' + '5802VN' + '6227' + '0823VT261031ABCD 0912345678' + '6304';
+  assert.strictEqual(qr.slice(0, -4), than);
+  assert.strictEqual(qr.slice(-4), goi('crcVietQR(' + JSON.stringify(than) + ')'));
+});
+
+test('phieu 2 phan: phieu 1 vao danh sach cho; phieu 2 dien lai dung ma don va thong tin, tao xong thi ra khoi danh sach; khong goi mang', async () => {
+  const luu = {};
+  const kho = { getItem: (k) => (k in luu ? luu[k] : null), setItem: (k, v) => { luu[k] = v; }, removeItem: (k) => { delete luu[k]; } };
+  const p1 = dungTrang({ cheDo: 'chuyen-khoan', kho });
+  p1.chonTau('indochina-queen', 'buffet');
+  p1.truong('nguoiLon').value = '3';
+  p1.el.hoTen.value = 'Khách B';
+  await p1.nop();
+  const ds = JSON.parse(luu['veTauSaiGon.phieuChoChuyenKhoan']);
+  assert.strictEqual(ds.length, 1, p1.thongBao());
+  const ma = ds[0].maDon;
+  assert.ok(!p1.phanTu['#khung-phieu'].innerHTML.includes('Code vé'), 'phieu 1 chua co code ve');
+
+  const p2 = dungTrang({ kho, search: '?ma=' + ma });
+  assert.strictEqual(p2.el.tau.value, 'indochina-queen');
+  assert.strictEqual(p2.el.hoTen.value, 'Khách B');
+  assert.strictEqual(String(p2.truong('nguoiLon').value), '3');
+  assert.ok(p2.thongBao().includes(ma), p2.thongBao());
+  p2.el.daNhanTien.checked = false;
+  await p2.nop();
+  assert.strictEqual(JSON.parse(luu['veTauSaiGon.phieuChoChuyenKhoan']).length, 1, 'chua nhan tien thi giu trong danh sach');
+  p2.el.daNhanTien.checked = true;
+  await p2.nop();
+  const html = p2.phanTu['#khung-phieu'].innerHTML;
+  assert.ok(html.includes(ma) && html.includes('Code vé điện tử') && html.includes('Đã thanh toán'), 'phieu 2 dung ma, co code ve');
+  assert.strictEqual(JSON.parse(luu['veTauSaiGon.phieuChoChuyenKhoan']).length, 0);
+
+  const khong = dungTrang({ kho, search: '?ma=VT261031ZZZZ' });
+  assert.ok(khong.thongBao().includes('Không thấy phiếu'));
 });

@@ -501,8 +501,9 @@ ${header('')}
   <main class="khung" id="tao-phieu" data-khong-dich>
     <div class="dau-trang-dat">
       <h1>Phiếu chuyển khoản cho khách nhắn riêng</h1>
-      <p>Trang nội bộ. Gửi ảnh phiếu cho khách kiểm tra thông tin. Khách đồng ý thì gửi thông tin chuyển khoản. Phiếu không lưu và không gửi về đâu.</p>
+      <p>Trang nội bộ cho khách nhắn riêng, không liên quan đơn đặt trên web. <b>Phần 1:</b> gửi phiếu có QR cho khách kiểm tra và chuyển khoản. <b>Phần 2:</b> khách chuyển xong, bấm nút ở danh sách chờ để tạo phiếu xác nhận có code vé. Danh sách chỉ lưu trên máy này.</p>
     </div>
+    <section class="the-form" style="margin-bottom:18px"><h2>Đang chờ khách chuyển khoản</h2><div id="ds-phieu-cho"></div></section>
     <div class="bo-cuc-dat">
       <div class="cot-form">
         <form class="the-form" id="form-tao-phieu" novalidate>
@@ -521,7 +522,7 @@ ${header('')}
             <div class="o-nhap"><label for="tp-sdt">Số điện thoại</label><input type="tel" inputmode="tel" id="tp-sdt" name="soDienThoai" autocomplete="off"><p class="loi" data-loi="soDienThoai"></p></div>
             <div class="o-nhap"><label for="tp-tk">Tài khoản nhận tiền</label><select id="tp-tk" name="taiKhoan"><option value="caNhan">Tài khoản cá nhân</option><option value="congTy">Tài khoản công ty</option></select><p class="loi" data-loi="taiKhoan"></p></div>
           </div>
-          <div class="nut-buoc"><button type="submit" class="nut">Tạo phiếu chuyển khoản</button></div>
+          <div class="nut-buoc"><button type="submit" class="nut">Tạo phiếu có QR</button></div>
           <p class="thong-bao" id="thong-bao" role="status"></p>
         </form>
       </div>
@@ -539,6 +540,7 @@ ${header('')}
   </main>
 ${footer('', true)}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha512-ZDSPMa/JM1D+7kdg2x3BsruQ6T/JpJo3jWDWkCZsP+5yVyp1KfESqLI+7RqB5k24F7p2cV7i2YHh/890y6P6Sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 ${script('', SCRIPT_CHUNG.concat(['dat-cho.js', 'tao-phieu.js']))}
   <script>khoiChayTrangTaoPhieu('chuyen-khoan');</script>
 </body>

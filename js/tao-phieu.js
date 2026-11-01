@@ -40,10 +40,71 @@ function taoOChonMonTay(tau, loai) {
   return html + oSo('treEmMienPhi', 'Bé miễn phí', 0);
 }
 
-// Phiếu gửi khách kiểm tra thông tin TRƯỚC khi chuyển khoản: thông tin đặt vé và giá tiền, không có tài khoản.
-function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm) {
+// CRC-16/CCITT-FALSE của chuỗi QR ngân hàng (chuẩn EMVCo).
+function crcVietQR(chuoi) {
+  var crc = 0xFFFF;
+  for (var i = 0; i < chuoi.length; i++) {
+    crc ^= chuoi.charCodeAt(i) << 8;
+    for (var j = 0; j < 8; j++) crc = crc & 0x8000 ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+  }
+  return ('000' + crc.toString(16).toUpperCase()).slice(-4);
+}
+// Nội dung mã VietQR chuyển khoản nhanh 24/7, có sẵn số tiền và nội dung.
+function taoChuoiVietQR(maNganHang, soTaiKhoan, soTien, noiDung) {
+  var o = function (id, gt) { return id + ('0' + gt.length).slice(-2) + gt; };
+  var thuHuong = o('00', 'A000000727') + o('01', o('00', maNganHang) + o('01', soTaiKhoan)) + o('02', 'QRIBFTTA');
+  var than = o('00', '01') + o('01', '12') + o('38', thuHuong) + o('53', '704') + o('54', String(soTien)) + o('58', 'VN') + o('62', o('08', noiDung)) + '6304';
+  return than + crcVietQR(than);
+}
+
+// Danh sách phiếu đã gửi khách, chờ khách chuyển khoản. Chỉ lưu trên máy tạo phiếu; khách chuyển xong thì mở lại để tạo phiếu xác nhận.
+var KHOA_PHIEU_CHO = 'veTauSaiGon.phieuChoChuyenKhoan';
+var SO_PHIEU_CHO_TOI_DA = 30;
+function layPhieuCho(kho, homNay) {
+  try {
+    var ds = JSON.parse(kho.getItem(KHOA_PHIEU_CHO));
+    if (!Array.isArray(ds)) return [];
+    var ngay = homNay || ngayHomNayDiaPhuong(new Date());
+    var con = ds.filter(function (d) {
+      return laDonHopLe(d) && new Date(d.ngay + 'T00:00:00Z').getTime() + 7 * 864e5 >= new Date(ngay + 'T00:00:00Z').getTime();
+    });
+    if (con.length !== ds.length) kho.setItem(KHOA_PHIEU_CHO, JSON.stringify(con));
+    return con;
+  } catch (loi) { return []; }
+}
+function luuPhieuCho(don, kho) {
+  try {
+    var con = layPhieuCho(kho).filter(function (d) { return d.maDon !== don.maDon; });
+    con.unshift(don);
+    kho.setItem(KHOA_PHIEU_CHO, JSON.stringify(con.slice(0, SO_PHIEU_CHO_TOI_DA)));
+  } catch (loi) { /* bỏ qua */ }
+}
+function xoaPhieuCho(maDon, kho) {
+  try {
+    kho.setItem(KHOA_PHIEU_CHO, JSON.stringify(layPhieuCho(kho).filter(function (d) { return d.maDon !== maDon; })));
+  } catch (loi) { /* bỏ qua */ }
+}
+function timPhieuCho(maDon, kho) {
+  return layPhieuCho(kho).filter(function (d) { return d.maDon === maDon; })[0] || null;
+}
+function taoDanhSachPhieuCho(ds, danhSachTau, bangTreEm) {
+  var e = escapeHtmlDatCho;
+  return ds.map(function (d) {
+    var tau = timTauTheoSlug(danhSachTau, d.slugTau);
+    if (!tau) return '';
+    return '<div class="dong-phieu-cho"><div><b>' + e(d.hoTen.trim()) + '</b> · ' + e(chuanHoaSoDienThoai(d.soDienThoai) || d.soDienThoai) +
+      '<br>' + e(tau.ten) + ' · ' + e(dinhDangNgay(d.ngay)) + ' · ' + e(soVnd(tomTatDon(d, tau, bangTreEm).tong)) + ' VND<br><small>Mã đơn ' + e(d.maDon) + '</small></div>' +
+      '<div class="nut-phieu-cho"><a class="nut" href="tao-phieu.html?ma=' + encodeURIComponent(d.maDon) + '">Khách đã chuyển: tạo phiếu xác nhận</a>' +
+      '<button type="button" class="nut nut-vien" data-xoa-phieu="' + e(d.maDon) + '">Xóa</button></div></div>';
+  }).join('');
+}
+
+// Phần 1: phiếu gửi khách kiểm tra thông tin và quét QR chuyển khoản. Chưa phải vé, chưa có code vé.
+function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm, tk) {
   var e = escapeHtmlDatCho;
   var tt = tomTatDon(don, tau, bangTreEm);
+  var noiDung = taoNoiDungChuyenKhoan(don);
+  var anhQR = tk.anhQR ? tk.anhQR : taoAnhQR(taoChuoiVietQR(tk.maNganHang, tk.soTaiKhoan, tt.tong, noiDung));
   var dongMon = '';
   for (var i = 0; i < tt.dong.length; i++) {
     var d = tt.dong[i];
@@ -51,7 +112,8 @@ function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm) {
       '<td colspan="2">' + e(d.ten) + '</td><td class="giua">' + e(soVnd(d.gia)) + ' x ' + d.soLuong + '</td></tr>';
   }
   return '<div class="phieu phieu-gon" id="phieu" data-khong-dich><div class="phieu-noi">' +
-    '<h2>PHIẾU XÁC NHẬN THÔNG TIN ĐẶT VÉ</h2>' +
+    '<h2>PHIẾU THÔNG TIN ĐẶT VÉ VÀ CHUYỂN KHOẢN</h2>' +
+    '<p class="phieu-ngay">Mã đơn <b>' + e(don.maDon) + '</b></p>' +
     '<table><tbody>' +
     '<tr><td class="nhan">Họ và tên</td><td colspan="3">' + e(don.hoTen.trim().toUpperCase()) + '</td></tr>' +
     '<tr><td class="nhan">Điện thoại</td><td colspan="3">' + e(chuanHoaSoDienThoai(don.soDienThoai) || don.soDienThoai) + '</td></tr>' +
@@ -62,10 +124,19 @@ function taoPhieuChuyenKhoanHtml(don, tau, bangTreEm) {
     '<tr><td class="giua do">' + tt.khach.nguoiLon + '</td><td class="giua do">' + tt.khach.treEm50 + '</td><td class="giua do">' + tt.khach.treEmMienPhi + '</td></tr>' +
     dongMon +
     '<tr><td class="nhan">Tổng tiền</td><td colspan="3" class="giua do">' + e(soVnd(tt.tong)) + ' VND</td></tr>' +
-    '</tbody></table></div></div>';
+    '</tbody></table>' +
+    '<p class="phieu-luu-y">Quý khách kiểm tra thông tin trên. Nếu đúng, xin chuyển khoản theo mã QR bên dưới; nếu sai, xin báo Ms Nguyên trước khi chuyển. Phiếu này chưa phải vé.</p>' +
+    '<div class="phieu-chuyen-khoan">' + (anhQR ? '<img src="' + e(anhQR) + '" alt="Mã QR chuyển khoản">' : '') +
+    '<table><tbody>' +
+    '<tr><td class="nhan">Ngân hàng</td><td>' + e(tk.nganHang) + '</td></tr>' +
+    '<tr><td class="nhan">Số tài khoản</td><td class="do">' + e(tk.soTaiKhoan) + '</td></tr>' +
+    '<tr><td class="nhan">Chủ tài khoản</td><td>' + e(tk.chuTaiKhoan) + '</td></tr>' +
+    '<tr><td class="nhan">Số tiền</td><td class="do">' + e(soVnd(tt.tong)) + ' VND</td></tr>' +
+    '<tr><td class="nhan">Nội dung</td><td class="do">' + e(noiDung) + '</td></tr>' +
+    '</tbody></table></div></div></div>';
 }
 
-// Tin nhắn gửi SAU khi khách đồng ý với phiếu: số tiền và tài khoản để chuyển khoản.
+// Tin nhắn kèm ảnh phiếu, để khách sao chép được số tài khoản và nội dung.
 function soanTinChuyenKhoan(don, tau, bangTreEm, tk) {
   return [
     'Thông tin chuyển khoản đặt vé ' + tau.ten + ' ngày ' + dinhDangNgay(don.ngay) + ':',
@@ -90,6 +161,10 @@ function khoiChayTrangTaoPhieu(cheDo) {
   var khungPhieu = goc.querySelector('#khung-phieu');
   var khuVucPhieu = goc.querySelector('#khu-vuc-phieu');
   var maDon = taoMaDon(new Date(), Math.random);
+  var ngayDatDon = ngayHomNayDiaPhuong(new Date());
+  var kho = null;
+  try { kho = window.localStorage; } catch (loiKho) { /* trình duyệt chặn: không có danh sách chờ */ }
+  var phieuTuDanhSach = null;
   var codeTuTao = '';
   var donDaTao = null;
 
@@ -114,7 +189,7 @@ function khoiChayTrangTaoPhieu(cheDo) {
       slugTau: el.tau.value, ngay: el.ngay.value, loai: el.loai.value, buffetMa: '', nguoiLon: 0, treEm50: 0, treEmMienPhi: 0, mon: {},
       hoTen: el.hoTen.value, soDienThoai: el.soDienThoai.value, email: '', ghiChu: '', vat: false,
       congTy: { ten: '', mst: '', diaChi: '', email: '' }, taiKhoan: el.taiKhoan.value, maDon: maDon,
-      ngayDat: ngayHomNayDiaPhuong(new Date())
+      ngayDat: ngayDatDon
     };
     var o = khungMon.querySelectorAll('[name]');
     for (var i = 0; i < o.length; i++) {
@@ -165,6 +240,56 @@ function khoiChayTrangTaoPhieu(cheDo) {
   el.ngay.min = hamLichCho.ngayHomNayVN();
   veLoai();
 
+  function veDanhSachCho() {
+    var khung = document.getElementById('ds-phieu-cho');
+    if (!khung) return;
+    var ds = layPhieuCho(kho);
+    khung.innerHTML = ds.length ? taoDanhSachPhieuCho(ds, DANH_SACH_TAU, GIA_TRE_EM) : '<p>Chưa có phiếu nào đang chờ khách chuyển khoản.</p>';
+  }
+  // Mở từ danh sách chờ: điền sẵn đúng thông tin và mã đơn của phiếu đã gửi khách.
+  function dienTuPhieuCho(d) {
+    maDon = d.maDon;
+    ngayDatDon = d.ngayDat || ngayDatDon;
+    phieuTuDanhSach = d;
+    el.tau.value = d.slugTau;
+    veLoai();
+    el.loai.value = d.loai;
+    veLoai();
+    el.ngay.value = d.ngay;
+    el.hoTen.value = d.hoTen;
+    el.soDienThoai.value = d.soDienThoai;
+    el.taiKhoan.value = d.taiKhoan;
+    var o = khungMon.querySelectorAll('[name]');
+    for (var i = 0; i < o.length; i++) {
+      var ten = o[i].name;
+      if (ten.indexOf('mon:') === 0) o[i].value = (d.mon && d.mon[ten.slice(4)]) || 0;
+      else if (d[ten] !== undefined) o[i].value = d[ten];
+    }
+    capNhatTong();
+    var tau = tauDangChon();
+    var lech = tau && typeof d.tongLucDat === 'number' && tomTatDon(docDon(), tau, GIA_TRE_EM).tong !== d.tongLucDat;
+    thongBao(lech ? 'Bảng giá đã đổi so với lúc gửi phiếu: khách đã thấy ' + soVnd(d.tongLucDat) + ' VND. Kiểm tra đúng số tiền đã nhận trước khi tạo phiếu.' : 'Đã điền từ phiếu gửi khách, mã đơn ' + d.maDon + '. Kiểm tra tiền đã vào rồi tích ô bên dưới.', lech ? 'loi-gui' : 'da-gui');
+  }
+  if (laPhieuCK) {
+    veDanhSachCho();
+    var khungCho = document.getElementById('ds-phieu-cho');
+    if (khungCho) khungCho.addEventListener('click', function (e) {
+      var nutXoa = e.target.closest('[data-xoa-phieu]');
+      if (!nutXoa) return;
+      var ma = nutXoa.getAttribute('data-xoa-phieu');
+      if (!window.confirm('Xóa phiếu ' + ma + ' khỏi danh sách chờ?')) return;
+      xoaPhieuCho(ma, kho);
+      veDanhSachCho();
+    });
+  } else {
+    var thamSo = docThamSoUrl(location.search);
+    if (thamSo.ma) {
+      var phieuCho = timPhieuCho(thamSo.ma, kho);
+      if (phieuCho && timTauTheoSlug(DANH_SACH_TAU, phieuCho.slugTau)) dienTuPhieuCho(phieuCho);
+      else thongBao('Không thấy phiếu ' + thamSo.ma + ' trên máy này. Vui lòng điền thông tin bằng tay.', 'loi-gui');
+    }
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var don = docDon();
@@ -172,9 +297,14 @@ function khoiChayTrangTaoPhieu(cheDo) {
     anPhieuCu();
     if (!baoLoi(kiemTraDonTay(don, tau, GIA_TRE_EM, hamLichCho.ngayHomNayVN()))) return;
     if (laPhieuCK) {
-      khungPhieu.innerHTML = taoPhieuChuyenKhoanHtml(don, tau, GIA_TRE_EM);
+      var tkCK = layTaiKhoan(CAU_HINH.thanhToan, don);
+      khungPhieu.innerHTML = taoPhieuChuyenKhoanHtml(don, tau, GIA_TRE_EM, tkCK);
       donDaTao = don;
-      thongBao('Đã tạo phiếu. Tải ảnh phiếu gửi khách kiểm tra; khách đồng ý thì gửi thông tin chuyển khoản.', 'da-gui');
+      don.tongLucDat = tomTatDon(don, tau, GIA_TRE_EM).tong;
+      luuPhieuCho(don, kho);
+      veDanhSachCho();
+      var coQR = tkCK.anhQR || typeof qrcode === 'function';
+      thongBao(coQR ? 'Đã tạo phiếu và đưa vào danh sách chờ. Tải ảnh phiếu gửi khách kiểm tra và chuyển khoản.' : 'Chưa tải được thư viện mã QR nên phiếu chưa có QR. Kiểm tra mạng rồi tải lại trang.', coQR ? 'da-gui' : 'loi-gui');
       khuVucPhieu.hidden = false;
       canhPhieuVuaKhung(khungPhieu);
       khuVucPhieu.scrollIntoView({ behavior: 'smooth' });
@@ -197,6 +327,8 @@ function khoiChayTrangTaoPhieu(cheDo) {
       trangThai: 'Đã thanh toán.', codeVe: codeVe, ngayXacNhan: ngayXacNhan, xacThuc: null
     });
     donDaTao = don;
+    // Đơn đã có phiếu xác nhận thì ra khỏi danh sách chờ.
+    xoaPhieuCho(don.maDon, kho);
     thongBao('Đã tạo phiếu. Tải ảnh phiếu rồi gửi cho khách.', 'da-gui');
     khuVucPhieu.hidden = false;
     canhPhieuVuaKhung(khungPhieu);
