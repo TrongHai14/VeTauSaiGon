@@ -88,6 +88,9 @@
     // Mỗi 15 phút tự đổi đơn quá hạn sang "Hết hạn" (để nhìn bảng cho dễ; web đã tự không tính đơn quá hạn).
     var coRoi = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'donDepHetHan'; });
     if (!coRoi) ScriptApp.newTrigger('donDepHetHan').timeBased().everyMinutes(15).create();
+    // Ngày 1 hằng tháng (khoảng 2–3 giờ sáng) tự tạo báo cáo của tháng trước.
+    var coBaoCao = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'baoCaoThangTruoc'; });
+    if (!coBaoCao) ScriptApp.newTrigger('baoCaoThangTruoc').timeBased().onMonthDay(1).atHour(2).create();
     capNhatTongHop();
   }
   
@@ -97,6 +100,7 @@
       .addItem('Trả chỗ các đơn quá hạn ngay', 'donDepHetHan')
       .addItem('Hủy các đơn chưa thanh toán của một SĐT (Giữ chỗ + Chờ xác nhận, khi bị spam)', 'huyTheoSdt')
       .addItem('Hủy TẤT CẢ đơn "Giữ chỗ" chưa chuyển khoản (khi bị spam)', 'huyTatCaGiuCho')
+      .addItem('Báo cáo tháng (tạo tab riêng, không tự đổi)', 'baoCaoThang')
       .addItem('Gửi thử email dự phòng (kiểm tra quyền gửi email)', 'kiemTraEmailDuPhong')
       .addItem('Cài đặt lần đầu', 'caiDat')
       .addToUi();
@@ -502,6 +506,73 @@
     if (ten === TAB.don || ten === TAB.hetCho || ten === TAB.soCho || ten === TAB.caiDat) capNhatTongHop();
   }
   
+  /* ---------- Báo cáo tháng ---------- */
+  // Menu: hỏi tháng (MM/YYYY) rồi tạo tab "Tháng MM/YYYY". Tab này không tự đổi; tạo lại thì tính lại từ tab đơn.
+  function baoCaoThang() {
+    var ui = SpreadsheetApp.getUi();
+    var goiY = Utilities.formatDate(new Date(), MUI_GIO, 'yyyy-MM-dd');
+    var tl = ui.prompt('Báo cáo tháng', 'Nhập tháng cần báo cáo, dạng MM/YYYY (ví dụ ' + goiY.slice(5, 7) + '/' + goiY.slice(0, 4) + '):', ui.ButtonSet.OK_CANCEL);
+    if (tl.getSelectedButton() !== ui.Button.OK) return;
+    var m = /^\s*(\d{1,2})\s*\/\s*(\d{4})\s*$/.exec(tl.getResponseText());
+    if (!m || Number(m[1]) < 1 || Number(m[1]) > 12) { ui.alert('Tháng không đúng dạng MM/YYYY.'); return; }
+    var ten = tenTabBaoCao(Number(m[2]), Number(m[1]));
+    if (SpreadsheetApp.getActive().getSheetByName(ten) &&
+      ui.alert('Tab "' + ten + '" đã có. Tạo lại theo dữ liệu đơn hiện tại?', ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
+    taoBaoCaoThang(Number(m[2]), Number(m[1]));
+    ui.alert('Đã tạo tab "' + ten + '".');
+  }
+  // Hẹn giờ ngày 1 hằng tháng: báo cáo tháng trước (đã có thì để nguyên).
+  function baoCaoThangTruoc() {
+    var homNay = Utilities.formatDate(new Date(), MUI_GIO, 'yyyy-MM-dd');
+    var nam = Number(homNay.slice(0, 4)), th = Number(homNay.slice(5, 7)) - 1;
+    if (th === 0) { th = 12; nam--; }
+    if (SpreadsheetApp.getActive().getSheetByName(tenTabBaoCao(nam, th))) return;
+    taoBaoCaoThang(nam, th);
+  }
+  function tenTabBaoCao(nam, th) {
+    return 'Tháng ' + (th < 10 ? '0' : '') + th + '/' + nam;
+  }
+  // Theo ngày đi: số khách và số đơn "Đã thanh toán" của từng tàu, cùng số đơn chờ xác nhận, hủy/hết hạn.
+  function taoBaoCaoThang(nam, th) {
+    var bang = docBang();
+    var tienTo = nam + '-' + (th < 10 ? '0' : '') + th + '-';
+    var soNgay = new Date(nam, th, 0).getDate();
+    var tieuDe = ['Ngày đi'].concat(DS_TAU.map(function (t) { return TEN_TAU[t] + ' – khách'; }), DS_TAU.map(function (t) { return TEN_TAU[t] + ' – đơn'; }),
+      ['Tổng khách đã thanh toán', 'Tổng đơn đã thanh toán', 'Đơn chờ xác nhận', 'Đơn hủy / hết hạn']);
+    var dong = [tieuDe];
+    var tong = tieuDe.map(function () { return 0; });
+    for (var d = 1; d <= soNgay; d++) {
+      var ngay = tienTo + (d < 10 ? '0' : '') + d;
+      var khach = {}, don = {}, cho = 0, huy = 0;
+      for (var i = 0; i < bang.don.length; i++) {
+        var x = bang.don[i];
+        if (x.ngay !== ngay) continue;
+        if (x.trangThai === TT.daTT) { khach[x.tau] = (khach[x.tau] || 0) + x.soCho; don[x.tau] = (don[x.tau] || 0) + 1; }
+        else if (x.trangThai === TT.choXN) cho++;
+        else if (x.trangThai === TT.huy || x.trangThai === TT.hetHan) huy++;
+      }
+      var hang = [(d < 10 ? '0' : '') + d + '/' + (th < 10 ? '0' : '') + th + '/' + nam]
+        .concat(DS_TAU.map(function (t) { return khach[t] || 0; }), DS_TAU.map(function (t) { return don[t] || 0; }));
+      var tongKhach = 0, tongDon = 0;
+      for (var k = 0; k < DS_TAU.length; k++) { tongKhach += hang[1 + k]; tongDon += hang[1 + DS_TAU.length + k]; }
+      hang.push(tongKhach, tongDon, cho, huy);
+      for (var c = 1; c < hang.length; c++) tong[c] += hang[c];
+      dong.push(hang);
+    }
+    tong[0] = 'Tổng tháng';
+    dong.push(tong);
+    var tab = layTab(tenTabBaoCao(nam, th));
+    tab.clear();
+    tab.getRange(1, 1, dong.length, tieuDe.length).setValues(dong);
+    tab.getRange(1, 1, 1, tieuDe.length).setFontWeight('bold');
+    tab.getRange(dong.length, 1, 1, tieuDe.length).setFontWeight('bold');
+    tab.getRange(2, 1, dong.length - 1, 1).setNumberFormat('@');
+    tab.setFrozenRows(1);
+    tab.getRange(dong.length + 2, 1).setValue('Tạo lúc ' + Utilities.formatDate(new Date(), MUI_GIO, 'dd/MM/yyyy HH:mm') +
+      '. Khách và đơn chỉ tính trạng thái "Đã thanh toán", theo ngày đi. Tab này không tự đổi; tạo lại bằng menu Vé Tàu > Báo cáo tháng.');
+    return dong;
+  }
+
   /* ---------- Tiện ích ---------- */
   function layTab(ten) {
     var ss = SpreadsheetApp.getActive();

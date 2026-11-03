@@ -30,7 +30,7 @@ function taoSheet(toiDaLan) {
   const ctx = {
     SpreadsheetApp: { getActive: () => ss, newDataValidation: () => kt, getUi: () => ({}), flush() {} },
     CacheService: { getScriptCache: () => ({ get: (k) => (k in cache ? cache[k] : null), put: (k, v) => { cache[k] = v; }, remove: (k) => { delete cache[k]; } }) },
-    ScriptApp: { getProjectTriggers: () => [], newTrigger: () => ({ timeBased: () => ({ everyMinutes: () => ({ create() {} }) }) }) },
+    ScriptApp: { getProjectTriggers: () => [], newTrigger: () => ({ timeBased: () => ({ everyMinutes: () => ({ create() {} }), onMonthDay: () => ({ atHour: () => ({ create() {} }) }) }) }) },
     LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: (s) => ({ s, setMimeType() { return this; } }) },
     MailApp: { sendEmail(o) { (ctx.thu = ctx.thu || []).push(o); } },

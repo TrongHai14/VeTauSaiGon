@@ -37,7 +37,7 @@ function taoSheetGia(macDinh) {
   const ctx = {
     SpreadsheetApp: { getActive: () => ss, newDataValidation: () => kiemTra, getUi: () => ({}), flush() { ctx.soLanFlush = (ctx.soLanFlush || 0) + 1; } },
     CacheService: { getScriptCache: () => ({ get: (k) => (k in cache ? cache[k] : null), put: (k, v) => { cache[k] = v; }, remove: (k) => { delete cache[k]; } }) },
-    ScriptApp: { getProjectTriggers: () => [], newTrigger: () => ({ timeBased: () => ({ everyMinutes: () => ({ create() {} }) }) }) },
+    ScriptApp: { getProjectTriggers: () => [], newTrigger: () => ({ timeBased: () => ({ everyMinutes: () => ({ create() {} }), onMonthDay: () => ({ atHour: () => ({ create() {} }) }) }) }) },
     LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
     MailApp: { sendEmail(o) { (ctx.thu = ctx.thu || []).push(o); } },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: (s) => ({ s, setMimeType() { return this; } }) },
@@ -840,4 +840,44 @@ test('tong hop: khong han muc thi hien so khach da dat theo tung tau, ngay het c
   for (const r of s.tabs['Cài đặt'].o) if (r && r[0] === 'Số chỗ mỗi ngày') r[1] = 50;
   s.ctx.capNhatTongHop();
   assert.strictEqual(s.tabs['Tổng hợp'].o.find((r) => r && r[0] === ngay)[tieuDe.indexOf('Bến Nghé')], 47);
+});
+
+test('bao cao thang: theo ngay di, chi dem da thanh toan, co cho xac nhan va huy, dong tong; tu tao thang truoc', () => {
+  const s = taoSheetGia(true);
+  for (const r of s.tabs['Cài đặt'].o) if (r && r[0] === 'Tối đa đơn đang giữ mỗi SĐT') r[1] = 99;
+  const dat = (ma, tau, ngay, nl, tt) => { s.post(giu({ maDon: MA + ma, tau, ngay, nguoiLon: nl })); s.tabs['Đơn giữ chỗ'].o.find((r) => r && r[0] === MA + ma)[7] = tt; };
+  dat('BC01', 'ben-nghe', '2099-03-10', 2, 'Đã thanh toán');
+  dat('BC02', 'ben-nghe', '2099-03-10', 3, 'Đã thanh toán');
+  dat('BC03', 'indochina-star', '2099-03-31', 4, 'Đã thanh toán');
+  dat('BC04', 'indochina-star', '2099-03-10', 5, 'Chờ xác nhận');
+  dat('BC05', 'indochina-queen', '2099-03-10', 6, 'Hủy');
+  dat('BC06', 'indochina-queen', '2099-04-01', 7, 'Đã thanh toán');
+  s.ctx.taoBaoCaoThang(2099, 3);
+  const tab = s.tabs['Tháng 03/2099'].o;
+  const td = tab[0];
+  const o = (dong, ten) => dong[td.indexOf(ten)];
+  assert.strictEqual(tab.length - 1 >= 32, true);
+  const d10 = tab.find((r) => r && r[0] === '10/03/2099');
+  assert.strictEqual(o(d10, 'Bến Nghé – khách'), 5);
+  assert.strictEqual(o(d10, 'Bến Nghé – đơn'), 2);
+  assert.strictEqual(o(d10, 'Indochina Star – khách'), 0, 'cho xac nhan khong tinh khach');
+  assert.strictEqual(o(d10, 'Đơn chờ xác nhận'), 1);
+  assert.strictEqual(o(d10, 'Đơn hủy / hết hạn'), 1);
+  const tong = tab.find((r) => r && r[0] === 'Tổng tháng');
+  assert.strictEqual(o(tong, 'Tổng khách đã thanh toán'), 9, 'khong tinh don thang 4');
+  assert.strictEqual(o(tong, 'Tổng đơn đã thanh toán'), 3);
+  assert.strictEqual(o(tong, 'Indochina Star – khách'), 4);
+  // Đổi trạng thái sau khi tạo: tab cũ không tự đổi.
+  s.tabs['Đơn giữ chỗ'].o.find((r) => r && r[0] === MA + 'BC01')[7] = 'Hủy';
+  assert.strictEqual(o(s.tabs['Tháng 03/2099'].o.find((r) => r && r[0] === 'Tổng tháng'), 'Tổng khách đã thanh toán'), 9);
+  // Hẹn giờ ngày 1: tạo tháng trước, đã có thì không ghi đè.
+  s.ctx.baoCaoThangTruoc();
+  const vn = new Date(Date.now() + 7 * 3600e3);
+  let nam = vn.getUTCFullYear(), th = vn.getUTCMonth();
+  if (th === 0) { th = 12; nam--; }
+  const ten = 'Tháng ' + String(th).padStart(2, '0') + '/' + nam;
+  assert.ok(s.tabs[ten], ten);
+  s.tabs[ten].o[0][0] = 'DA SUA';
+  s.ctx.baoCaoThangTruoc();
+  assert.strictEqual(s.tabs[ten].o[0][0], 'DA SUA', 'khong ghi de bao cao da co');
 });

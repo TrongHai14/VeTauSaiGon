@@ -63,6 +63,7 @@ Web vẫn chạy bình thường sau khi khoá.
 | **Cài đặt** | Số chỗ mỗi ngày (**để trống** = không giới hạn; chỉ ghi số khi tàu cấp hạn mức). Số giờ giữ chỗ chờ chuyển khoản (1). Có tính bé miễn phí vào số chỗ không. **Mã quản lý**. Chặn đặt khi đã sát giờ tàu chạy. Tối đa khách mỗi đơn online (50). Số đơn chưa xong tối đa của mỗi SĐT (1): khách phải chờ đơn trước được xác nhận hoặc hủy mới đặt tiếp được. Số lượt giữ chỗ tối đa trong 10 phút (30). |
 | **Số chỗ riêng** | Chỉ dùng khi có hạn mức: tàu, ngày, số chỗ riêng của ngày đó. Muốn đóng ngày thì dùng tab "Ngày hết chỗ". |
 | **Đơn giữ chỗ** | Đơn khách đặt trên web sẽ tự hiện ở đây. |
+| **Tháng MM/YYYY** | Báo cáo tháng: theo từng ngày đi, số khách và số đơn **Đã thanh toán** của từng tàu, số đơn chờ xác nhận, hủy/hết hạn, dòng tổng tháng. Ngày 1 hằng tháng tự tạo cho tháng trước; muốn tạo tháng bất kỳ: menu **Vé Tàu → Báo cáo tháng**. Tab này không tự đổi. |
 | **Tổng hợp** | 45 ngày tới của từng tàu, tự làm mới mỗi 15 phút và khi sửa Sheet (menu **Vé Tàu → Xem chỗ còn lại 45 ngày tới** để làm mới ngay). Không đặt hạn mức: ô ghi **"Đã đặt N khách"** (đơn đã thanh toán, chờ xác nhận, đang giữ). Có hạn mức: ô là số chỗ còn lại, số **âm** là đang vượt, cần kiểm tra với tàu. |
 
 **Khi Ms Nguyên kiểm tra tiền:**
