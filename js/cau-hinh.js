@@ -92,7 +92,9 @@ var CAU_HINH = {
         'anh/indochina-star/tau-10.jpg',
         'anh/indochina-star/tau-11.jpg'
       ],
-      khuyenMai: {}
+      khuyenMai: {
+        'Gói trang trí cơ bản': 'anh/indochina-star/khuyen-mai-goi-trang-tri-co-ban.jpg'
+      }
     },
     'ben-nghe': {   // Bến Nghé
       daiDien: 'anh/ben-nghe/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
@@ -114,7 +116,9 @@ var CAU_HINH = {
         'anh/ben-nghe/tau-15.jpg',
         'anh/ben-nghe/tau-16.jpg'
       ],
-      khuyenMai: {}
+      khuyenMai: {
+        'Gói trang trí cơ bản': 'anh/ben-nghe/khuyen-mai-goi-trang-tri-co-ban.jpg'
+      }
     },
     'indochina-queen': {   // Indochina Queen
       daiDien: 'anh/indochina-queen/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
@@ -129,7 +133,9 @@ var CAU_HINH = {
         'anh/indochina-queen/tau-08.jpg',
         'anh/indochina-queen/tau-09.jpg'
       ],
-      khuyenMai: {}
+      khuyenMai: {
+        'Gói trang trí cơ bản': 'anh/indochina-queen/khuyen-mai-goi-trang-tri-co-ban.jpg'
+      }
     },
     'elite-of-saigon': {   // Elite of Saigon
       daiDien: 'anh/elite-of-saigon/dai-dien.jpg',   // ảnh ngoài tàu đẹp nhất: thẻ trang chủ, ảnh lớn trang tàu, ảnh chia sẻ link
@@ -161,7 +167,8 @@ var CAU_HINH = {
         'anh/elite-of-saigon/tau-25.jpg'
       ],
       khuyenMai: {
-        'Mid-week Chill': 'anh/elite-of-saigon/khuyen-mai-mid-week-chill.jpg'
+        'Mid-week Chill': 'anh/elite-of-saigon/khuyen-mai-mid-week-chill.jpg',
+        'Gói trang trí cơ bản': 'anh/elite-of-saigon/khuyen-mai-goi-trang-tri-co-ban.jpg'
       }
     },
     'saigon-princess': {   // Saigon Princess
@@ -191,7 +198,9 @@ var CAU_HINH = {
         'anh/ben-thanh-princess/tau-05.jpg',
         'anh/ben-thanh-princess/tau-06.jpg'
       ],
-      khuyenMai: {}
+      khuyenMai: {
+        'Gói trang trí cơ bản': 'anh/ben-thanh-princess/khuyen-mai-goi-trang-tri-co-ban.jpg'
+      }
     },
   },
 

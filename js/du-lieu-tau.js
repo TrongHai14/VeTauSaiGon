@@ -70,7 +70,12 @@ var DANH_SACH_TAU = [
         ]
       }
     ],
-    khuyenMai: [],
+    khuyenMai: [
+      {
+        tieuDe: 'Gói trang trí cơ bản',
+        noiDung: 'Tặng kèm gói trang trí cơ bản đối với tiệc sinh nhật và kỷ niệm.'
+      }
+    ],
     chinhSachTreEm: CHINH_SACH_TRE_EM_INDOCHINA,
     giaiTri: [
       'Sảnh tầng 1 và sảnh VIP: nhạc dân tộc và 02 bài múa dân tộc (biểu diễn từ 30-45 phút).',
@@ -106,7 +111,12 @@ var DANH_SACH_TAU = [
         ]
       }
     ],
-    khuyenMai: [],
+    khuyenMai: [
+      {
+        tieuDe: 'Gói trang trí cơ bản',
+        noiDung: 'Tặng kèm gói trang trí cơ bản đối với tiệc sinh nhật và kỷ niệm.'
+      }
+    ],
     chinhSachTreEm: CHINH_SACH_TRE_EM_INDOCHINA,
     giaiTri: [
       'Tầng 1: nhạc dân tộc và 2 bài múa dân tộc.',
@@ -162,7 +172,12 @@ var DANH_SACH_TAU = [
         ]
       }
     ],
-    khuyenMai: [],
+    khuyenMai: [
+      {
+        tieuDe: 'Gói trang trí cơ bản',
+        noiDung: 'Tặng kèm gói trang trí cơ bản đối với tiệc sinh nhật và kỷ niệm.'
+      }
+    ],
     chinhSachTreEm: [
       'Trẻ em từ 9 tuổi trở lên: tính 1 suất như người lớn.',
       'Trẻ em từ 4 – 8 tuổi: tính 50% = ½ suất.',
@@ -232,6 +247,10 @@ var DANH_SACH_TAU = [
       {
         tieuDe: 'Mid-week Chill',
         noiDung: 'Chỉ thứ 3 và thứ 5: tặng 2 bia + nachos (bò hoặc gà), áp dụng kèm buffet hoặc set menu.'
+      },
+      {
+        tieuDe: 'Gói trang trí cơ bản',
+        noiDung: 'Tặng kèm gói trang trí cơ bản đối với tiệc sinh nhật và kỷ niệm.'
       }
     ],
     chinhSachTreEm: [
@@ -355,7 +374,12 @@ var DANH_SACH_TAU = [
         ]
       }
     ],
-    khuyenMai: [],
+    khuyenMai: [
+      {
+        tieuDe: 'Gói trang trí cơ bản',
+        noiDung: 'Tặng kèm gói trang trí cơ bản đối với tiệc sinh nhật và kỷ niệm.'
+      }
+    ],
     chinhSachTreEm: CHINH_SACH_TRE_EM_PRINCESS,
     giaiTri: [
       'Ban nhạc Việt Nam (Live band): thứ 4 và thứ 7 hằng tuần.',
@@ -438,7 +462,7 @@ var CHINH_SACH_CHUNG = [
     nhom: [{ tieuDe: null, dong: [
       'Sau khi đặt thành công, quý khách sẽ nhận được vé điện tử bằng file PDF qua Zalo dùng để lên tàu.',
       'Xuất trình vé qua điện thoại cho nhân viên để lên tàu.',
-      'Địa điểm tổ chức: 05 Nguyễn Tất Thành, phường Xóm Chiếu (bên cạnh Bến Nhà Rồng). Có bãi giữ xe.'
+      'Địa điểm đón khách: 05 Nguyễn Tất Thành, phường Xóm Chiếu (bên cạnh Bến Nhà Rồng). Có bãi giữ xe.'
     ] }]
   },
   {

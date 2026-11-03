@@ -461,7 +461,7 @@ var TU_DIEN_EN = {
   'Nước uống (khách mua và thanh toán trực tiếp tại tàu).': 'Drinks (bought and paid for on board).',
   'Sau khi đặt thành công, quý khách sẽ nhận được vé điện tử bằng file PDF qua Zalo dùng để lên tàu.': 'After booking, you will receive an e-ticket (PDF) by Zalo to use for boarding.',
   'Xuất trình vé qua điện thoại cho nhân viên để lên tàu.': 'Show the ticket on your phone to the staff when boarding.',
-  'Địa điểm tổ chức: 05 Nguyễn Tất Thành, phường Xóm Chiếu (bên cạnh Bến Nhà Rồng). Có bãi giữ xe.': 'Venue: 05 Nguyen Tat Thanh, Xom Chieu Ward (next to Nha Rong Wharf). Parking available.',
+  'Địa điểm đón khách: 05 Nguyễn Tất Thành, phường Xóm Chiếu (bên cạnh Bến Nhà Rồng). Có bãi giữ xe.': 'Pick-up point: 05 Nguyen Tat Thanh, Xom Chieu Ward (next to Nha Rong Wharf). Parking available.',
   'Nếu quý khách đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.': 'Guests who arrive after departure time may be refused boarding.',
   'Nhà hàng sẽ tính thêm phí phục vụ nếu khách hàng mang đồ ăn, thức uống từ bên ngoài vào nhà hàng.': 'A service fee applies if guests bring outside food or drinks on board.',
   'Vui lòng xuất trình CMND/hộ chiếu có ảnh (bản photo/hình chụp) để đối chiếu nếu được yêu cầu.': 'Please show a photo ID or passport (copy or photo) if requested.',
