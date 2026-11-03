@@ -539,7 +539,7 @@ var TU_DIEN_EN = {
   'Đang chờ xác nhận thanh toán': 'Awaiting payment confirmation',
   'Giao dịch thành công': 'Payment successful',
   'Chính sách hoàn/hủy vé': 'Refund and cancellation policy',
-  'Vé đã thanh toán không được hoàn tiền, hủy vé hoặc đổi sang ngày khác theo yêu cầu của quý khách. Áp dụng cho tất cả các tàu.': 'Paid tickets cannot be refunded, cancelled or moved to another date at the guest’s request. This applies to all cruises.',
+  'Vé đã thanh toán không được hoàn tiền.': 'Paid tickets are non-refundable.',
   'Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản.': 'Please check the date, number of guests and menu carefully before transferring.',
   'Trường hợp tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách.': 'If the cruise reports it is sold out on your date, Nguyên Nguyên Travel gives a 100% refund or moves you to another date of your choice.',
   'Không. Vé đã thanh toán không được hoàn tiền, hủy vé hoặc đổi sang ngày khác, áp dụng cho tất cả các tàu. Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản. Chỉ khi tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác.':

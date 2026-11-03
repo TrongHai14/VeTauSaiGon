@@ -427,7 +427,7 @@ var CHINH_SACH_CHUNG = [
     id: 'doi-tra', tieuDe: 'Chính sách hoàn/hủy vé',
     nhom: [
       { tieuDe: null, dong: [
-        'Vé đã thanh toán không được hoàn tiền, hủy vé hoặc đổi sang ngày khác theo yêu cầu của quý khách. Áp dụng cho tất cả các tàu.',
+        'Vé đã thanh toán không được hoàn tiền.',
         'Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản.',
         'Trường hợp tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách.'
       ] }

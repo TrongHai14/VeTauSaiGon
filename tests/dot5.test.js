@@ -37,13 +37,13 @@ test('hoan huy: moi tau deu khong hoan/huy, khong doi ngay theo yeu cau khach; c
   for (const t of DANH_SACH_TAU) {
     const html = ht.taoTrangTau(t, LIEN_HE, '../');
     assert.ok(html.includes('id="doi-tra"') && html.includes('Chính sách hoàn/hủy vé'), t.slug);
-    assert.ok(html.includes('không được hoàn tiền, hủy vé hoặc đổi sang ngày khác') && html.includes('hoàn 100%'), t.slug);
+    assert.ok(html.includes('Vé đã thanh toán không được hoàn tiền.') && !html.includes('hủy vé hoặc đổi sang ngày khác theo yêu cầu') && html.includes('hoàn 100%'), t.slug);
     assert.ok(!html.includes('Đổi ngày sử dụng') && !html.includes('báo trước 2–3 ngày'), t.slug + ' khong con doi ngay 2-3 ngay');
     assert.ok(html.includes('id="dieu-kien-ve"'), t.slug + ' van co dieu kien ve');
   }
   for (const f of ['chinh-sach.html', 'faq.html']) {
     const h = doc(f);
-    assert.ok(h.includes('Áp dụng cho tất cả các tàu') || h.includes('áp dụng cho tất cả các tàu'), f);
+    assert.ok(h.includes('không được hoàn tiền'), f);
     assert.ok(!h.includes('chỉ có ở Indochina Queen và Indochina Star') && !h.includes('chỉ áp dụng cho Indochina Queen và Indochina Star'), f);
   }
 });
