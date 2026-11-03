@@ -84,9 +84,9 @@ test('tai khoan nhan: VAT luon vao tai khoan cong ty', () => {
 
 test('VietQR: dung ngan hang, so tai khoan, so tien, noi dung', () => {
   const noiDung = dc.taoNoiDungChuyenKhoan(donBuffet());
-  assert.strictEqual(noiDung, 'VT261007ABCD 0392082288');
+  assert.strictEqual(noiDung, 'VT261007ABCD');
   const url = dc.taoLinkVietQR(TT.caNhan, 1540000, noiDung);
-  assert.ok(url.startsWith('https://img.vietqr.io/image/970416-25960437-compact2.png?amount=1540000&addInfo=VT261007ABCD%200392082288'));
+  assert.ok(url.startsWith('https://img.vietqr.io/image/970416-25960437-compact2.png?amount=1540000&addInfo=VT261007ABCD&'));
   assert.ok(url.includes('accountName=' + encodeURIComponent('Lê Hoàng Thảo Nguyên')));
 });
 

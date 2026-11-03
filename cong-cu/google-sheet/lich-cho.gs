@@ -22,6 +22,9 @@
     'elite-of-saigon': 'Elite of Saigon', 'saigon-princess': 'Saigon Princess', 'ben-thanh-princess': 'Bến Thành Princess'
   };
   var MUI_GIO = 'Asia/Ho_Chi_Minh';
+  // Email dự phòng (khi FormSubmit lỗi) chỉ gửi tới đúng hộp thư nhận đơn này, không gửi được tới địa chỉ khác.
+  var EMAIL_NHAN_DON = 'bookingindochinaqueen@gmail.com';
+  var TOI_DA_EMAIL_10_PHUT = 20;
   // Trần tuyệt đối mỗi đơn online, kể cả khi không có hạn mức (chống gửi số khách ảo).
   var TRAN_KHACH_MOI_DON = 200;
   // Cột của tab "Đơn giữ chỗ" (bắt đầu từ 1).
@@ -116,6 +119,7 @@
   // POST (body JSON dạng text):
   //   { action: 'giu', maDon, tau, ngay, nguoiLon, treEm, beMienPhi, hoTen, sdt }   khách sang bước thanh toán
   //   { action: 'daChuyen', maDon, sdt }                                          khách bấm "Tôi đã chuyển khoản"
+  //   { action: 'email', maDon, duLieu: { _subject, 'Tên trường': 'giá trị', ... } }   FormSubmit lỗi: Apps Script gửi email đơn thay
   //   { action: 'xacNhan', maDon, ma, tau?, ngay?, nguoiLon?, treEm?, beMienPhi?, hoTen?, sdt? }  Ms Nguyên đã kiểm tra tiền (ma = Mã quản lý);
   //     đơn chưa có dòng (lúc giữ chỗ bị lỗi mạng) thì thêm dòng mới từ các thông tin kèm theo
   function doPost(e) {
@@ -127,6 +131,7 @@
       if (duLieu.action === 'giu') return traJson(giuCho(duLieu));
       if (duLieu.action === 'daChuyen') return traJson(baoDaChuyen(duLieu));
       if (duLieu.action === 'xacNhan') return traJson(xacNhanThanhToan(duLieu));
+      if (duLieu.action === 'email') return traJson(guiEmailDuPhong(duLieu));
       return traJson({ ok: false, loi: 'action' });
     } catch (loi) {
       return traJson({ ok: false, loi: 'may-chu' });
@@ -242,6 +247,43 @@
     return vuot > 0 ? { ok: true, vuot: vuot } : { ok: true };
   }
   
+  // Gửi email đơn tới EMAIL_NHAN_DON khi web không gửi được qua FormSubmit. Có giới hạn lượt để chống spam.
+  function guiEmailDuPhong(d) {
+    var maDon = String(d.maDon || '').trim().toUpperCase();
+    if (!/^VT\d{6}[A-Z0-9]{4}$/.test(maDon)) return { ok: false, loi: 'du-lieu' };
+    var homNay = Utilities.formatDate(new Date(), MUI_GIO, 'yyyy-MM-dd');
+    var homQua = Utilities.formatDate(new Date(Date.now() - 86400000), MUI_GIO, 'yyyy-MM-dd');
+    var ngayMai = Utilities.formatDate(new Date(Date.now() + 86400000), MUI_GIO, 'yyyy-MM-dd');
+    var ngayMa = '20' + maDon.slice(2, 4) + '-' + maDon.slice(4, 6) + '-' + maDon.slice(6, 8);
+    if (ngayMa !== homNay && ngayMa !== homQua && ngayMa !== ngayMai) return { ok: false, loi: 'du-lieu' };
+    var du = d.duLieu;
+    if (!du || typeof du !== 'object') return { ok: false, loi: 'du-lieu' };
+    var cache = CacheService.getScriptCache();
+    // Cùng một đơn chỉ gửi 1 lần mỗi 2 phút (khách bấm lại liên tục).
+    if (cache.get('email-don-' + maDon)) return { ok: true, daGui: true };
+    var khoaLuot = 'email-' + Math.floor(Date.now() / 600000);
+    var luot = Number(cache.get(khoaLuot)) || 0;
+    if (luot >= TOI_DA_EMAIL_10_PHUT) return { ok: false, loi: 'ban' };
+    var dong = [];
+    var soTruong = 0;
+    for (var k in du) {
+      if (!Object.prototype.hasOwnProperty.call(du, k) || k.charAt(0) === '_') continue;
+      if (++soTruong > 40) break;
+      dong.push(String(k).slice(0, 60) + ': ' + String(du[k] === null || du[k] === undefined ? '' : du[k]).slice(0, 2000));
+    }
+    var tieuDe = String(du._subject || ('Đặt chỗ mới - ' + maDon)).replace(/[\r\n]+/g, ' ').slice(0, 150);
+    if (tieuDe.indexOf(maDon) === -1) tieuDe += ' - ' + maDon;
+    MailApp.sendEmail({
+      to: EMAIL_NHAN_DON,
+      subject: tieuDe,
+      name: 'Vé Tàu Sài Gòn',
+      body: dong.join('\n') + '\n\n(Email dự phòng gửi từ Google Sheet vì FormSubmit không gửi được.)'
+    });
+    cache.put(khoaLuot, String(luot + 1), 700);
+    cache.put('email-don-' + maDon, '1', 120);
+    return { ok: true };
+  }
+
   function xacNhanThanhToan(d) {
     var bang = docBang();
     var ma = String(bang.caiDat[CD.ma] || '');

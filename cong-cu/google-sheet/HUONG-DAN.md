@@ -98,3 +98,5 @@ Cột **Ngày đi** và **SĐT** đang để dạng chữ, đừng đổi địn
 3. Ở **Phiên bản**, chọn **Phiên bản mới**, rồi bấm **Triển khai**.
 
 Link Web App giữ nguyên, không phải sửa gì trên web.
+
+Bản có **email dự phòng** (gửi đơn qua Gmail khi FormSubmit lỗi): lần triển khai đầu, Google hỏi quyền **gửi email thay bạn**, bấm **Cho phép**. Email chỉ gửi tới bookingindochinaqueen@gmail.com, từ tài khoản Google đang chạy Sheet. Gmail thường giới hạn khoảng 100 email mỗi ngày.

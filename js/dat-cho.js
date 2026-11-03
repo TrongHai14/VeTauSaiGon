@@ -437,7 +437,12 @@ function guiBaoDaChuyen(don, tau, bangTreEm, cauHinhThanhToan) {
   return baoChuyen.then(function (kqChuyen) {
     if (kqChuyen && kqChuyen.ok) { don.daChuyen = kqChuyen.vuot ? 'vuot' : 'ok'; don.vuotCho = kqChuyen.vuot || 0; }
     else if (kqChuyen) { don.daChuyen = kqChuyen.loi === 'da-huy' ? 'da-huy' : 'loi'; don.loiChuyen = kqChuyen.loi || ''; }
-    return guiEmailDatCho(taoDuLieuEmail(don, tau, bangTreEm, tk, linkXacNhan), typeof fetch === 'function' ? fetch.bind(window) : null);
+    var duLieu = taoDuLieuEmail(don, tau, bangTreEm, tk, linkXacNhan);
+    return guiEmailDatCho(duLieu, typeof fetch === 'function' ? fetch.bind(window) : null).then(function (ok) {
+      // FormSubmit lỗi: nhờ Google Sheet gửi email tới hộp thư nhận đơn.
+      if (ok) return true;
+      return hamLichCho.giuChoOnline({ action: 'email', maDon: don.maDon, duLieu: duLieu }).then(function (kq) { return !!(kq && kq.ok); });
+    });
   }).then(null, function () { return false; });
 }
 // Trạng thái sau khi đã báo chuyển khoản.
@@ -476,9 +481,9 @@ function laMaDon(ma) {
   return /^VT\d{6}[A-Z0-9]{4}$/.test(String(ma || ''));
 }
 
-// Nội dung chuyển khoản: không dấu, không ký tự đặc biệt để ngân hàng nào cũng nhận.
+// Nội dung chuyển khoản: chỉ mã đơn (12 ký tự, không dấu) để app ngân hàng hiện đủ, ngân hàng nào cũng nhận.
 function taoNoiDungChuyenKhoan(don) {
-  return (don.maDon + ' ' + (chuanHoaSoDienThoai(don.soDienThoai) || '')).trim();
+  return String(don.maDon || '').trim();
 }
 
 function layTaiKhoan(cauHinhThanhToan, don) {
@@ -586,7 +591,9 @@ function guiEmailDatCho(duLieuEmail, fetchHam) {
   } catch (loi) {
     return Promise.resolve(false);
   }
-  return Promise.resolve(yeuCau).then(function (phanHoi) {
+  // FormSubmit sập thường treo khoảng 20 giây mới báo lỗi: thôi chờ sau 15 giây.
+  var hetGio = new Promise(function (xong) { setTimeout(function () { xong(null); }, 15000); });
+  return Promise.race([Promise.resolve(yeuCau), hetGio]).then(function (phanHoi) {
     if (!phanHoi || !phanHoi.ok) return false;
     return Promise.resolve(phanHoi.json()).then(function (noiDung) {
       return !!noiDung && noiDung.success !== false && noiDung.success !== 'false';

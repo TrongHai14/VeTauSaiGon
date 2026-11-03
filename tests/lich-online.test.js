@@ -39,6 +39,7 @@ function taoSheetGia(macDinh) {
     CacheService: { getScriptCache: () => ({ get: (k) => (k in cache ? cache[k] : null), put: (k, v) => { cache[k] = v; } }) },
     ScriptApp: { getProjectTriggers: () => [], newTrigger: () => ({ timeBased: () => ({ everyMinutes: () => ({ create() {} }) }) }) },
     LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
+    MailApp: { sendEmail(o) { (ctx.thu = ctx.thu || []).push(o); } },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: (s) => ({ s, setMimeType() { return this; } }) },
     Utilities: {
       getUuid: () => '12345678-1234-1234-1234-123456789abc',
@@ -697,4 +698,57 @@ test('thanh toan: phai chon 1 trong 2 moi hien QR; chon VAT la tai khoan cong ty
   assert.ok(!the.includes('data-viec="da-chuyen"') && !the.includes('vietqr'), 'the don chua chon');
   const html = doc('dat-cho.html');
   assert.ok(html.includes('name="vat"') && html.includes('name="congTyMst"'), 'o tich xuat hoa don van con');
+});
+
+test('email du phong: chi gui toi hop thu nhan don, du lieu xau bi tu choi, khong gui trung, co gioi han luot', () => {
+  const s = taoSheetGia(true);
+  const gui = (them) => s.post(Object.assign({ action: 'email', maDon: MA + 'EM09', duLieu: { _subject: 'Đặt chỗ mới - Indochina Queen\nBcc: x@y.z', _captcha: 'false', 'Họ tên': 'A', 'Tổng tiền': '1.124.000 VND' } }, them));
+  assert.deepStrictEqual(gui(), { ok: true });
+  assert.strictEqual(s.ctx.thu.length, 1);
+  const thu = s.ctx.thu[0];
+  assert.strictEqual(thu.to, 'bookingindochinaqueen@gmail.com');
+  assert.ok(!/\n/.test(thu.subject) && thu.subject.includes(MA + 'EM09'), 'tieu de khong chen dong moi');
+  assert.ok(thu.body.includes('Họ tên: A') && thu.body.includes('Tổng tiền: 1.124.000 VND') && !thu.body.includes('_captcha'));
+  assert.deepStrictEqual(gui(), { ok: true, daGui: true }, 'cung don trong 2 phut khong gui lai');
+  assert.strictEqual(s.ctx.thu.length, 1);
+  assert.deepStrictEqual(gui({ maDon: 'VT990101AAAA' }), { ok: false, loi: 'du-lieu' }, 'ma don qua ngay');
+  assert.deepStrictEqual(gui({ maDon: MA + 'EM10', duLieu: 'x' }), { ok: false, loi: 'du-lieu' });
+  assert.deepStrictEqual(gui({ maDon: MA + 'EM11', to: 'ke-gian@x.com', duLieu: { a: 1 } }), { ok: true });
+  assert.ok(s.ctx.thu.every((t) => t.to === 'bookingindochinaqueen@gmail.com'), 'khong doi duoc nguoi nhan');
+  for (let i = 0; i < 30; i++) gui({ maDon: MA + 'Q' + String(i).padStart(3, '0'), duLieu: { a: i } });
+  assert.ok(s.ctx.thu.length <= 20, 'gioi han 20 email / 10 phut: ' + s.ctx.thu.length);
+});
+
+test('web: FormSubmit loi thi nho Google Sheet gui email; ca hai loi thi bao loi; FormSubmit ok thi khong goi Sheet', async () => {
+  const dc = require('../js/dat-cho.js');
+  const { DANH_SACH_TAU, GIA_TRE_EM } = require('../js/du-lieu-tau.js');
+  const { CAU_HINH } = require('../js/cau-hinh.js');
+  const tau = DANH_SACH_TAU.find((t) => t.slug === 'indochina-queen');
+  const fetchGoc = global.fetch, locGoc = global.location, winGoc = global.window, chGoc = global.CAU_HINH;
+  global.location = { href: 'https://vetausaigon.vn/dat-cho.html' };
+  global.window = global;
+  global.CAU_HINH = { lichChoOnline: { url: 'https://script.google.com/macros/s/x/exec' } };
+  const goi = [];
+  const datFetch = (formOk, sheetOk) => { global.fetch = (u, o) => {
+    goi.push(String(u).includes('formsubmit') ? 'form' : JSON.parse(o.body).action);
+    if (String(u).includes('formsubmit')) return formOk ? Promise.resolve({ ok: true, json: () => ({ success: 'true' }) }) : Promise.resolve({ ok: false, status: 522 });
+    return Promise.resolve({ json: () => ({ ok: sheetOk }) });
+  }; };
+  try {
+    const don = () => donCuaToi({ maDon: MA + 'EM20', tongLucDat: 1124000 });
+    datFetch(false, true);
+    assert.strictEqual(await dc.guiBaoDaChuyen(don(), tau, GIA_TRE_EM, CAU_HINH.thanhToan), true);
+    assert.deepStrictEqual(goi.splice(0), ['form', 'email']);
+    datFetch(false, false);
+    assert.strictEqual(await dc.guiBaoDaChuyen(don(), tau, GIA_TRE_EM, CAU_HINH.thanhToan), false);
+    goi.length = 0;
+    datFetch(true, true);
+    assert.strictEqual(await dc.guiBaoDaChuyen(don(), tau, GIA_TRE_EM, CAU_HINH.thanhToan), true);
+    assert.deepStrictEqual(goi, ['form']);
+  } finally { global.fetch = fetchGoc; global.location = locGoc; global.CAU_HINH = chGoc; if (winGoc === undefined) delete global.window; else global.window = winGoc; }
+});
+
+test('noi dung chuyen khoan chi con ma don cho app ngan hang hien du', () => {
+  const dc = require('../js/dat-cho.js');
+  assert.strictEqual(dc.taoNoiDungChuyenKhoan({ maDon: 'VT261103MRWT', soDienThoai: '0967907959' }), 'VT261103MRWT');
 });
