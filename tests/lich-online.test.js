@@ -75,13 +75,14 @@ const vnHomNay = new Date(Date.now() + 7 * 3600e3);
 const MA = 'VT' + String(vnHomNay.getUTCFullYear() % 100).padStart(2, '0') + String(vnHomNay.getUTCMonth() + 1).padStart(2, '0') + String(vnHomNay.getUTCDate()).padStart(2, '0');
 const giu = (them) => Object.assign({ action: 'giu', maDon: MA + 'AAAA', tau: 'indochina-queen', ngay: NGAY, nguoiLon: 2, treEm: 0, beMienPhi: 0, hoTen: 'A', sdt: '0948170036' }, them);
 
-test('sheet: cai dat tao 5 tab, mac dinh KHONG gioi han cho (dai ly phu thuoc tau), giu 1 gio, toi da 20 khach/don', () => {
+test('sheet: cai dat tao 5 tab, mac dinh KHONG gioi han cho (dai ly phu thuoc tau), giu 1 gio, toi da 50 khach/don, 1 don moi SDT', () => {
   const { tabs } = taoSheetGia(true);
   assert.deepStrictEqual(Object.keys(tabs).sort(), ['Cài đặt', 'Ngày hết chỗ', 'Số chỗ riêng', 'Tổng hợp', 'Đơn giữ chỗ'].sort());
   const cd = Object.fromEntries(tabs['Cài đặt'].o.slice(1).map((r) => [r[0], r[1]]));
   assert.strictEqual(cd['Số chỗ mỗi ngày'], '');
   assert.strictEqual(cd['Số giờ giữ chỗ chờ chuyển khoản'], 1);
-  assert.strictEqual(cd['Tối đa khách mỗi đơn online'], 20);
+  assert.strictEqual(cd['Tối đa khách mỗi đơn online'], 50);
+  assert.strictEqual(cd['Tối đa đơn đang giữ mỗi SĐT'], 1);
   // Không còn dòng ví dụ đóng thật ngày 31/12 ở tab Số chỗ riêng.
   assert.strictEqual(tabs['Số chỗ riêng'].o.filter((r) => r && r[2] === 0).length, 0);
   assert.match(cd['Mã quản lý (không chia sẻ)'], /^[0-9a-f]{16}$/);
@@ -223,7 +224,7 @@ test('cau hinh: lich online mac dinh tat (url rong) de web chay nhu cu cho toi k
 
 test('sheet chong spam: doan qua 20 khach, 1 SDT giu toi da 2 don, gioi han luot 10 phut, lich khong do duoc so cho', () => {
   const s = taoSheetGia(true);
-  for (const r of s.tabs['Cài đặt'].o) if (r && r[0] === 'Số chỗ mỗi ngày') r[1] = 999;
+  for (const r of s.tabs['Cài đặt'].o) { if (r && r[0] === 'Số chỗ mỗi ngày') r[1] = 999; if (r && r[0] === 'Tối đa khách mỗi đơn online') r[1] = 20; if (r && r[0] === 'Tối đa đơn đang giữ mỗi SĐT') r[1] = 2; }
   assert.strictEqual(s.post(giu({ nguoiLon: 21 })).loi, 'doan-dong');
   assert.strictEqual(s.post(giu({ maDon: MA + 'SP01', nguoiLon: 2 })).ok, true);
   assert.strictEqual(s.post(giu({ maDon: MA + 'SP02', nguoiLon: 2 })).ok, true);
@@ -311,7 +312,7 @@ test('web: Web App khong tra loi thi het gio cho va bao loi mang', async () => {
 
 test('sheet chong spam qua Cho xac nhan: tinh vao gioi han SDT; don da Huy khong song lai; menu huy theo SDT go duoc', () => {
   const s = taoSheetGia(true);
-  for (const r of s.tabs['Cài đặt'].o) if (r && r[0] === 'Số chỗ mỗi ngày') r[1] = 999;
+  for (const r of s.tabs['Cài đặt'].o) { if (r && r[0] === 'Số chỗ mỗi ngày') r[1] = 999; if (r && r[0] === 'Tối đa khách mỗi đơn online') r[1] = 20; if (r && r[0] === 'Tối đa đơn đang giữ mỗi SĐT') r[1] = 2; }
   const don = s.tabs['Đơn giữ chỗ'].o;
   for (const d of ['SX01', 'SX02']) {
     assert.strictEqual(s.post(giu({ maDon: MA + d, nguoiLon: 2 })).ok, true);
@@ -423,11 +424,19 @@ test('sheet: xac nhan don chua co dong thi them dong Da thanh toan, chi khi dung
   assert.deepStrictEqual(s.post(Object.assign({}, them, { tau: 'tau-la', maDon: MA + 'TT03', ma: maQuanLy(s) })), { ok: false, loi: 'khong-co-don' });
 });
 
-test('sheet khong co han muc: doan dong va nhieu don cua 1 SDT van dat duoc nhu hien tai', () => {
+test('khong co han muc van ap dung: toi da 50 khach moi don, moi SDT 1 don chua xong', () => {
   const s = taoSheetGia(true);
-  assert.strictEqual(s.post(giu({ maDon: MA + 'TT04', nguoiLon: 30 })).ok, true);
-  assert.strictEqual(s.post(giu({ maDon: MA + 'TT05' })).ok, true);
-  assert.strictEqual(s.post(giu({ maDon: MA + 'TT06' })).ok, true);
+  assert.strictEqual(s.post(giu({ maDon: MA + 'TT04', nguoiLon: 51 })).loi, 'doan-dong');
+  assert.strictEqual(s.post(giu({ maDon: MA + 'TT04', nguoiLon: 50 })).ok, true, '50 khach van duoc');
+  assert.strictEqual(s.post(giu({ maDon: MA + 'TT05' })).loi, 'nhieu-don', 'SDT dang co don giu cho');
+  assert.strictEqual(s.post(giu({ maDon: MA + 'TT04', nguoiLon: 10 })).ok, true, 'sua lai chinh don do van duoc');
+  assert.strictEqual(s.post(giu({ maDon: MA + 'TT06', sdt: '0912000999' })).ok, true, 'SDT khac van duoc');
+  s.post({ action: 'daChuyen', maDon: MA + 'TT04', sdt: '0948170036' });
+  assert.strictEqual(s.post(giu({ maDon: MA + 'TT05' })).loi, 'nhieu-don', 'cho xac nhan van tinh');
+  s.tabs['Đơn giữ chỗ'].o.find((r) => r && r[0] === MA + 'TT04')[7] = 'Đã thanh toán';
+  assert.strictEqual(s.post(giu({ maDon: MA + 'TT05' })).ok, true, 'don truoc da thanh toan thi dat tiep duoc');
+  for (const r of s.tabs['Cài đặt'].o) if (r && r[0] === 'Tối đa khách mỗi đơn online') r[1] = 80;
+  assert.strictEqual(s.post(giu({ maDon: MA + 'TT07', nguoiLon: 70, sdt: '0912000888' })).ok, true, 'sua tay tab Cai dat co hieu luc ngay');
 });
 
 test('web: theo doi thanh toan hoi lai toi khi co ket qua, dung thi khong hoi nua', async () => {

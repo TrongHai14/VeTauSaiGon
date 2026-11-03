@@ -50,8 +50,8 @@
         [CD.tinhBe, 'Không', 'Ghi "Có" nếu bé miễn phí cũng chiếm chỗ ngồi.'],
         [CD.ma, taoMaBiMat(), 'Nhập mã này ở trang xác nhận đơn để web tự đổi đơn sang "Đã thanh toán". Không chia sẻ cho ai.'],
         [CD.chanGio, 0, 'Ví dụ 3: còn dưới 3 giờ trước 18h ngày đi thì không nhận giữ chỗ online. 0 = không chặn.'],
-        [CD.toiDaKhach, 20, 'Chỉ áp dụng khi có hạn mức số chỗ. Đoàn đông hơn số này thì web nhắn khách liên hệ Zalo (chống giữ chỗ ảo).'],
-        [CD.toiDaDonSdt, 2, 'Chỉ áp dụng khi có hạn mức số chỗ. Một số điện thoại được giữ tối đa bấy nhiêu đơn chưa thanh toán cùng lúc.'],
+        [CD.toiDaKhach, 50, 'Đoàn đông hơn số này thì web không nhận đặt online, nhắn khách liên hệ Zalo (chống giữ chỗ ảo).'],
+        [CD.toiDaDonSdt, 1, 'Một số điện thoại được có tối đa bấy nhiêu đơn "Giữ chỗ" hoặc "Chờ xác nhận" cùng lúc. Đơn trước được xác nhận hoặc hủy thì đặt tiếp được.'],
         [CD.toiDaLan, 30, 'Chống spam: quá số lượt này trong 10 phút thì tạm ngừng giữ chỗ tự động (khách vẫn đặt được, Ms Nguyên kiểm tra tay).']
       ]);
       cd.getRange('A1:C1').setFontWeight('bold');
@@ -168,7 +168,7 @@
   function lichThang(tau, thang, khach, be) {
     if (DS_TAU.indexOf(tau) === -1 || !/^\d{4}-\d{2}$/.test(String(thang || ''))) return { ok: false, loi: 'tham-so' };
     var bang = docBang();
-    var toiDa = Number(bang.caiDat[CD.toiDaKhach]) || 20;
+    var toiDa = Number(bang.caiDat[CD.toiDaKhach]) || 50;
     // Giới hạn theo mức tối đa mỗi đơn: không dò được con số còn lại chính xác.
     var can = Math.max(1, Math.min(toiDa, (parseInt(khach, 10) || 1) + (laCo(bang.caiDat[CD.tinhBe]) ? soNguyen(be) : 0)));
     var nam = Number(thang.slice(0, 4)), th = Number(thang.slice(5, 7));
@@ -200,10 +200,9 @@
     var cd = bang.caiDat;
     if ((Number(cd[CD.chanGio]) || 0) > 0 && gioDenNgayDi(ngay) < Number(cd[CD.chanGio])) return { ok: false, loi: 'sat-gio' };
     var soCho = nguoiLon + treEm + (laCo(cd[CD.tinhBe]) ? beMienPhi : 0);
-    // Không có hạn mức thì đơn không chiếm chỗ của ai: không chặn đoàn đông hay nhiều đơn (vẫn có giới hạn lượt bên dưới).
+    // Áp dụng cả khi không có hạn mức: đoàn quá đông hoặc SĐT đang có đơn chưa xong thì nhờ khách liên hệ Zalo.
     if (soCho > TRAN_KHACH_MOI_DON) return { ok: false, loi: 'doan-dong' };
-    var coHanMuc = hanMuc(bang, tau, ngay) !== Infinity;
-    if (coHanMuc && soCho > (Number(cd[CD.toiDaKhach]) || 20)) return { ok: false, loi: 'doan-dong' };
+    if (soCho > (Number(cd[CD.toiDaKhach]) || 50)) return { ok: false, loi: 'doan-dong' };
     var viTri = timDongDon(bang, maDon);
     var cu = viTri > 0 ? bang.don[viTri - 2] : null;
     if (cu && (cu.trangThai === TT.daTT || cu.trangThai === TT.choXN)) {
@@ -217,7 +216,7 @@
       var x = bang.don[i];
       if (x.sdt === sdt && x.maDon !== maDon && ((x.trangThai === TT.giu && x.giuDen > bayGio) || x.trangThai === TT.choXN)) dangGiu++;
     }
-    if (coHanMuc && dangGiu >= (Number(cd[CD.toiDaDonSdt]) || 2)) return { ok: false, loi: 'nhieu-don' };
+    if (dangGiu >= (Number(cd[CD.toiDaDonSdt]) || 1)) return { ok: false, loi: 'nhieu-don' };
     if (!demLuot(Number(cd[CD.toiDaLan]) || 30)) return { ok: false, loi: 'ban' };
     var tab = layTab(TAB.don);
     // Cùng mã đơn (khách quay lại sửa đơn): không tính chỗ của chính đơn đó khi kiểm tra.
