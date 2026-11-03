@@ -72,7 +72,7 @@ function giuChoOnline(thongTin) {
   });
 }
 
-// Hỏi đơn đã được xác nhận chưa. Trả Promise<'da-tt' | 'huy' | 'cho' | ''>; '' là chưa cài hoặc lỗi mạng.
+// Hỏi trạng thái đơn trên Google Sheet. Trả Promise<'giu' | 'cho' | 'da-tt' | 'huy' | 'het-han' | 'khong-co' | ''>; '' là chưa cài hoặc lỗi mạng.
 function trangThaiDonOnline(maDon) {
   var url = urlLichOnline();
   if (!url || typeof fetch !== 'function') return Promise.resolve('');
@@ -86,6 +86,7 @@ function trangThaiDonOnline(maDon) {
 // xác nhận lại đơn hủy nhầm. Tab ẩn thì tạm ngừng, quay lại tab thì hỏi ngay. Sau 3 ngày thôi hẹn giờ
 // nhưng quay lại tab vẫn hỏi (Ms Nguyên có 24 giờ để xác nhận). Trả về hàm dừng theo dõi.
 var CHU_KY_HOI_TRANG_THAI = 30000;
+var TRANG_THAI_SHEET = ['giu', 'cho', 'da-tt', 'huy', 'het-han'];
 var THOI_GIAN_HEN_GIO_TOI_DA = 72 * 3600 * 1000;
 function theoDoiThanhToan(maDon, xong, hoi) {
   var hoiTrangThai = hoi || trangThaiDonOnline;
@@ -108,8 +109,12 @@ function theoDoiThanhToan(maDon, xong, hoi) {
     hoiTrangThai(maDon).then(function (tt) {
       dangHoi = false;
       if (daDung) return;
-      if (tt === 'da-tt') { dung(); xong(tt); return; }
-      if (tt === 'huy' && daBao !== tt) { daBao = tt; xong(tt); }
+      // Báo mỗi khi Ms Nguyên đổi trạng thái trong Sheet (kể cả đổi lại); "đã thanh toán" thì thôi hỏi.
+      if (TRANG_THAI_SHEET.indexOf(tt) !== -1 && tt !== daBao) {
+        daBao = tt;
+        if (tt === 'da-tt') { dung(); xong(tt); return; }
+        xong(tt);
+      }
       henLai();
     }, function () {
       dangHoi = false;

@@ -554,6 +554,8 @@ var TU_DIEN_EN = {
   'Đặt chỗ ngay': 'Book now',
   'Mã đơn:': 'Booking code:',
   'Chưa chuyển khoản': 'Not paid yet',
+  'Hết hạn giữ chỗ': 'Seat hold expired',
+  'Đơn đã hết hạn giữ chỗ. Nếu quý khách đã chuyển khoản, vui lòng nhắn Zalo Ms Nguyên 0948170036 kèm mã đơn.': 'This booking’s seat hold has expired. If you have already transferred, please message Ms Nguyên on Zalo at 0948170036 with your booking code.',
   'Đang chờ xác nhận': 'Awaiting confirmation',
   'Quý khách chuyển khoản rồi bấm “Tôi đã chuyển khoản”.': 'Please make the transfer, then tap “I have transferred”.',
   'Đã qua giờ tàu chạy nên đơn này không còn chuyển khoản được. Vui lòng nhắn Zalo Ms Nguyên nếu cần hỗ trợ.': 'The cruise has already departed, so this booking can no longer be paid. Please message Ms Nguyên on Zalo if you need help.',

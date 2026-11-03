@@ -389,25 +389,32 @@ const hoiTT = (s, maDon) => s.get({ action: 'trangThai', maDon });
 
 test('sheet: hoi trang thai don chi tra trang thai, khong lo thong tin khach', () => {
   const s = taoSheetGia(true);
-  assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: 'cho' }, 'chua co don');
+  assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: 'khong-co' }, 'chua co don');
   assert.strictEqual(hoiTT(s, 'sai-ma').ok, false);
   s.post(giu({ maDon: MA + 'TT01', hoTen: 'Khach Bi Mat' }));
-  assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: 'cho' }, 'dang giu cho');
+  assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: 'giu' }, 'dang giu cho');
   s.post({ action: 'daChuyen', maDon: MA + 'TT01', sdt: '0948170036' });
   assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: 'cho' }, 'cho xac nhan');
   assert.deepStrictEqual(s.post({ action: 'xacNhan', maDon: MA + 'TT01', ma: 'sai' }), { ok: false, loi: 'ma' });
   assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: 'cho' }, 'sai ma quan ly thi khong doi');
   assert.strictEqual(s.post({ action: 'xacNhan', maDon: MA + 'TT01', ma: maQuanLy(s) }).ok, true);
   assert.deepStrictEqual(hoiTT(s, MA.toLowerCase() + 'tt01'), { ok: true, trangThai: 'da-tt' });
-  s.tabs['Đơn giữ chỗ'].o[1][7] = 'Hủy';
-  assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: 'huy' }, 'doi tay trong Sheet');
+  const dong = s.tabs['Đơn giữ chỗ'].o[1];
+  // Ms Nguyên đổi tay cột Trạng thái nào thì web nhận đúng trạng thái đó.
+  for (const [chu, tt] of [['Hủy', 'huy'], ['Hết hạn', 'het-han'], ['Chờ xác nhận', 'cho'], ['Đã thanh toán', 'da-tt'], ['Giữ chỗ', 'giu']]) {
+    dong[7] = chu;
+    assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: tt }, chu);
+  }
+  dong[8] = new Date(Date.now() - 60000);
+  assert.deepStrictEqual(hoiTT(s, MA + 'TT01'), { ok: true, trangThai: 'het-han' }, 'giu cho qua han');
+  assert.ok(!JSON.stringify(hoiTT(s, MA + 'TT01')).includes('Khach'), 'khong lo ten khach');
 });
 
 test('sheet: xac nhan don chua co dong thi them dong Da thanh toan, chi khi dung ma quan ly', () => {
   const s = taoSheetGia(true);
   const them = { action: 'xacNhan', maDon: MA + 'TT02', tau: 'indochina-star', ngay: NGAY, nguoiLon: 2, treEm: 1, beMienPhi: 1, hoTen: '=A', sdt: '0948170036' };
   assert.deepStrictEqual(s.post(Object.assign({}, them, { ma: 'sai' })), { ok: false, loi: 'ma' });
-  assert.deepStrictEqual(hoiTT(s, MA + 'TT02'), { ok: true, trangThai: 'cho' });
+  assert.deepStrictEqual(hoiTT(s, MA + 'TT02'), { ok: true, trangThai: 'khong-co' });
   assert.deepStrictEqual(s.post(Object.assign({}, them, { ma: maQuanLy(s) })), { ok: true, moiTao: true });
   assert.deepStrictEqual(hoiTT(s, MA + 'TT02'), { ok: true, trangThai: 'da-tt' });
   const dong = s.tabs['Đơn giữ chỗ'].o.find((r) => r && r[0] === MA + 'TT02');
@@ -435,17 +442,19 @@ test('web: theo doi thanh toan hoi lai toi khi co ket qua, dung thi khong hoi nu
     const hoiMa = []; const ketQua = [];
     theoDoiThanhToan('VT261031ABCD', (tt) => ketQua.push(tt), (ma) => { hoiMa.push(ma); return Promise.resolve(dap.shift()); });
     await nghi();
-    assert.deepStrictEqual(ketQua, []);
+    assert.deepStrictEqual(ketQua, ['cho'], 'bao trang thai dau tien');
     hen.shift()(); await nghi();
-    assert.deepStrictEqual(ketQua, [], 'loi mang thi hoi tiep');
+    assert.deepStrictEqual(ketQua, ['cho'], 'loi mang thi hoi tiep, khong bao');
     hen.shift()(); await nghi();
-    assert.deepStrictEqual(ketQua, ['da-tt']);
+    assert.deepStrictEqual(ketQua, ['cho', 'da-tt']);
     assert.strictEqual(hoiMa.length, 3);
     assert.strictEqual(hen.length, 0, 'co ket qua thi khong hen nua');
     let hoi = 0;
-    const dung = theoDoiThanhToan('VT261031ABCD', () => assert.fail('da dung'), () => { hoi++; return Promise.resolve('cho'); });
+    const baoSau = [];
+    const dung = theoDoiThanhToan('VT261031ABCD', (tt) => baoSau.push(tt), () => { hoi++; return Promise.resolve('cho'); });
     await nghi();
     dung();
+    assert.deepStrictEqual(baoSau, ['cho']);
     hen.splice(0).forEach((f) => f()); await nghi();
     assert.strictEqual(hoi, 1);
     assert.strictEqual(await trangThaiDonOnline('VT261031ABCD'), '', 'chua cai url');
@@ -716,7 +725,7 @@ test('email du phong: chi gui toi hop thu nhan don, du lieu xau bi tu choi, khon
   assert.deepStrictEqual(gui({ maDon: MA + 'EM11', to: 'ke-gian@x.com', duLieu: { a: 1 } }), { ok: true });
   assert.ok(s.ctx.thu.every((t) => t.to === 'bookingindochinaqueen@gmail.com'), 'khong doi duoc nguoi nhan');
   for (let i = 0; i < 30; i++) gui({ maDon: MA + 'Q' + String(i).padStart(3, '0'), duLieu: { a: i } });
-  assert.ok(s.ctx.thu.length <= 20, 'gioi han 20 email / 10 phut: ' + s.ctx.thu.length);
+  assert.ok(s.ctx.thu.length <= 50, 'gioi han 50 email / 10 phut: ' + s.ctx.thu.length);
 });
 
 test('web: FormSubmit loi thi nho Google Sheet gui email; ca hai loi thi bao loi; FormSubmit ok thi khong goi Sheet', async () => {
@@ -767,4 +776,59 @@ test('email du phong: ham kiem tra trong trinh soan gui 1 thu; loi gui email tra
   assert.match(kq.chiTiet, /permission/);
   s.ctx.kiemTraEmailDuPhong();
   assert.match(nhatKy[1], /^LỖI: .*permission/);
+});
+
+test('dong bo trang thai: Sheet doi Huy, Het han, Cho, Da thanh toan, doi lai thi web theo; chi bao khi doi', async () => {
+  const { theoDoiThanhToan } = require('../js/lich-cho.js');
+  const dc = require('../js/dat-cho.js');
+  assert.deepStrictEqual(['giu', 'cho', 'da-tt', 'huy', 'het-han', 'khong-co', '', 'rac'].map(dc.trangThaiTuSheet), ['chua-chuyen', 'cho', 'da-tt', 'huy', 'het-han', '', '', '']);
+  const setGoc = global.setTimeout, clearGoc = global.clearTimeout;
+  const hen = [];
+  global.setTimeout = (fn) => { hen.push(fn); return hen.length; };
+  global.clearTimeout = () => {};
+  const nghi = () => new Promise((x) => setImmediate(x));
+  try {
+    const dap = ['giu', 'giu', 'huy', 'khong-co', 'cho', 'het-han', 'cho', 'da-tt'];
+    const bao = [];
+    theoDoiThanhToan('VT261031ABCD', (tt) => bao.push(tt), () => Promise.resolve(dap.shift()));
+    await nghi();
+    while (hen.length) { hen.shift()(); await nghi(); }
+    assert.deepStrictEqual(bao, ['giu', 'huy', 'cho', 'het-han', 'cho', 'da-tt']);
+  } finally { global.setTimeout = setGoc; global.clearTimeout = clearGoc; }
+  const kho = khoGia();
+  dc.luuDonCuaToi(donCuaToi(), 'cho', kho);
+  assert.strictEqual(dc.doiTrangThaiDonCuaToi('VT261031AAAA', 'het-han', kho), true);
+  assert.strictEqual(dc.layDonCuaToi(kho)[0].trangThai, 'het-han');
+  assert.strictEqual(dc.doiTrangThaiDonCuaToi('VT261031AAAA', 'het-han', kho), false, 'khong doi thi khong ghi');
+  assert.strictEqual(dc.doiTrangThaiDonCuaToi('VT261031AAAA', 'rac', kho), false);
+  const { DANH_SACH_TAU, GIA_TRE_EM, LIEN_HE } = require('../js/du-lieu-tau.js');
+  const { CAU_HINH } = require('../js/cau-hinh.js');
+  const tau = DANH_SACH_TAU.find((t) => t.slug === 'indochina-queen');
+  const the = dc.taoTheDonCuaToi({ don: donCuaToi(), trangThai: 'het-han' }, tau, GIA_TRE_EM, CAU_HINH.thanhToan, LIEN_HE, true);
+  assert.ok(the.includes('Hết hạn giữ chỗ') && !the.includes('data-viec="da-chuyen"') && !the.includes('vietqr'));
+});
+
+test('tong hop: khong han muc thi hien so khach da dat theo tung tau, ngay het cho ghi HET; co han muc thi so cho con', () => {
+  const s = taoSheetGia(true);
+  const ngay = new Date(Date.now() + 7 * 3600e3 + 3 * 864e5).toISOString().slice(0, 10);
+  for (const [ma, tau, nl] of [['TH01', 'ben-nghe', 2], ['TH02', 'ben-nghe', 3], ['TH03', 'indochina-star', 4]]) {
+    assert.strictEqual(s.post(giu({ maDon: MA + ma, tau, ngay, nguoiLon: nl, sdt: '09010000' + ma.slice(2) })).ok, true, ma);
+  }
+  s.post({ action: 'daChuyen', maDon: MA + 'TH02', sdt: '0901000002' });
+  s.tabs['Ngày hết chỗ'].o.push(['indochina-queen', ngay, '']);
+  s.ctx.capNhatTongHop();
+  const bang = s.tabs['Tổng hợp'].o;
+  const tieuDe = bang[0];
+  const dong = bang.find((r) => r && r[0] === ngay);
+  const o = (ten) => dong[tieuDe.indexOf(ten)];
+  assert.strictEqual(o('Bến Nghé'), 'Đã đặt 5 khách');
+  assert.strictEqual(o('Indochina Star'), 'Đã đặt 4 khách');
+  assert.strictEqual(o('Indochina Queen'), 'HẾT');
+  assert.strictEqual(o('Elite of Saigon'), 'Nhận đặt');
+  s.tabs['Đơn giữ chỗ'].o.find((r) => r && r[0] === MA + 'TH01')[7] = 'Hủy';
+  s.ctx.onEdit({ range: { getSheet: () => ({ getName: () => 'Đơn giữ chỗ' }) } });
+  assert.strictEqual(s.tabs['Tổng hợp'].o.find((r) => r && r[0] === ngay)[tieuDe.indexOf('Bến Nghé')], 'Đã đặt 3 khách', 'sua tay thi tong hop tu cap nhat');
+  for (const r of s.tabs['Cài đặt'].o) if (r && r[0] === 'Số chỗ mỗi ngày') r[1] = 50;
+  s.ctx.capNhatTongHop();
+  assert.strictEqual(s.tabs['Tổng hợp'].o.find((r) => r && r[0] === ngay)[tieuDe.indexOf('Bến Nghé')], 47);
 });

@@ -10,6 +10,15 @@ function khoiChayTrangDonCuaToi() {
   var dangTheoDoi = {};
   var dangGui = {};
   var baoLoiGui = {};
+  var daHoiMotLan = {};
+  function capNhatTuSheet(ma) {
+    return function (ttSheet) {
+      var tt = trangThaiTuSheet(ttSheet);
+      if (!tt) return;
+      if (tt === 'da-tt') quenDonChoXacNhan(ma, kho);
+      if (doiTrangThaiDonCuaToi(ma, tt, kho)) ve();
+    };
+  }
   var coOnline = !!hamLichCho.urlLichOnline();
   oTuCapNhat.hidden = !coOnline;
 
@@ -52,11 +61,14 @@ function khoiChayTrangDonCuaToi() {
     ds.forEach(function (b) {
       var ma = b.don.maDon;
       if (dangTheoDoi[ma] || b.trangThai === 'da-tt' || b.don.ngay < homNay) return;
-      dangTheoDoi[ma] = hamLichCho.theoDoiThanhToan(ma, function (tt) {
-        if (tt === 'da-tt') quenDonChoXacNhan(ma, kho);
-        doiTrangThaiDonCuaToi(ma, tt, kho);
-        ve();
-      });
+      dangTheoDoi[ma] = hamLichCho.theoDoiThanhToan(ma, capNhatTuSheet(ma));
+    });
+    // Đơn đã thanh toán: hỏi lại 1 lần mỗi khi mở trang, phòng khi Ms Nguyên đổi trạng thái trong Sheet.
+    ds.forEach(function (b) {
+      var ma = b.don.maDon;
+      if (b.trangThai !== 'da-tt' || daHoiMotLan[ma] || b.don.ngay < homNay) return;
+      daHoiMotLan[ma] = true;
+      hamLichCho.trangThaiDonOnline(ma).then(capNhatTuSheet(ma));
     });
   }
 

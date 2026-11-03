@@ -24,7 +24,7 @@
   var MUI_GIO = 'Asia/Ho_Chi_Minh';
   // Email dự phòng (khi FormSubmit lỗi) chỉ gửi tới đúng hộp thư nhận đơn này, không gửi được tới địa chỉ khác.
   var EMAIL_NHAN_DON = 'bookingindochinaqueen@gmail.com';
-  var TOI_DA_EMAIL_10_PHUT = 20;
+  var TOI_DA_EMAIL_10_PHUT = 50;
   // Trần tuyệt đối mỗi đơn online, kể cả khi không có hạn mức (chống gửi số khách ảo).
   var TRAN_KHACH_MOI_DON = 200;
   // Cột của tab "Đơn giữ chỗ" (bắt đầu từ 1).
@@ -105,7 +105,7 @@
   /* ---------- Web gọi vào ---------- */
   // GET ?action=lich&tau=<mã tàu>&thang=YYYY-MM&khach=<người lớn + trẻ tính vé>&be=<bé miễn phí>
   // → { ok: true, het: ['2026-10-25', ...] }  (ngày không đủ chỗ cho số khách đó)
-  // GET ?action=trangThai&maDon=<mã đơn> → { ok: true, trangThai: 'da-tt' | 'huy' | 'cho' } (không trả thông tin khách)
+  // GET ?action=trangThai&maDon=<mã đơn> → { ok: true, trangThai: 'giu' | 'cho' | 'da-tt' | 'huy' | 'het-han' | 'khong-co' } (không trả thông tin khách)
   function doGet(e) {
     var p = (e && e.parameter) || {};
     try {
@@ -149,17 +149,20 @@
   function trangThaiDon(maDonVao) {
     var maDon = String(maDonVao || '').trim().toUpperCase();
     if (!/^VT\d{6}[A-Z0-9]{4}$/.test(maDon)) return { ok: false, loi: 'du-lieu' };
-    // Chỉ đọc tới cột Trạng thái: không lấy họ tên, SĐT, và nhanh hơn vì web hỏi thường xuyên.
+    // Chỉ đọc tới cột "Giữ đến": không lấy họ tên, SĐT, và nhanh hơn vì web hỏi thường xuyên.
+    // Ms Nguyên đổi cột Trạng thái thế nào thì web của khách hiện theo thế đó.
     var tab = layTab(TAB.don);
     var soDong = tab.getLastRow() - 1;
-    if (soDong < 1) return { ok: true, trangThai: 'cho' };
-    var dd = tab.getRange(2, 1, soDong, COT.trangThai).getValues();
+    if (soDong < 1) return { ok: true, trangThai: 'khong-co' };
+    var dd = tab.getRange(2, 1, soDong, COT.giuDen).getValues();
     for (var i = 0; i < dd.length; i++) {
       if (String(dd[i][COT.maDon - 1]).trim().toUpperCase() !== maDon) continue;
       var tt = chuanTrangThai(dd[i][COT.trangThai - 1]);
-      return { ok: true, trangThai: tt === TT.daTT ? 'da-tt' : tt === TT.huy ? 'huy' : 'cho' };
+      var giuDen = dd[i][COT.giuDen - 1];
+      if (tt === TT.giu) return { ok: true, trangThai: giuDen instanceof Date && giuDen.getTime() <= Date.now() ? 'het-han' : 'giu' };
+      return { ok: true, trangThai: tt === TT.daTT ? 'da-tt' : tt === TT.huy ? 'huy' : tt === TT.hetHan ? 'het-han' : 'cho' };
     }
-    return { ok: true, trangThai: 'cho' };
+    return { ok: true, trangThai: 'khong-co' };
   }
 
   function lichThang(tau, thang, khach, be) {
@@ -419,6 +422,7 @@
     } finally {
       khoa.releaseLock();
     }
+    capNhatTongHop();
   }
   
   // Menu: hủy các đơn "Giữ chỗ" (chưa chuyển khoản) của một SĐT.
@@ -470,7 +474,10 @@
       dong.push([ngay].concat(DS_TAU.map(function (t) {
         if (bang.hetCho[t + '|' + ngay]) return 'HẾT';
         var con = conLai(bang, t, ngay, '');
-        return con === Infinity ? 'Nhận đặt' : con;
+        if (con !== Infinity) return con;
+        // Không giới hạn chỗ (đại lý phụ thuộc tàu): hiện số khách đã đặt để Ms Nguyên báo tàu.
+        var daDat = soKhachDaDat(bang, t, ngay);
+        return daDat > 0 ? 'Đã đặt ' + daDat + ' khách' : 'Nhận đặt';
       })));
     }
     tab.getRange(1, 1, dong.length, dong[0].length).setValues(dong);
@@ -478,7 +485,22 @@
     tab.getRange(2, 1, dong.length - 1, 1).setNumberFormat('@');
     tab.setFrozenRows(1);
     tab.getRange(1, dong[0].length + 2).setValue('Cập nhật lúc ' + Utilities.formatDate(bayGio, MUI_GIO, 'dd/MM/yyyy HH:mm') +
-      ' (menu Vé Tàu > Xem chỗ còn lại để làm mới). Số âm = đang vượt số chỗ, cần kiểm tra với tàu.');
+      ' (tự làm mới mỗi 15 phút và khi sửa Sheet; menu Vé Tàu > Xem chỗ còn lại để làm mới ngay). ' +
+      'Có hạn mức: số = chỗ còn lại, số âm = đang vượt. Không hạn mức: "Đã đặt N khách" (đơn đã thanh toán, chờ xác nhận, đang giữ).');
+  }
+  // Tổng số chỗ của các đơn đang chiếm chỗ một tàu một ngày.
+  function soKhachDaDat(bang, tau, ngay) {
+    var tong = 0, bayGio = Date.now();
+    for (var i = 0; i < bang.don.length; i++) {
+      var d = bang.don[i];
+      if (d.tau === tau && d.ngay === ngay && chiemCho(d, bayGio)) tong += d.soCho;
+    }
+    return tong;
+  }
+  // Sửa tay tab đơn, ngày hết chỗ, số chỗ hoặc cài đặt: làm mới Tổng hợp ngay.
+  function onEdit(e) {
+    var ten = e && e.range && e.range.getSheet().getName();
+    if (ten === TAB.don || ten === TAB.hetCho || ten === TAB.soCho || ten === TAB.caiDat) capNhatTongHop();
   }
   
   /* ---------- Tiện ích ---------- */
