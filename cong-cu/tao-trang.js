@@ -182,7 +182,7 @@ const CAU_HOI_FAQ = [
   ['Nếu tàu hết chỗ ngày tôi chọn thì sao?', 'Sau khi quý khách thanh toán, Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách. Ngày nào tàu đã báo hết chỗ sẽ bị khoá trên lịch đặt chỗ.'],
   ['Làm sao biết phiếu là thật?', 'Phiếu xác nhận có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu không có mã QR, vui lòng liên hệ Ms Nguyên 0948170036 để kiểm tra.'],
   ['Trẻ em tính giá thế nào?', 'Mỗi tàu có chính sách trẻ em riêng (độ tuổi, chiều cao, số bé miễn phí đi kèm người lớn). Chính sách của từng tàu:'],
-  ['Có đổi ngày hoặc hủy vé được không?', 'Không. Vé đã thanh toán không được hoàn tiền, hủy vé hoặc đổi sang ngày khác, áp dụng cho tất cả các tàu. Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản. Chỉ khi tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác.'],
+  ['Có đổi ngày hoặc hủy vé được không?', 'Vé đã thanh toán không được hoàn tiền. Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản. Trường hợp tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác.'],
   ['Đón khách ở đâu? Nên có mặt lúc nào?', 'Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.'],
   ['Tôi đến trễ thì có được hỗ trợ không?', 'Quý khách vui lòng báo Ms Nguyên sớm nhất có thể. Nguyên Nguyên Travel sẽ kiểm tra khả năng hỗ trợ theo quy định của tàu, nhưng không thể cam kết nếu đã quá giờ tàu chạy.'],
   ['Tôi có đổi tên người đi được không?', 'Vui lòng báo Ms Nguyên để kiểm tra điều kiện đổi tên và phí phát sinh (nếu có).'],
@@ -299,7 +299,7 @@ ${o('dat-cho-cong-ty-dia-chi', 'congTyDiaChi', 'Địa chỉ công ty', '<input 
             </div>
           </div>
           <div class="the-form">
-            <label class="o-chon"><input type="checkbox" name="dongY" id="dat-cho-dong-y"><span><strong>Tôi đã đọc và đồng ý <a href="chinh-sach.html" target="_blank" rel="noopener">điều kiện vé &amp; chính sách</a></strong><small>Vé đã thanh toán không hoàn/hủy và không đổi ngày.</small></span></label>
+            <label class="o-chon"><input type="checkbox" name="dongY" id="dat-cho-dong-y"><span><strong>Tôi đã đọc và đồng ý <a href="chinh-sach.html" target="_blank" rel="noopener">điều kiện vé &amp; chính sách</a></strong><small>Vé đã thanh toán không được hoàn tiền.</small></span></label>
             <p class="loi" data-loi="dongY"></p>
           </div>
           <div class="nut-buoc"><button type="button" class="nut nut-vien" data-hanh-dong="ve-buoc-1">Quay lại</button><button type="button" class="nut" data-hanh-dong="buoc-3">Tiếp tục thanh toán</button></div>

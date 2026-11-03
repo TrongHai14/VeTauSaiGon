@@ -542,9 +542,8 @@ var TU_DIEN_EN = {
   'Vé đã thanh toán không được hoàn tiền.': 'Paid tickets are non-refundable.',
   'Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản.': 'Please check the date, number of guests and menu carefully before transferring.',
   'Trường hợp tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách.': 'If the cruise reports it is sold out on your date, Nguyên Nguyên Travel gives a 100% refund or moves you to another date of your choice.',
-  'Không. Vé đã thanh toán không được hoàn tiền, hủy vé hoặc đổi sang ngày khác, áp dụng cho tất cả các tàu. Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản. Chỉ khi tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác.':
-    'No. Paid tickets cannot be refunded, cancelled or moved to another date; this applies to all cruises. Please check the date, number of guests and menu carefully before transferring. Only if the cruise reports it is sold out on your date does Nguyên Nguyên Travel give a 100% refund or move you to another date.',
-  'Vé đã thanh toán không hoàn/hủy và không đổi ngày.': 'Paid tickets are non-refundable and cannot be rescheduled.',
+  'Vé đã thanh toán không được hoàn tiền. Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản. Trường hợp tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác.':
+    'Paid tickets are non-refundable. Please check the date, number of guests and menu carefully before transferring. If the cruise reports it is sold out on your date, Nguyên Nguyên Travel gives a 100% refund or moves you to another date.',
   'Ăn tối, sinh nhật, kỷ niệm, hẹn hò, cầu hôn, họp mặt gia đình, tiếp khách, tiệc công ty, YEP (tiệc tất niên), gala dinner, hội nghị': 'Dinner, birthdays, anniversaries, dates, proposals, family gatherings, client dinners, company parties, YEP (year-end parties), gala dinners, conferences',
   'Đơn của tôi': 'My bookings',
   'Đơn của tôi | Vé Tàu Sài Gòn': 'My bookings | Vé Tàu Sài Gòn',

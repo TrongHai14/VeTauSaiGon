@@ -223,7 +223,7 @@ test('doi tra: trang cac tau khac Queen/Star khong co noi dung hoan/huy/doi ngay
 
 test('hoan huy: o tick dong y nhac ro ve khong hoan/huy, khong doi ngay cho moi tau', () => {
   const m = /id="dat-cho-dong-y".*?<\/label>/s.exec(doc('dat-cho.html'))[0].replace(/<[^>]*>/g, '');
-  assert.ok(m.includes('Vé đã thanh toán không hoàn/hủy và không đổi ngày.') && !/Queen|Star/.test(m), m);
+  assert.ok(m.includes('Vé đã thanh toán không được hoàn tiền.') && !/đổi ngày|hủy/.test(m) && !/Queen|Star/.test(m), m);
 });
 
 test('doi tra: phieu va tin nhan cua tau khac Queen/Star khong nhac hoan/huy/doi ngay', () => {
