@@ -180,7 +180,7 @@ const CAU_HOI_FAQ = [
   ['Thanh toán thế nào? Có xuất hóa đơn VAT không?', 'Quý khách chuyển khoản bằng mã QR hiện ở bước thanh toán (số tiền và nội dung đã điền sẵn). Cần hóa đơn VAT thì tích "Tôi cần xuất hóa đơn VAT" và chuyển vào tài khoản ' + CONG_TY.ten + '.'],
   ['Bao lâu thì nhận được vé?', 'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua Zalo. Khi lên tàu, xuất trình vé qua điện thoại.'],
   ['Nếu tàu hết chỗ ngày tôi chọn thì sao?', 'Sau khi quý khách thanh toán, Ms Nguyên xác nhận chỗ với tàu. Nếu tàu hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách. Ngày nào tàu đã báo hết chỗ sẽ bị khoá trên lịch đặt chỗ.'],
-  ['Làm sao biết phiếu là thật?', 'Phiếu đặt trên web có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu Ms Nguyên lập riêng cho khách đặt qua Zalo hoặc điện thoại không có mã QR; cần kiểm tra, vui lòng liên hệ Ms Nguyên 0948170036.'],
+  ['Làm sao biết phiếu là thật?', 'Phiếu xác nhận có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu không có mã QR, vui lòng liên hệ Ms Nguyên 0948170036 để kiểm tra.'],
   ['Trẻ em tính giá thế nào?', 'Mỗi tàu có chính sách trẻ em riêng (độ tuổi, chiều cao, số bé miễn phí đi kèm người lớn). Chính sách của từng tàu:'],
   ['Có đổi ngày hoặc hủy vé được không?', 'Chính sách đổi trả chỉ áp dụng cho Indochina Queen và Indochina Star: không hoàn/hủy vé trong ngày sử dụng; đổi sang ngày khác được nếu báo trước 2–3 ngày (tùy tình trạng chỗ), hoàn tất khi nhân viên gửi lại mã vé điện tử mới. Các tàu khác không hỗ trợ hoàn/hủy vé hoặc đổi ngày theo yêu cầu của khách. Riêng trường hợp tàu báo hết chỗ ngày đã chọn, quý khách vẫn được hoàn 100% hoặc đổi ngày.'],
   ['Đón khách ở đâu? Nên có mặt lúc nào?', 'Cảng Sài Gòn – 05 Nguyễn Tất Thành, phường Xóm Chiếu (cạnh Bến Nhà Rồng), có bãi giữ xe. Quý khách nên có mặt trước giờ tàu chạy; đến trễ hơn giờ tàu chạy, tàu có quyền từ chối phục vụ.'],
@@ -449,7 +449,7 @@ ${header('')}
   <main class="khung" id="tao-phieu" data-khong-dich>
     <div class="dau-trang-dat">
       <h1>Tạo phiếu cho khách nhắn riêng</h1>
-      <p>Trang nội bộ. Điền thông tin khách đặt qua Zalo hoặc điện thoại để ra phiếu xác nhận dịch vụ du thuyền. Chỉ tạo phiếu khi đã thấy tiền vào tài khoản.</p>
+      <p>Trang nội bộ. Điền thông tin khách đặt qua Zalo hoặc điện thoại để ra phiếu xác nhận dịch vụ du thuyền. Chỉ tạo phiếu khi đã thấy tiền vào tài khoản. Tạo trên máy đã cài khoá ký của Ms Nguyên (máy dùng trang xác nhận đơn) thì phiếu có mã QR kiểm tra vé hợp lệ.</p>
     </div>
     <div class="bo-cuc-dat">
       <div class="cot-form">
@@ -488,7 +488,8 @@ ${header('')}
   </main>
 ${footer('', true)}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-${script('', SCRIPT_CHUNG.concat(['dat-cho.js', 'tao-phieu.js']))}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha512-ZDSPMa/JM1D+7kdg2x3BsruQ6T/JpJo3jWDWkCZsP+5yVyp1KfESqLI+7RqB5k24F7p2cV7i2YHh/890y6P6Sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+${script('', SCRIPT_CHUNG.concat(['xac-thuc.js', 'dat-cho.js', 'tao-phieu.js']))}
   <script>khoiChayTrangTaoPhieu();</script>
 </body>
 </html>

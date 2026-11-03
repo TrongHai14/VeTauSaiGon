@@ -4,7 +4,7 @@ var LIEN_HE = {
   linkGoi: 'tel:0948170036', linkZalo: 'https://zalo.me/0948170036'
 };
 var DIA_CHI_MAC_DINH = '5 Nguyễn Tất Thành, Phường Xóm Chiếu, Hồ Chí Minh';
-var CONG_TY = { ten: 'Công ty TNHH Nguyên Nguyên Global', mst: '0319143429', vaiTro: 'Đại lý chính thức' };
+var CONG_TY = { ten: 'Công ty TNHH Nguyên Nguyên Global', mst: '0319143429', vaiTro: 'Đại lý chính thức Nguyên Nguyên Travel' };
 
 var CHINH_SACH_TRE_EM_PRINCESS = [
   'Trẻ em dưới 6 tuổi: ăn chung với bố mẹ và được tặng kèm 1 phần soup cho bé. Mỗi người lớn được kèm tối đa 1 bé, bé phát sinh phụ thu 100.000 VND/bé.',

@@ -90,11 +90,11 @@ test('tao-phieu: trang noi bo, khong dich, khong co lien ket tu trang khach, kho
   const h = doc('tao-phieu.html');
   assert.ok(h.includes('<meta name="robots" content="noindex, nofollow">') && h.includes('id="tao-phieu" data-khong-dich'));
   assert.ok(h.indexOf('js/dat-cho.js') < h.indexOf('js/tao-phieu.js'));
-  // Chỉ điền thông tin: không khoá ký, không mã QR chữ ký số.
-  for (const chu of ['xac-thuc.js', 'khung-khoa', 'qrcode', 'link-kiem-tra']) assert.ok(!h.includes(chu), chu);
+  // Ký phiếu bằng khoá đã cài trên máy; trang không có phần tạo hay quản lý khoá.
+  for (const chu of ['khung-khoa', 'link-kiem-tra']) assert.ok(!h.includes(chu), chu);
   const ma = doc('js/tao-phieu.js');
-  for (const chu of ['docKhoaBiMat', 'kyPhieuAnToan', 'ganQuanLyKhoa']) assert.ok(!ma.replace(/^\/\/.*$/gm, '').includes(chu), chu);
-  assert.ok(ma.includes('xacThuc: null'));
+  for (const chu of ['ganQuanLyKhoa', 'taoCapKhoa', 'luuKhoaBiMat']) assert.ok(!ma.replace(/^\/\/.*$/gm, '').includes(chu), chu);
+  assert.ok(ma.includes('xacThuc: kq.xacThuc') && ma.includes('kyPhieuAnToan'));
   assert.ok(doc('robots.txt').includes('Disallow: /tao-phieu.html'));
   assert.ok(!doc('sitemap.xml').includes('tao-phieu'));
   for (const f of ['index.html', 'faq.html', 'dat-cho.html', 'chinh-sach.html', 'tau/ben-nghe.html']) assert.ok(!doc(f).includes('tao-phieu.html'), f);

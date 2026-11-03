@@ -152,6 +152,24 @@ function soanTinChuyenKhoan(don, tau, bangTreEm, tk) {
   ].join('\n');
 }
 
+// Ký phiếu xác nhận để có mã QR "VÉ HỢP LỆ". Cần máy đã cài khoá ký của Ms Nguyên (máy dùng trang xác nhận đơn).
+// Trả Promise<{ xacThuc, lyDo }>; không ký được thì xacThuc = null và lyDo nói vì sao.
+function kyPhieuRieng(don, tau, bangTreEm, codeVe, ngayXacNhan) {
+  if (typeof docKhoaBiMat !== 'function' || typeof CAU_HINH === 'undefined' || !CAU_HINH.khoaCongKhai) {
+    return Promise.resolve({ xacThuc: null, lyDo: 'Chưa tải được phần chữ ký số nên phiếu chưa có mã QR kiểm tra vé. Kiểm tra mạng rồi tải lại trang.' });
+  }
+  return kyPhieuAnToan(CAU_HINH.khoaCongKhai, docKhoaBiMat, taoNoiDungVe(don, tau, bangTreEm, codeVe, ngayXacNhan)).then(function (chuoiVe) {
+    var link = taoLinkKiemTraVe(CAU_HINH.tenMien, chuoiVe);
+    var anhQR = taoAnhQR(link);
+    if (!anhQR) return { xacThuc: null, lyDo: 'Chưa tải được thư viện mã QR nên phiếu chưa có mã QR kiểm tra vé. Kiểm tra mạng rồi tạo lại.' };
+    return { xacThuc: { qr: anhQR, maNgan: maXacThucNgan(chuoiVe), link: link }, lyDo: '' };
+  }, function (loi) {
+    // Lời báo của xac-thuc.js nói tới nút ở trang xác nhận đơn, trang này không có nên báo theo cách riêng.
+    void loi;
+    return { xacThuc: null, lyDo: 'Phiếu chưa có mã QR kiểm tra vé vì máy này chưa có khoá ký của Ms Nguyên (hoặc khoá không khớp). Tạo phiếu trên máy Ms Nguyên dùng để mở link xác nhận đơn trong email, hoặc mở link đó trên máy này để nạp khoá.' };
+  });
+}
+
 // cheDo 'chuyen-khoan': trang phieu-chuyen-khoan.html, ra phiếu cho khách kiểm tra trước khi chuyển (không code vé).
 function khoiChayTrangTaoPhieu(cheDo) {
   var laPhieuCK = cheDo === 'chuyen-khoan';
@@ -169,6 +187,7 @@ function khoiChayTrangTaoPhieu(cheDo) {
   var kho = null;
   try { kho = window.localStorage; } catch (loiKho) { /* trình duyệt chặn: không có danh sách chờ */ }
   var phieuTuDanhSach = null;
+  var lanKy = 0;
   var codeTuTao = '';
   var donDaTao = null;
 
@@ -233,6 +252,7 @@ function khoiChayTrangTaoPhieu(cheDo) {
   el.tau.addEventListener('change', veLoai);
   el.loai.addEventListener('change', veLoai);
   function anPhieuCu() {
+    lanKy++;
     if (!donDaTao) return;
     donDaTao = null;
     khuVucPhieu.hidden = true;
@@ -286,6 +306,8 @@ function khoiChayTrangTaoPhieu(cheDo) {
       veDanhSachCho();
     });
   } else {
+    // Lấy khoá công khai mới nhất, để phiếu ký trên máy Ms Nguyên khớp với trang kiểm tra vé.
+    if (typeof fetch === 'function') capNhatKhoaCongKhaiMoiNhat(fetch.bind(window));
     var thamSo = docThamSoUrl(location.search);
     if (thamSo.ma) {
       var phieuCho = timPhieuCho(thamSo.ma, kho);
@@ -327,16 +349,22 @@ function khoiChayTrangTaoPhieu(cheDo) {
     }
     var ngayXacNhan = new Date();
     var tk = layTaiKhoan(CAU_HINH.thanhToan, don);
-    khungPhieu.innerHTML = taoPhieuHtml(don, tau, CONG_TY, LIEN_HE, GIA_TRE_EM, tk, {
-      trangThai: 'Đã thanh toán.', codeVe: codeVe, ngayXacNhan: ngayXacNhan, xacThuc: null
+    var lan = ++lanKy;
+    thongBao('Đang ký phiếu…', '');
+    kyPhieuRieng(don, tau, GIA_TRE_EM, codeVe, ngayXacNhan).then(function (kq) {
+      // Đã bấm tạo lại trong lúc đang ký: bỏ kết quả cũ.
+      if (lan !== lanKy) return;
+      khungPhieu.innerHTML = taoPhieuHtml(don, tau, CONG_TY, LIEN_HE, GIA_TRE_EM, tk, {
+        trangThai: 'Đã thanh toán.', codeVe: codeVe, ngayXacNhan: ngayXacNhan, xacThuc: kq.xacThuc
+      });
+      donDaTao = don;
+      // Đơn đã có phiếu xác nhận thì ra khỏi danh sách chờ.
+      xoaPhieuCho(don.maDon, kho);
+      thongBao(kq.xacThuc ? 'Đã ký phiếu, có mã QR kiểm tra vé. Tải ảnh phiếu rồi gửi cho khách.' : kq.lyDo, kq.xacThuc ? 'da-gui' : 'loi-gui');
+      khuVucPhieu.hidden = false;
+      canhPhieuVuaKhung(khungPhieu);
+      khuVucPhieu.scrollIntoView({ behavior: 'smooth' });
     });
-    donDaTao = don;
-    // Đơn đã có phiếu xác nhận thì ra khỏi danh sách chờ.
-    xoaPhieuCho(don.maDon, kho);
-    thongBao('Đã tạo phiếu. Tải ảnh phiếu rồi gửi cho khách.', 'da-gui');
-    khuVucPhieu.hidden = false;
-    canhPhieuVuaKhung(khungPhieu);
-    khuVucPhieu.scrollIntoView({ behavior: 'smooth' });
   });
 
   goc.addEventListener('click', function (e) {

@@ -455,3 +455,34 @@ test('phieu 2 phan: phieu 1 vao danh sach cho; phieu 2 dien lai dung ma don va t
   const khong = dungTrang({ kho, search: '?ma=VT261031ZZZZ' });
   assert.ok(khong.thongBao().includes('Không thấy phiếu'));
 });
+
+test('tao-phieu: may co khoa ky thi phieu co ma QR kiem tra ve; khong co khoa thi van ra phieu va bao ro', async () => {
+  const coKhoa = dungTrang();
+  vm.runInContext(`
+    kyPhieuAnToan = function (ck, lay, nd) { return Promise.resolve('CHUOI-VE-' + nd.m + '-' + nd.c); };
+    taoAnhQR = function (link) { return 'data:image/png;base64,QR'; };
+    maXacThucNgan = function () { return 'ABCD-1234'; };
+    docKhoaBiMat = function () { return Promise.resolve({}); };`, coKhoa.ctx);
+  coKhoa.chonTau('indochina-star', 'buffet');
+  await coKhoa.nop();
+  const html = coKhoa.phanTu['#khung-phieu'].innerHTML;
+  assert.ok(html.includes('phieu-xac-thuc') && html.includes('ABCD-1234') && html.includes('Code vé điện tử'), coKhoa.thongBao());
+  assert.ok(coKhoa.thongBao().includes('có mã QR kiểm tra vé'));
+
+  const khongKhoa = dungTrang();
+  vm.runInContext(`kyPhieuAnToan = function () { return Promise.reject(new Error('Máy này chưa có khoá ký.')); };`, khongKhoa.ctx);
+  khongKhoa.chonTau('indochina-star', 'buffet');
+  await khongKhoa.nop();
+  const h2 = khongKhoa.phanTu['#khung-phieu'].innerHTML;
+  assert.ok(h2.includes('Code vé điện tử') && !h2.includes('phieu-xac-thuc'), 'van co phieu khong QR');
+  assert.ok(khongKhoa.thongBao().includes('chưa có mã QR') && khongKhoa.thongBao().includes('khoá ký'));
+  const trang = doc('tao-phieu.html');
+  assert.ok(trang.includes('js/xac-thuc.js') && trang.includes('qrcode.min.js'));
+  assert.ok(!doc('phieu-chuyen-khoan.html').includes('js/xac-thuc.js'), 'phieu 1 khong ky');
+});
+
+test('ten dai ly: Dai ly chinh thuc Nguyen Nguyen Travel tren phieu va web', () => {
+  const { CONG_TY } = require('../js/du-lieu-tau.js');
+  assert.strictEqual(CONG_TY.vaiTro, 'Đại lý chính thức Nguyên Nguyên Travel');
+  for (const f of ['index.html', 'dat-cho.html']) assert.ok(doc(f).includes('Đại lý chính thức Nguyên Nguyên Travel'), f);
+});

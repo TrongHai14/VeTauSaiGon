@@ -170,6 +170,10 @@ var TU_DIEN_EN = {
   'Đại lý chính thức': 'Official agent',
   '★ Đại lý chính thức': '★ Official agent',
   '– Đại lý chính thức': '– Official agent',
+  'Đại lý chính thức Nguyên Nguyên Travel': 'Official agent Nguyên Nguyên Travel',
+  '★ Đại lý chính thức Nguyên Nguyên Travel': '★ Official agent Nguyên Nguyên Travel',
+  '– Đại lý chính thức Nguyên Nguyên Travel': '– Official agent Nguyên Nguyên Travel',
+  '★ Đại lý chính thức Nguyên Nguyên Travel · 6 du thuyền': '★ Official agent Nguyên Nguyên Travel · 6 cruises',
   'Công ty TNHH Nguyên Nguyên Global': 'Nguyen Nguyen Global Co., Ltd.',
   'Công Ty TNHH Nguyên Nguyên Global': 'Nguyen Nguyen Global Co., Ltd.',
   'Nguyên Nguyên Global': 'Nguyen Nguyen Global',
@@ -244,8 +248,8 @@ var TU_DIEN_EN = {
   'Sau khi thanh toán thành công, trong vòng 24 giờ Ms Nguyên gửi phiếu xác nhận và vé điện tử (PDF) qua Zalo. Khi lên tàu, xuất trình vé qua điện thoại.':
     'Within 24 hours of a successful payment, Ms Nguyên sends the confirmation slip and e-ticket (PDF) by Zalo. Show the ticket on your phone when boarding.',
   'Làm sao biết phiếu là thật?': 'How do I know the slip is genuine?',
-  'Phiếu đặt trên web có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu Ms Nguyên lập riêng cho khách đặt qua Zalo hoặc điện thoại không có mã QR; cần kiểm tra, vui lòng liên hệ Ms Nguyên 0948170036.':
-    'Every slip carries a digital signature and a QR code. Scanning it (staff or you) shows "VALID TICKET" with the name, date and number of guests. An altered slip shows as invalid.',
+  'Phiếu xác nhận có chữ ký số và mã QR. Nhân viên (hoặc quý khách) quét mã sẽ thấy "VÉ HỢP LỆ" cùng tên, ngày và số khách. Phiếu bị sửa sẽ báo không hợp lệ. Phiếu không có mã QR, vui lòng liên hệ Ms Nguyên 0948170036 để kiểm tra.':
+    'Each confirmation slip carries a digital signature and a QR code. Scanning it (staff or you) shows "VALID TICKET" with the name, date and number of guests. An altered slip shows as invalid. If a slip has no QR code, please contact Ms Nguyên at 0948170036 to verify it.',
   'Trẻ em tính giá thế nào?': 'How are children charged?',
   'Mỗi tàu có chính sách riêng, ghi ngay ở ô đếm trẻ em khi đặt chỗ. Thường: trẻ dưới 1m miễn phí (2 người lớn kèm 1 bé), trẻ 1m – dưới 1,3m mua vé trẻ em, từ 1,3m mua vé người lớn.':
     'Each cruise has its own policy, shown next to the children counters when booking. Usually: children under 1 m are free (one per 2 adults), 1 m – under 1.3 m pay the child fare, 1.3 m and taller pay the adult fare.',

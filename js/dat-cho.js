@@ -779,7 +779,7 @@ function taoAnhQR(noiDung) {
 function layCongTy() {
   if (typeof CONG_TY !== 'undefined') return CONG_TY;
   if (typeof module !== 'undefined') return require('./du-lieu-tau.js').CONG_TY;
-  return { ten: '', mst: '', vaiTro: '' };
+  return { ten: '', mst: '', vaiTro: 'Đại lý chính thức Nguyên Nguyên Travel' };
 }
 
 // Đường dẫn logo đại lý (CAU_HINH.logo.header); '' nếu chưa cấu hình.
@@ -1019,7 +1019,7 @@ function taoTomTatDon(don, tau, bangTreEm, tienTo) {
   if (tt.khach.treEmMienPhi > 0) html += '<li><span>Trẻ em miễn phí<small>x ' + tt.khach.treEmMienPhi + '</small></span><b>0</b></li>';
   return html + '</ul><div class="tt-tong"><span>Tổng thanh toán</span><strong>' + e(hamHienThi.dinhDangGia(tt.tong)) + '</strong></div>' +
     '<div class="tt-dai-ly">' + taoAnhLogo(tienTo, 'tt-logo') + '<span>Đặt qua <b>' + e(layCongTy().ten) +
-    '</b> – Đại lý chính thức</span></div>';
+    '</b> – ' + e(layCongTy().vaiTro) + '</span></div>';
 }
 
 // Không tải được mã QR (mất mạng, dịch vụ lỗi): thay bằng lời nhắn, khách vẫn chuyển khoản theo thông tin bên cạnh.
