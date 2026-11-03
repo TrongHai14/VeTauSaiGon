@@ -36,7 +36,7 @@ function taoSheetGia(macDinh) {
   const cache = {};
   const ctx = {
     SpreadsheetApp: { getActive: () => ss, newDataValidation: () => kiemTra, getUi: () => ({}), flush() { ctx.soLanFlush = (ctx.soLanFlush || 0) + 1; } },
-    CacheService: { getScriptCache: () => ({ get: (k) => (k in cache ? cache[k] : null), put: (k, v) => { cache[k] = v; } }) },
+    CacheService: { getScriptCache: () => ({ get: (k) => (k in cache ? cache[k] : null), put: (k, v) => { cache[k] = v; }, remove: (k) => { delete cache[k]; } }) },
     ScriptApp: { getProjectTriggers: () => [], newTrigger: () => ({ timeBased: () => ({ everyMinutes: () => ({ create() {} }) }) }) },
     LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
     MailApp: { sendEmail(o) { (ctx.thu = ctx.thu || []).push(o); } },
@@ -751,4 +751,20 @@ test('web: FormSubmit loi thi nho Google Sheet gui email; ca hai loi thi bao loi
 test('noi dung chuyen khoan chi con ma don cho app ngan hang hien du', () => {
   const dc = require('../js/dat-cho.js');
   assert.strictEqual(dc.taoNoiDungChuyenKhoan({ maDon: 'VT261103MRWT', soDienThoai: '0967907959' }), 'VT261103MRWT');
+});
+
+test('email du phong: ham kiem tra trong trinh soan gui 1 thu; loi gui email tra kem ly do', () => {
+  const s = taoSheetGia(true);
+  const nhatKy = [];
+  s.ctx.Logger = { log: (x) => nhatKy.push(x) };
+  s.ctx.kiemTraEmailDuPhong();
+  assert.strictEqual(s.ctx.thu.length, 1);
+  assert.strictEqual(s.ctx.thu[0].to, 'bookingindochinaqueen@gmail.com');
+  assert.match(nhatKy[0], /Kết quả: \{"ok":true\}/);
+  s.ctx.MailApp.sendEmail = () => { throw new Error('You do not have permission to call MailApp.sendEmail'); };
+  const kq = s.post({ action: 'email', maDon: MA + 'EM30', duLieu: { a: 1 } });
+  assert.strictEqual(kq.loi, 'may-chu');
+  assert.match(kq.chiTiet, /permission/);
+  s.ctx.kiemTraEmailDuPhong();
+  assert.match(nhatKy[1], /^LỖI: .*permission/);
 });

@@ -97,6 +97,7 @@
       .addItem('Trả chỗ các đơn quá hạn ngay', 'donDepHetHan')
       .addItem('Hủy các đơn chưa thanh toán của một SĐT (Giữ chỗ + Chờ xác nhận, khi bị spam)', 'huyTheoSdt')
       .addItem('Hủy TẤT CẢ đơn "Giữ chỗ" chưa chuyển khoản (khi bị spam)', 'huyTatCaGiuCho')
+      .addItem('Gửi thử email dự phòng (kiểm tra quyền gửi email)', 'kiemTraEmailDuPhong')
       .addItem('Cài đặt lần đầu', 'caiDat')
       .addToUi();
   }
@@ -134,6 +135,8 @@
       if (duLieu.action === 'email') return traJson(guiEmailDuPhong(duLieu));
       return traJson({ ok: false, loi: 'action' });
     } catch (loi) {
+      // Email dự phòng lỗi (thường do chưa cấp quyền gửi email): báo kèm lý do để biết cách sửa.
+      if (duLieu.action === 'email') return traJson({ ok: false, loi: 'may-chu', chiTiet: String((loi && loi.message) || loi).slice(0, 200) });
       return traJson({ ok: false, loi: 'may-chu' });
     } finally {
       // Ghi hết vào Sheet rồi mới mở khoá, để yêu cầu kế tiếp đọc đúng số chỗ (không bán quá chỗ).
@@ -282,6 +285,18 @@
     cache.put(khoaLuot, String(luot + 1), 700);
     cache.put('email-don-' + maDon, '1', 120);
     return { ok: true };
+  }
+
+  // Chạy trong trình soạn Apps Script (hoặc menu Vé Tàu) để Google hỏi quyền gửi email và gửi 1 email thử tới hộp thư nhận đơn.
+  function kiemTraEmailDuPhong() {
+    var ma = 'VT' + Utilities.formatDate(new Date(), MUI_GIO, 'yyyy-MM-dd').replace(/-/g, '').slice(2) + 'THU1';
+    try {
+      CacheService.getScriptCache().remove('email-don-' + ma);
+      var kq = guiEmailDuPhong({ maDon: ma, duLieu: { _subject: 'TEST email dự phòng', 'Ghi chú': 'Email thử từ Apps Script. Không cần xử lý.' } });
+      Logger.log('Kết quả: ' + JSON.stringify(kq));
+    } catch (loi) {
+      Logger.log('LỖI: ' + loi);
+    }
   }
 
   function xacNhanThanhToan(d) {
