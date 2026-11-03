@@ -486,3 +486,12 @@ test('ten dai ly: Dai ly chinh thuc Nguyen Nguyen Travel tren phieu va web', () 
   assert.strictEqual(CONG_TY.vaiTro, 'Đại lý chính thức Nguyên Nguyên Travel');
   for (const f of ['index.html', 'dat-cho.html']) assert.ok(doc(f).includes('Đại lý chính thức Nguyên Nguyên Travel'), f);
 });
+
+test('phieu xac nhan: dia chi duoi ten cong ty ghi ro la dia diem don khach', () => {
+  const t = dungTrang();
+  t.chonTau('indochina-star', 'buffet');
+  return t.nop().then(() => {
+    const html = t.phanTu['#khung-phieu'].innerHTML;
+    assert.ok(html.includes('Địa điểm đón khách: ') && !html.includes('<p>Địa chỉ: '), t.thongBao());
+  });
+});

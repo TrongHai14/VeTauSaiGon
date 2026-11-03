@@ -687,7 +687,7 @@ function taoPhieuHtml(don, tau, congTy, lienHe, bangTreEm, taiKhoan, thongTin) {
     '<div class="phieu-dau">' + taoAnhLogo('', 'phieu-logo') +
     '<div class="phieu-cong-ty"><strong>' + e(congTy.ten) + '</strong>' +
     '<p>MST: ' + e(congTy.mst) + ' – ' + e(congTy.vaiTro) + '</p>' +
-    '<p>Địa chỉ: ' + e(tau.diaChi) + '</p>' +
+    '<p>Địa điểm đón khách: ' + e(tau.diaChi) + '</p>' +
     '<p>Hỗ trợ dịch vụ: ' + e(lienHe.tenNguoiLienHe) + ' ' + e(lienHe.soDienThoai) + '</p></div></div>' +
     '<h2>PHIẾU XÁC NHẬN DỊCH VỤ DU THUYỀN<br>' + e(tau.ten.toUpperCase()) + '</h2>' +
     '<p class="phieu-ngay">Ngày đặt <b>' + hai(ngayDat.getDate()) + '</b> tháng <b>' + hai(ngayDat.getMonth() + 1) +
