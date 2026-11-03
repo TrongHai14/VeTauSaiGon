@@ -33,17 +33,19 @@ test('Nguyen Nguyen: cau cam ket dung ten thuong hieu Travel; ten phap ly cong t
   assert.strictEqual(CAU_HINH.thanhToan.congTy.chuTaiKhoan, 'Công Ty TNHH Nguyên Nguyên Global');
 });
 
-test('doi tra: chi Queen va Star co muc nay tren trang tau; trang chinh sach ghi ro pham vi', () => {
+test('hoan huy: moi tau deu khong hoan/huy, khong doi ngay theo yeu cau khach; chi tru khi tau het cho', () => {
   for (const t of DANH_SACH_TAU) {
     const html = ht.taoTrangTau(t, LIEN_HE, '../');
-    const co = t.slug === 'indochina-queen' || t.slug === 'indochina-star';
-    assert.strictEqual(html.includes('id="doi-tra"'), co, t.slug);
-    assert.strictEqual(html.includes('Hoàn/Hủy vé'), co, t.slug);
-    assert.strictEqual(html.includes('Đổi ngày sử dụng'), co, t.slug);
+    assert.ok(html.includes('id="doi-tra"') && html.includes('Chính sách hoàn/hủy vé'), t.slug);
+    assert.ok(html.includes('không được hoàn tiền, hủy vé hoặc đổi sang ngày khác') && html.includes('hoàn 100%'), t.slug);
+    assert.ok(!html.includes('Đổi ngày sử dụng') && !html.includes('báo trước 2–3 ngày'), t.slug + ' khong con doi ngay 2-3 ngay');
     assert.ok(html.includes('id="dieu-kien-ve"'), t.slug + ' van co dieu kien ve');
   }
-  assert.ok(doc('chinh-sach.html').includes('Áp dụng khi khách muốn hoàn/hủy hoặc đổi ngày: chỉ có ở Indochina Queen và Indochina Star. Trường hợp tàu hết chỗ xem mục Điều kiện vé.'));
-  assert.ok(doc('faq.html').includes('Các tàu khác không hỗ trợ hoàn/hủy vé hoặc đổi ngày theo yêu cầu của khách. Riêng trường hợp tàu báo hết chỗ ngày đã chọn, quý khách vẫn được hoàn 100% hoặc đổi ngày.'));
+  for (const f of ['chinh-sach.html', 'faq.html']) {
+    const h = doc(f);
+    assert.ok(h.includes('Áp dụng cho tất cả các tàu') || h.includes('áp dụng cho tất cả các tàu'), f);
+    assert.ok(!h.includes('chỉ có ở Indochina Queen và Indochina Star') && !h.includes('chỉ áp dụng cho Indochina Queen và Indochina Star'), f);
+  }
 });
 
 test('giao dien toi: moi trang co nut, doc lua chon truoc khi nap CSS; phieu giu nen trang', () => {

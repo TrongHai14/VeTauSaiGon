@@ -33,7 +33,7 @@ var DANH_SACH_TAU = [
       { nhan: 'Kích thước', giaTri: 'Dài 74 m, rộng 13,7 m, vỏ thép' },
       { nhan: 'Số tầng', giaTri: '3 tầng' },
       { nhan: 'Bố trí', giaTri: 'Tầng trệt 120 khách, tầng giữa 220 khách, tầng 3 ngoài trời 190 khách và phòng VIP 70 khách' },
-      { nhan: 'Phù hợp', giaTri: 'Sinh nhật, gala dinner, hội nghị, tiệc công ty' }
+      { nhan: 'Phù hợp', giaTri: 'Ăn tối, sinh nhật, kỷ niệm, hẹn hò, cầu hôn, họp mặt gia đình, tiếp khách, tiệc công ty, YEP (tiệc tất niên), gala dinner, hội nghị' }
     ],
     noiBat: ['Buffet không giới hạn ở 3 tầng', 'Sảnh VIP tầng 3 với 11 set menu', 'Nhạc dân tộc, nhạc Philippines và múa dân tộc'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h45', capBen: '21h15', ghiChu: null },
@@ -90,7 +90,7 @@ var DANH_SACH_TAU = [
       { nhan: 'Kích thước', giaTri: 'Dài 48,9 m, rộng 12,2 m, vỏ thép' },
       { nhan: 'Số tầng', giaTri: '3 tầng: tầng trệt, tầng giữa, sân thượng' },
       { nhan: 'Điểm nổi bật', giaTri: 'Sân thượng nhìn 360° ra sông Sài Gòn' },
-      { nhan: 'Phù hợp', giaTri: 'Ăn tối, tiếp khách, sự kiện' }
+      { nhan: 'Phù hợp', giaTri: 'Ăn tối, sinh nhật, kỷ niệm, hẹn hò, cầu hôn, họp mặt gia đình, tiếp khách, tiệc công ty, YEP (tiệc tất niên), gala dinner, hội nghị' }
     ],
     noiBat: ['Buffet ở tầng 1 và tầng 2, tầng thượng ngắm cảnh', 'Nhạc, múa dân tộc và nhạc Philippines trên boong', 'Ngắm cầu Thủ Thiêm, Landmark 81 về đêm'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h45', capBen: '21h15', ghiChu: null },
@@ -127,7 +127,7 @@ var DANH_SACH_TAU = [
       { nhan: 'Số tầng', giaTri: '4 tầng' },
       { nhan: 'Đại sảnh', giaTri: '2 sảnh ở tầng 2 và tầng 3, mỗi sảnh khoảng 400 khách, có sân khấu, âm thanh, màn hình LED' },
       { nhan: 'Phòng VIP', giaTri: '12 phòng ở tầng 1, 10–24 khách/phòng' },
-      { nhan: 'Phù hợp', giaTri: 'Gala dinner, tiệc cưới, Year End Party, hội nghị' }
+      { nhan: 'Phù hợp', giaTri: 'Ăn tối, sinh nhật, kỷ niệm, hẹn hò, cầu hôn, họp mặt gia đình, tiếp khách, tiệc công ty, YEP (tiệc tất niên), gala dinner, hội nghị' }
     ],
     noiBat: ['Lên tàu sớm, dùng bữa từ 19h00', 'Nhạc sống hằng đêm từ 19h đến 21h15', 'Cuối tuần có belly dance hoặc múa cổ trang'],
     moTaGia: 'Set menu từ 469.000đ · Buffet 733.320đ',
@@ -187,7 +187,7 @@ var DANH_SACH_TAU = [
       { nhan: 'Kích thước', giaTri: 'Dài 75 m, rộng 13,9 m, cao 11,5 m' },
       { nhan: 'Số tầng', giaTri: '3 tầng' },
       { nhan: 'Vận hành', giaTri: '2 động cơ Hyundai, chạy êm và ổn định' },
-      { nhan: 'Phù hợp', giaTri: 'Ăn tối, gala dinner, tiệc công ty, hội nghị' }
+      { nhan: 'Phù hợp', giaTri: 'Ăn tối, sinh nhật, kỷ niệm, hẹn hò, cầu hôn, họp mặt gia đình, tiếp khách, tiệc công ty, YEP (tiệc tất niên), gala dinner, hội nghị' }
     ],
     noiBat: ['Buffet, set menu và set chill theo từng tầng', 'Live band hằng đêm, DJ và dancer từ thứ 5 đến chủ nhật', 'Mid-week Chill thứ 3 và thứ 5: tặng 2 bia + nachos'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '21h30', ghiChu: null },
@@ -257,7 +257,7 @@ var DANH_SACH_TAU = [
       { nhan: 'Tầng trệt', giaTri: 'Sảnh Thủ Thiêm, 100 khách' },
       { nhan: 'Tầng giữa', giaTri: 'Sảnh Bến Thành 78 khách, sảnh Nhà Bè 38 khách' },
       { nhan: 'Sân thượng', giaTri: 'Sundeck ngoài trời, ngắm hoàng hôn và thành phố về đêm' },
-      { nhan: 'Phù hợp', giaTri: 'Gala dinner, hội nghị, tiếp khách VIP, tiệc gia đình' }
+      { nhan: 'Phù hợp', giaTri: 'Ăn tối, sinh nhật, kỷ niệm, hẹn hò, cầu hôn, họp mặt gia đình, tiếp khách, tiệc công ty, YEP (tiệc tất niên), gala dinner, hội nghị' }
     ],
     noiBat: ['20 set menu 3, 4, 5 món', 'Band nhạc Philippines, ảo thuật, violin', 'Tặng trang trí tiệc sinh nhật, kỷ niệm'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '21h30', ghiChu: null },
@@ -318,7 +318,7 @@ var DANH_SACH_TAU = [
       { nhan: 'Phòng VIP', giaTri: '18 phòng riêng: 14 phòng 12 khách, 4 phòng 10 khách' },
       { nhan: 'Sảnh tiệc chính', giaTri: 'Khoảng 70 khách' },
       { nhan: 'Panorama Lounge', giaTri: 'Nhóm khoảng 60 khách' },
-      { nhan: 'Phù hợp', giaTri: 'Tiếp đối tác, ký kết, sum họp gia đình' }
+      { nhan: 'Phù hợp', giaTri: 'Ăn tối, sinh nhật, kỷ niệm, hẹn hò, cầu hôn, họp mặt gia đình, tiếp khách, tiệc công ty, YEP (tiệc tất niên), gala dinner, hội nghị' }
     ],
     noiBat: ['20 set menu, có trà hoặc cà phê sau món chính', 'Live band quốc tế và Việt Nam', 'Ảo thuật tại bàn hằng ngày'],
     gioChay: { donKhach: '18h00', khoiHanh: '19h30', capBen: '21h30', ghiChu: null },
@@ -423,14 +423,13 @@ var CHINH_SACH_CHUNG = [
     ]
   },
   {
-    // Chỉ tàu trong chiApDung mới hiện mục này trên trang tàu.
-    id: 'doi-tra', tieuDe: 'Chính sách đổi trả vé', chiApDung: ['indochina-queen', 'indochina-star'],
+    // Áp dụng cho tất cả các tàu: khách không được hoàn/hủy hay đổi ngày; chỉ trừ khi tàu báo hết chỗ.
+    id: 'doi-tra', tieuDe: 'Chính sách hoàn/hủy vé',
     nhom: [
-      { tieuDe: null, dong: ['Áp dụng khi khách muốn hoàn/hủy hoặc đổi ngày: chỉ có ở Indochina Queen và Indochina Star. Trường hợp tàu hết chỗ xem mục Điều kiện vé.'] },
-      { tieuDe: 'Hoàn/Hủy vé', dong: ['Không áp dụng hoàn tiền hoặc hủy vé trong ngày sử dụng dịch vụ.'] },
-      { tieuDe: 'Đổi ngày sử dụng', dong: [
-        'Hỗ trợ linh hoạt đổi sang ngày khác nếu quý khách thông báo trước 2–3 ngày (tùy thuộc vào số lượng vé và tình trạng chỗ).',
-        'Yêu cầu đổi ngày chỉ hoàn tất khi nhân viên tư vấn xác nhận và gửi lại mã vé điện tử mới cho quý khách.'
+      { tieuDe: null, dong: [
+        'Vé đã thanh toán không được hoàn tiền, hủy vé hoặc đổi sang ngày khác theo yêu cầu của quý khách. Áp dụng cho tất cả các tàu.',
+        'Quý khách vui lòng kiểm tra kỹ ngày đi, số khách và thực đơn trước khi chuyển khoản.',
+        'Trường hợp tàu báo hết chỗ ngày đã chọn, Nguyên Nguyên Travel hoàn 100% số tiền hoặc đổi sang ngày khác theo lựa chọn của quý khách.'
       ] }
     ]
   },
